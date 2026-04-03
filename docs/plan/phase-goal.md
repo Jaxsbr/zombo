@@ -8,10 +8,10 @@ Bridge the pure logic systems from core-loop to a playable game — create Phase
 - US-14 — Playable game loop
 
 ### Done-when (observable)
-- [ ] `src/entities/DefenderEntity.ts` exists, exports a Phaser game object that renders a colored rectangle (green=generator, blue=shooter, gray=wall) and a health bar above it; `npm run build` compiles without errors [US-12]
-- [ ] `src/entities/EnemyEntity.ts` exists, exports a Phaser game object that renders a colored circle (red=basic, purple=tough) and a health bar above it; `npm run build` compiles without errors [US-12]
-- [ ] `src/entities/ProjectileEntity.ts` exists, exports a Phaser game object that renders a small yellow circle; `npm run build` compiles without errors [US-12]
-- [ ] Each entity file imports its corresponding config type (`DefenderType`, `EnemyType`) from `src/config/`; verified by grep [US-12]
+- [x] `src/entities/DefenderEntity.ts` exists, exports a Phaser game object that renders a colored rectangle (green=generator, blue=shooter, gray=wall) and a health bar above it; `npm run build` compiles without errors [US-12]
+- [x] `src/entities/EnemyEntity.ts` exists, exports a Phaser game object that renders a colored circle (red=basic, purple=tough) and a health bar above it; `npm run build` compiles without errors [US-12]
+- [x] `src/entities/ProjectileEntity.ts` exists, exports a Phaser game object that renders a small yellow circle; `npm run build` compiles without errors [US-12]
+- [x] Each entity file imports its corresponding config type (`DefenderType`, `EnemyType`) from `src/config/`; verified by grep [US-12]
 - [ ] GameScene creates an `Economy` instance and renders the current balance as text in the HUD area; verified by grep for `Economy` instantiation and `setText` or `text` update in GameScene [US-13]
 - [ ] GameScene creates a `WaveManager` instance and renders the current wave number and total waves in the HUD; verified by grep for `WaveManager` and wave text in GameScene [US-13]
 - [ ] GameScene renders a defender selection panel with all 3 defender types showing name and cost; verified by grep for `DEFENDER_TYPES` iteration and text creation in GameScene [US-13]
