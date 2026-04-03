@@ -32,3 +32,9 @@ entries:
     result: pass
     notes: "US-13 complete. Next: levels.ts with 5 waves of escalating difficulty, plus test verifying waves.length >= 5."
     tokens: ~1k
+  - task: 6
+    story: US-14
+    description: "Create levels.ts with 5-wave config and unit test"
+    result: pass
+    notes: "LEVEL_1 with 5 waves of escalating difficulty (basic → mixed → tough-heavy). 5 tests verify structure. 72 total tests pass."
+    tokens: ~3k
