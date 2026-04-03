@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "US-12 complete. Next: wire Economy + WaveManager display in HUD, add defender card panel with click-to-select, click-to-place."
     tokens: ~1k
+  - task: 4
+    story: US-13
+    description: "Implement HUD with economy display, wave counter, and defender selection panel"
+    result: pass
+    notes: "GameScene rewritten: Economy/Grid/Placement/WaveManager/GameFlow init. HUD shows balance + wave. 3 defender cards with select-then-place. 67 tests pass. ✓ US-13 complete"
+    tokens: ~6k
