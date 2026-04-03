@@ -74,3 +74,9 @@ entries:
     result: pass
     notes: "game.ts: scenes=[GameScene,GameOverScene], need TitleScene first. GameOverScene: generic text + bare scene.start. Phaser fade: cameras.main.fadeOut(ms) + camerafadeoutcomplete. Queue scene flow implementation."
     tokens: ~2k
+  - task: 13
+    story: US-18
+    description: "Implement TitleScene, camera fade transitions, themed GameOverScene"
+    result: pass
+    notes: "TitleScene: 'Toy Box Siege' + Play button. Camera fades on all transitions. GameOverScene: 'Fort Defended!'/'The Mess Wins!' + Play Again. Clean restart. 88 tests + build pass. ✓ US-18 complete"
+    tokens: ~5k

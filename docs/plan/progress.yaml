@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 11
-  next_task: "[US-18] Implement TitleScene, camera fade transitions, themed GameOverScene with Play Again"
+  task_number: 12
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
