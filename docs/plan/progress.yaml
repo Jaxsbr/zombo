@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 3
-  next_task: null
+  next_task: "[US-15] Investigate: plan distinct shape rendering for DefenderEntity (Water Pistol, Jack-in-the-Box, Block Tower) and EnemyEntity (Dust Bunny, Cleaning Robot)"
   last_result: pass
   consecutive_fails: 0
 

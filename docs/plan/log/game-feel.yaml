@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "Defender names: Generator→Jack-in-the-Box, Shooter→Water Pistol, Wall→Block Tower. Enemy names: Basic→Dust Bunny, Tough→Cleaning Robot. HUD: Energy→Sparks. Config keys unchanged. 72 tests pass."
     tokens: ~3k
+  - task: 3
+    story: US-15
+    description: "Investigation — entity rendering code reviewed, queue distinct shapes task"
+    result: pass
+    notes: "DefenderEntity: fillRect with color map, EnemyEntity: fillCircle with color map. Both need per-key shape dispatch. Grid carpet color also needed."
+    tokens: ~2k
