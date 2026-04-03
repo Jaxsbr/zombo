@@ -27,6 +27,7 @@ const STARTING_BALANCE = 500;
 const PASSIVE_INCOME_INTERVAL = 8000; // ms
 const PASSIVE_INCOME_AMOUNT = 25;
 const GENERATOR_INCOME_INTERVAL = 5000; // ms
+const FADE_DURATION = 600;
 
 export class GameScene extends Phaser.Scene {
   private grid!: Grid;
@@ -46,12 +47,16 @@ export class GameScene extends Phaser.Scene {
   private enemies: EnemyEntity[] = [];
   private projectiles: ProjectileEntity[] = [];
   private cellZones: Phaser.GameObjects.Zone[] = [];
+  private transitioning = false;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
   create(): void {
+    this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
+    this.transitioning = false;
+
     // Initialize systems
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
     this.economy = new Economy(STARTING_BALANCE);
@@ -489,8 +494,13 @@ export class GameScene extends Phaser.Scene {
     this.gameFlow.update(flowEnemies, this.waveManager.isComplete);
 
     const state = this.gameFlow.getState();
-    if (state !== 'playing') {
-      this.scene.start('GameOverScene', { won: state === 'won' });
+    if (state !== 'playing' && !this.transitioning) {
+      this.transitioning = true;
+      const won = state === 'won';
+      this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.start('GameOverScene', { won });
+      });
       return;
     }
 
