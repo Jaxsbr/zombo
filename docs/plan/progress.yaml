@@ -28,9 +28,9 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 1
-  next_task: "[US-01] Create docs/reference/plants.md with comprehensive PvZ1 plant catalogue — minimum 30 entries with Name, Cost, Recharge, Damage/Effect, Range, Unlock-level, and behaviour descriptions"
-  last_result: null
+  task_number: 2
+  next_task: null
+  last_result: pass
   consecutive_fails: 0
 
   # --- Review (owner: iterator) ---

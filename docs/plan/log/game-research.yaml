@@ -8,3 +8,9 @@ entries:
     result: pass
     notes: "First task of phase. Queued creation of docs/reference/plants.md."
     tokens: ~1k
+  - task: 2
+    story: US-01
+    description: "Create docs/reference/plants.md — comprehensive PvZ1 plant catalogue"
+    result: pass
+    notes: "49 plant entries with full stats and behaviour descriptions. ✓ US-01 complete"
+    tokens: ~8k
