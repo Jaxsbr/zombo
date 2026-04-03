@@ -56,3 +56,9 @@ entries:
     result: pass
     notes: "Pure TS, lazy AudioContext, 6 trigger functions (place/fire/hit/death/collect/announce), mute toggle. No Phaser dependency. 88 tests pass."
     tokens: ~3k
+  - task: 10
+    story: US-21
+    description: "Wire SFX into GameScene + HUD mute toggle"
+    result: pass
+    notes: "All code paths wired: place, fire, hit, death, announce. Mute toggle in HUD top-right. Collect SFX deferred to US-23 (spark mechanic). 88 tests pass."
+    tokens: ~3k
