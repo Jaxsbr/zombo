@@ -96,3 +96,9 @@ entries:
     result: pass
     notes: "PR created: https://github.com/Jaxsbr/zombo/pull/2"
     tokens: ~3k
+  - task: 13
+    story: review
+    description: "review-pr pr=2 — automated PR review"
+    result: pass
+    notes: "0 critical, 0 concern, 0 nit. Clean code PR with good architecture."
+    tokens: ~5k
