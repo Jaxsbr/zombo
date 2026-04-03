@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "US-07 complete. Next: economy module, 3 defender types, placement module with occupancy tracking."
     tokens: ~2k
+  - task: 4
+    story: US-08
+    description: "Implement economy, defender registry, and placement systems"
+    result: pass
+    notes: "Economy with spend/income/reset. 3 defenders (generator, shooter, wall). Placement with occupancy tracking. 20 new tests, 26 total. ✓ US-08 complete"
+    tokens: ~6k
