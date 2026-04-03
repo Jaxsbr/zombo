@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "3 Phaser container classes with colored shapes + health bars. Build compiles, 67 tests pass. ✓ US-12 complete"
     tokens: ~4k
+  - task: 3
+    story: US-13
+    description: "Investigation — queued HUD and defender selection task"
+    result: pass
+    notes: "US-12 complete. Next: wire Economy + WaveManager display in HUD, add defender card panel with click-to-select, click-to-place."
+    tokens: ~1k
