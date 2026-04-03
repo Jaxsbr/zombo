@@ -1,5 +1,5 @@
  Test Files  10 passed (10)
       Tests  88 passed (88)
-   Start at  12:20:47
-   Duration  159ms (transform 185ms, setup 0ms, import 303ms, tests 22ms, environment 0ms)
+   Start at  12:22:31
+   Duration  172ms (transform 260ms, setup 0ms, import 381ms, tests 23ms, environment 0ms)
 

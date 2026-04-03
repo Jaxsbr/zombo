@@ -86,6 +86,7 @@ export class GameScene extends Phaser.Scene {
     this.lastWaveState = 'setup';
 
     this.drawGrid();
+    this.createAtmosphere();
     this.createHUD();
     this.createDefenderPanel();
     this.createGridClickZones();
@@ -137,6 +138,89 @@ export class GameScene extends Phaser.Scene {
     // HUD background
     graphics.fillStyle(0x3e2723, 1);
     graphics.fillRect(0, 0, GRID_COLS * CELL_SIZE, HUD_HEIGHT);
+  }
+
+  private createAtmosphere(): void {
+    const ATMO_DEPTH = -10; // behind all gameplay entities
+
+    // Furniture silhouettes along top edge of play area
+    const fg = this.add.graphics();
+    fg.setDepth(ATMO_DEPTH);
+    // Bookshelf silhouette
+    fg.fillStyle(0x3e2723, 0.6);
+    fg.fillRect(20, HUD_HEIGHT + 2, 60, 35);
+    fg.fillRect(25, HUD_HEIGHT - 8, 50, 12);
+    fg.fillRect(30, HUD_HEIGHT - 16, 40, 10);
+    // Dresser silhouette
+    fg.fillRect(GRID_COLS * CELL_SIZE - 120, HUD_HEIGHT + 2, 80, 30);
+    fg.fillRect(GRID_COLS * CELL_SIZE - 115, HUD_HEIGHT - 5, 70, 10);
+    // Drawer lines
+    fg.lineStyle(1, 0x2e1b0e, 0.4);
+    fg.lineBetween(GRID_COLS * CELL_SIZE - 115, HUD_HEIGHT + 14, GRID_COLS * CELL_SIZE - 45, HUD_HEIGHT + 14);
+    fg.lineBetween(GRID_COLS * CELL_SIZE - 115, HUD_HEIGHT + 24, GRID_COLS * CELL_SIZE - 45, HUD_HEIGHT + 24);
+
+    // Decorative toy details on random grid cells (3-5 pieces)
+    const toyPositions: { row: number; col: number }[] = [];
+    while (toyPositions.length < 4) {
+      const r = Math.floor(Math.random() * GRID_ROWS);
+      const c = Math.floor(Math.random() * GRID_COLS);
+      if (!toyPositions.some(p => p.row === r && p.col === c)) {
+        toyPositions.push({ row: r, col: c });
+      }
+    }
+    const tg = this.add.graphics();
+    tg.setDepth(ATMO_DEPTH);
+    const toyDrawers = [
+      // Crayon
+      (cx: number, cy: number) => {
+        tg.fillStyle(0xe53935, 0.3);
+        tg.fillRect(cx - 8, cy + 12, 16, 4);
+        tg.fillStyle(0xffcdd2, 0.3);
+        tg.fillTriangle(cx + 8, cy + 14, cx + 12, cy + 12, cx + 12, cy + 16);
+      },
+      // Marble
+      (cx: number, cy: number) => {
+        tg.fillStyle(0x42a5f5, 0.25);
+        tg.fillCircle(cx + 10, cy - 8, 5);
+      },
+      // Building brick
+      (cx: number, cy: number) => {
+        tg.fillStyle(0x66bb6a, 0.3);
+        tg.fillRect(cx - 14, cy + 8, 10, 6);
+      },
+      // Small star
+      (cx: number, cy: number) => {
+        tg.fillStyle(0xffeb3b, 0.25);
+        tg.fillCircle(cx - 10, cy - 10, 3);
+      },
+    ];
+    toyPositions.forEach((pos, i) => {
+      const cx = pos.col * CELL_SIZE + CELL_SIZE / 2;
+      const cy = HUD_HEIGHT + pos.row * CELL_SIZE + CELL_SIZE / 2;
+      toyDrawers[i](cx, cy);
+    });
+
+    // Floating dust mote particles (15 semi-transparent dots drifting)
+    for (let i = 0; i < 15; i++) {
+      const mote = this.add.circle(
+        Math.random() * GRID_COLS * CELL_SIZE,
+        HUD_HEIGHT + Math.random() * GRID_ROWS * CELL_SIZE,
+        Math.random() * 1.5 + 1,
+        0xffffff,
+        Math.random() * 0.15 + 0.05,
+      );
+      mote.setDepth(ATMO_DEPTH);
+      // Slow drift across play area
+      this.tweens.add({
+        targets: mote,
+        x: mote.x + (Math.random() - 0.5) * 200,
+        y: mote.y + (Math.random() - 0.5) * 100,
+        duration: 8000 + Math.random() * 6000,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1,
+      });
+    }
   }
 
   private createHUD(): void {
