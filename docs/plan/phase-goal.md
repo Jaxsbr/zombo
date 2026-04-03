@@ -10,10 +10,10 @@ Build a playable tower defense core loop — grid-based lane map, resource econo
 - US-11 — Game flow: win, lose, restart
 
 ### Done-when (observable)
-- [ ] `package.json` lists `phaser` (>=3.60) and `typescript` as dependencies; `npm run build` succeeds without errors [US-07]
-- [ ] `tsconfig.json` has `"strict": true`; `npx tsc --noEmit` completes with zero errors [US-07]
-- [ ] `src/main.ts` exists and creates a `Phaser.Game` instance with a configured scene list [US-07]
-- [ ] A grid module in `src/` defines grid dimensions (rows=5, cols=9) and provides a cell-coordinate API; unit test verifies grid cell count equals 45 [US-07]
+- [x] `package.json` lists `phaser` (>=3.60) and `typescript` as dependencies; `npm run build` succeeds without errors [US-07]
+- [x] `tsconfig.json` has `"strict": true`; `npx tsc --noEmit` completes with zero errors [US-07]
+- [x] `src/main.ts` exists and creates a `Phaser.Game` instance with a configured scene list [US-07]
+- [x] A grid module in `src/` defines grid dimensions (rows=5, cols=9) and provides a cell-coordinate API; unit test verifies grid cell count equals 45 [US-07]
 - [ ] An economy module exposes `getBalance()`, `spend(amount)`, and `addIncome(amount)` functions; unit test verifies starting balance is configurable and `spend` rejects when insufficient funds [US-08]
 - [ ] At least 3 defender types are defined in a config/registry, each with `name`, `cost`, `health` properties; unit test verifies all three types exist with valid numeric costs [US-08]
 - [ ] A placement module tracks occupied cells; unit test verifies placing on an empty cell succeeds and deducts cost, placing on an occupied cell rejects [US-08]
