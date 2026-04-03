@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 4
-  next_task: "[US-04] Create docs/reference/systems.md — PvZ1 game systems reference covering sun economy, wave structure, progression unlocks, wave timing, and Crazy Dave"
+  task_number: 5
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

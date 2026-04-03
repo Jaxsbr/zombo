@@ -26,3 +26,9 @@ entries:
     result: pass
     notes: "5 world types with grid layouts and mechanics + mini-games, puzzles, survival, grid mechanics. ✓ US-03 complete"
     tokens: ~8k
+  - task: 5
+    story: US-04
+    description: "Create docs/reference/systems.md — PvZ1 game systems reference"
+    result: pass
+    notes: "Sun economy, wave structure/timing, progression unlocks, seed slots, Crazy Dave roles and triggers. ✓ US-04 complete"
+    tokens: ~12k
