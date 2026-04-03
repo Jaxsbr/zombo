@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "26 zombie entries with full stats, behaviour descriptions, and counters. ✓ US-02 complete"
     tokens: ~8k
+  - task: 4
+    story: US-03
+    description: "Create docs/reference/levels.md — PvZ1 level types and map reference"
+    result: pass
+    notes: "5 world types with grid layouts and mechanics + mini-games, puzzles, survival, grid mechanics. ✓ US-03 complete"
+    tokens: ~8k
