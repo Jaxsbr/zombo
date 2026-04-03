@@ -89,3 +89,9 @@ entries:
     result: pass
     notes: "PR created: https://github.com/Jaxsbr/zombo/pull/3"
     tokens: ~3k
+  - task: 12
+    story: review
+    description: "review-pr pr=3 — automated PR review"
+    result: pass
+    notes: "0 critical, 2 concern (stale ARCHITECTURE.md filenames, fragile getEnemyKey), 1 nit (health bar duplication). Posted as COMMENT."
+    tokens: ~5k
