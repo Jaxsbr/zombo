@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "49 plant entries with full stats and behaviour descriptions. ✓ US-01 complete"
     tokens: ~8k
+  - task: 3
+    story: US-02
+    description: "Create docs/reference/zombies.md — comprehensive PvZ1 zombie catalogue"
+    result: pass
+    notes: "26 zombie entries with full stats, behaviour descriptions, and counters. ✓ US-02 complete"
+    tokens: ~8k

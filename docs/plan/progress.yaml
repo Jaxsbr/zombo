@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 2
-  next_task: "[US-02] Create docs/reference/zombies.md with comprehensive PvZ1 zombie catalogue — minimum 20 entries with Name, Health, Speed, Special-ability, First-appears, behaviour descriptions, and known counters"
+  task_number: 3
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
