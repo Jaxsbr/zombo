@@ -6,7 +6,7 @@ import { LEVEL_1 } from '../config/levels';
 import { Grid } from '../systems/Grid';
 import { Economy } from '../systems/Economy';
 import { Placement } from '../systems/Placement';
-import { WaveManager } from '../systems/WaveManager';
+import { WaveManager, WaveState } from '../systems/WaveManager';
 import { GameFlow } from '../systems/GameFlow';
 import {
   ShooterEntity as ShooterState,
@@ -37,6 +37,9 @@ export class GameScene extends Phaser.Scene {
 
   private balanceText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
+  private announcementText!: Phaser.GameObjects.Text;
+  private progressDots: Phaser.GameObjects.Graphics[] = [];
+  private lastWaveState: WaveState = 'setup';
   private selectedDefenderKey: string | null = null;
   private panelCards: Map<string, Phaser.GameObjects.Container> = new Map();
   private defenders: DefenderEntity[] = [];
@@ -63,11 +66,15 @@ export class GameScene extends Phaser.Scene {
     this.enemies = [];
     this.projectiles = [];
     this.cellZones = [];
+    this.progressDots = [];
+    this.lastWaveState = 'setup';
 
     this.drawGrid();
     this.createHUD();
     this.createDefenderPanel();
     this.createGridClickZones();
+    this.createAnnouncementText();
+    this.createProgressDots();
 
     // Passive sky-drop income
     this.time.addEvent({
@@ -272,6 +279,97 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private createAnnouncementText(): void {
+    const centerX = (GRID_COLS * CELL_SIZE) / 2;
+    const centerY = HUD_HEIGHT + (GRID_ROWS * CELL_SIZE) / 2;
+
+    this.announcementText = this.add.text(centerX, centerY, '', {
+      fontSize: '28px',
+      color: '#ffc107',
+      fontFamily: 'monospace',
+      stroke: '#000000',
+      strokeThickness: 4,
+      align: 'center',
+    });
+    this.announcementText.setOrigin(0.5);
+    this.announcementText.setDepth(100);
+    this.announcementText.setVisible(false);
+  }
+
+  private createProgressDots(): void {
+    const totalWaves = this.waveManager.totalWaves;
+    const dotSize = 8;
+    const gap = 6;
+    const totalWidth = totalWaves * dotSize + (totalWaves - 1) * gap;
+    const startX = (GRID_COLS * CELL_SIZE) - totalWidth - 10;
+    const y = 56;
+
+    for (let i = 0; i < totalWaves; i++) {
+      const dot = this.add.graphics();
+      dot.x = startX + i * (dotSize + gap);
+      dot.y = y;
+      dot.fillStyle(0x5d4037, 1);
+      dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      dot.lineStyle(1, 0x8d6e63, 1);
+      dot.strokeCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      this.progressDots.push(dot);
+    }
+  }
+
+  private updateProgressDots(): void {
+    const currentWave = this.waveManager.currentWaveNumber;
+    const dotSize = 8;
+
+    for (let i = 0; i < this.progressDots.length; i++) {
+      const dot = this.progressDots[i];
+      dot.clear();
+      if (i < currentWave - 1) {
+        // Completed wave — bright gold
+        dot.fillStyle(0xffc107, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      } else if (i === currentWave - 1) {
+        // Current wave — pulsing white
+        dot.fillStyle(0xffffff, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      } else {
+        // Future wave — dim
+        dot.fillStyle(0x5d4037, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+        dot.lineStyle(1, 0x8d6e63, 1);
+        dot.strokeCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      }
+    }
+  }
+
+  private getWaveAnnouncement(): string {
+    const wave = this.waveManager.currentWaveNumber;
+    const total = this.waveManager.totalWaves;
+
+    if (wave === total) {
+      return 'A HUGE mess is coming!';
+    }
+
+    const messages = [
+      'Dust bunnies incoming!',
+      'Here comes trouble!',
+      'More mess approaching!',
+    ];
+    return messages[(wave - 1) % messages.length];
+  }
+
+  private updateAnnouncement(): void {
+    const state = this.waveManager.waveState;
+
+    if (state === 'announcing' && this.lastWaveState !== 'announcing') {
+      this.announcementText.setText(this.getWaveAnnouncement());
+      this.announcementText.setVisible(true);
+    } else if (state !== 'announcing' && this.lastWaveState === 'announcing') {
+      this.announcementText.setVisible(false);
+    }
+
+    this.lastWaveState = state;
+  }
+
   update(_time: number, delta: number): void {
     const dt = delta / 1000;
 
@@ -398,6 +496,8 @@ export class GameScene extends Phaser.Scene {
 
     this.updateHUDText();
     this.updatePanelHighlight();
+    this.updateAnnouncement();
+    this.updateProgressDots();
   }
 
 }
