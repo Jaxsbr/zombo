@@ -12,21 +12,38 @@ export interface WaveConfig {
 
 export interface LevelConfig {
   waves: WaveConfig[];
+  setupDelay?: number;       // seconds before first wave (default 25)
+  interWaveDelay?: number;   // seconds between waves (default 18)
+  announceDuration?: number; // seconds to show announcement (default 2.5)
 }
+
+export type WaveState = 'setup' | 'announcing' | 'spawning' | 'waiting' | 'complete';
+
+const DEFAULT_SETUP_DELAY = 25;
+const DEFAULT_INTER_WAVE_DELAY = 18;
+const DEFAULT_ANNOUNCE_DURATION = 2.5;
 
 export class WaveManager {
   private readonly level: LevelConfig;
+  private readonly setupDelay: number;
+  private readonly interWaveDelay: number;
+  private readonly announceDuration: number;
+
   private currentWave: number;
   private waveTimer: number;
   private spawnIndex: number;
-  private allWavesSpawned: boolean;
+  private _waveState: WaveState;
 
   constructor(level: LevelConfig) {
     this.level = level;
+    this.setupDelay = level.setupDelay ?? DEFAULT_SETUP_DELAY;
+    this.interWaveDelay = level.interWaveDelay ?? DEFAULT_INTER_WAVE_DELAY;
+    this.announceDuration = level.announceDuration ?? DEFAULT_ANNOUNCE_DURATION;
+
     this.currentWave = 0;
     this.waveTimer = 0;
     this.spawnIndex = 0;
-    this.allWavesSpawned = false;
+    this._waveState = this.setupDelay > 0 ? 'setup' : 'announcing';
   }
 
   get totalWaves(): number {
@@ -38,21 +55,62 @@ export class WaveManager {
   }
 
   get isComplete(): boolean {
-    return this.allWavesSpawned;
+    return this._waveState === 'complete';
+  }
+
+  get waveState(): WaveState {
+    return this._waveState;
   }
 
   update(deltaSeconds: number): EnemySpawn[] {
-    if (this.allWavesSpawned) {
+    if (this._waveState === 'complete') {
+      return [];
+    }
+
+    this.waveTimer += deltaSeconds;
+
+    // Process pre-spawn delay states. These can chain through zero-duration
+    // states within a single tick (e.g. setup=0 + announce=0 → spawning).
+    let guard = 0;
+    while (guard++ < 5) {
+      if (this._waveState === 'setup') {
+        if (this.waveTimer >= this.setupDelay) {
+          this.waveTimer -= this.setupDelay;
+          this._waveState = 'announcing';
+          continue;
+        }
+        return [];
+      }
+      if (this._waveState === 'announcing') {
+        if (this.waveTimer >= this.announceDuration) {
+          this.waveTimer -= this.announceDuration;
+          this._waveState = 'spawning';
+          this.spawnIndex = 0;
+          break; // fall through to spawning below
+        }
+        return [];
+      }
+      if (this._waveState === 'waiting') {
+        if (this.waveTimer >= this.interWaveDelay) {
+          this.waveTimer -= this.interWaveDelay;
+          this._waveState = 'announcing';
+          continue;
+        }
+        return [];
+      }
+      break;
+    }
+
+    // State: spawning — process enemy spawns for this tick
+    if (this._waveState !== 'spawning') {
       return [];
     }
 
     const wave = this.level.waves[this.currentWave];
     if (!wave) {
-      this.allWavesSpawned = true;
+      this._waveState = 'complete';
       return [];
     }
-
-    this.waveTimer += deltaSeconds;
 
     const spawned: EnemySpawn[] = [];
     while (this.spawnIndex < wave.spawns.length) {
@@ -65,12 +123,19 @@ export class WaveManager {
       }
     }
 
+    // All spawns in current wave consumed — advance
     if (this.spawnIndex >= wave.spawns.length) {
       this.currentWave++;
       this.waveTimer = 0;
-      this.spawnIndex = 0;
       if (this.currentWave >= this.level.waves.length) {
-        this.allWavesSpawned = true;
+        this._waveState = 'complete';
+      } else if (this.interWaveDelay > 0) {
+        this._waveState = 'waiting';
+      } else if (this.announceDuration > 0) {
+        this._waveState = 'announcing';
+      } else {
+        // Zero delays — stay in spawning for next wave, reset index
+        this.spawnIndex = 0;
       }
     }
 
@@ -81,6 +146,6 @@ export class WaveManager {
     this.currentWave = 0;
     this.waveTimer = 0;
     this.spawnIndex = 0;
-    this.allWavesSpawned = false;
+    this._waveState = this.setupDelay > 0 ? 'setup' : 'announcing';
   }
 }
