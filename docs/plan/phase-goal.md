@@ -28,11 +28,11 @@ Transform the game from a functional prototype with colored shapes into "Toy Box
 - [x] A text announcement (themed, e.g. "Dust bunnies incoming!") appears on screen during the announcing wave state, displayed for >= 2 seconds before spawning begins [US-17]
 - [x] The final wave announcement uses distinct text different from earlier waves (e.g., "A HUGE mess is coming!") [US-17]
 - [x] Wave progress indicator updates to reflect current wave number after each wave completes [US-17]
-- [ ] `src/scenes/TitleScene.ts` exists and is registered as the first scene in the Phaser game config [US-18]
-- [ ] TitleScene displays "Toy Box Siege" text and a clickable "Play" element [US-18]
-- [ ] Transitions between TitleScene -> GameScene and GameScene -> GameOverScene use Phaser camera fade (or equivalent visual effect), not bare `scene.start()` [US-18]
-- [ ] GameOverScene displays themed text ("Fort Defended!" on win, "The Mess Wins!" on loss) and a "Play Again" button with transition [US-18]
-- [ ] Restarting via "Play Again" resets all game state — a second playthrough behaves identically to the first (no stale defenders, enemies, or timers) [US-18]
+- [x] `src/scenes/TitleScene.ts` exists and is registered as the first scene in the Phaser game config [US-18]
+- [x] TitleScene displays "Toy Box Siege" text and a clickable "Play" element [US-18]
+- [x] Transitions between TitleScene -> GameScene and GameScene -> GameOverScene use Phaser camera fade (or equivalent visual effect), not bare `scene.start()` [US-18]
+- [x] GameOverScene displays themed text ("Fort Defended!" on win, "The Mess Wins!" on loss) and a "Play Again" button with transition [US-18]
+- [x] Restarting via "Play Again" resets all game state — a second playthrough behaves identically to the first (no stale defenders, enemies, or timers) [US-18]
 - [ ] AGENTS.md reflects Toy Box Siege theme, new TitleScene, WaveManager wave-state system, and updated entity rendering descriptions [phase]
 
 ### Golden principles (phase-relevant)
