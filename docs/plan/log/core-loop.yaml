@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "Phaser 3.90, TS strict, Vite, Vitest. Grid(5,9) with cell API. GameScene + GameOverScene. 6 tests passing. ✓ US-07 complete"
     tokens: ~8k
+  - task: 3
+    story: US-08
+    description: "Investigation — queued economy, defenders, and placement task"
+    result: pass
+    notes: "US-07 complete. Next: economy module, 3 defender types, placement module with occupancy tracking."
+    tokens: ~2k
