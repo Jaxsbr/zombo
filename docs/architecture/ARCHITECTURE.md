@@ -33,7 +33,7 @@ src/
     └── Projectile.ts    # Projectile game object — movement, collision
 ```
 
-(planned for `core-loop` phase)
+(shipped in `core-loop` phase; `entities/` and `config/levels.ts` planned for `playable` phase)
 
 ## Data flow
 
@@ -57,8 +57,8 @@ GameOverScene → restart → reset all systems
 - **Config-driven entities:** Defender and enemy types are defined in `config/` registries, not hardcoded in entity classes. Adding a new type is a config addition, not a code change.
 - **No theme coupling:** All names, colors, and labels are generic placeholders. Theming is a separate concern for a future phase.
 
-## AGENTS.md sections affected by core-loop phase
+## AGENTS.md sections affected by playable phase
 
-- Directory layout (new `src/` tree)
-- Quality checks (add test runner command, verify command)
-- Running instructions (dev server, build, test commands)
+- Directory layout (new `src/entities/` directory, `src/config/levels.ts`)
+- Game logic architecture (entity layer bridges systems and rendering)
+- Testing conventions (level config unit test added)
