@@ -62,3 +62,9 @@ entries:
     result: pass
     notes: "All code paths wired: place, fire, hit, death, announce. Mute toggle in HUD top-right. Collect SFX deferred to US-23 (spark mechanic). 88 tests pass."
     tokens: ~3k
+  - task: 11
+    story: US-22
+    description: "Implement bedroom atmosphere — furniture, toys, dust motes, themed backgrounds"
+    result: pass
+    notes: "GameScene: bookshelf+dresser silhouettes (depth -10), 4 random toy details, 15 dust motes with drift tweens. TitleScene+GameOverScene: floor boards, rug, furniture, scattered toys. No pointer input on atmosphere. 88 tests pass. ✓ US-22 complete"
+    tokens: ~5k

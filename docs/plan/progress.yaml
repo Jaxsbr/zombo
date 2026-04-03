@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 8
-  next_task: "[US-22] Implement bedroom atmosphere — furniture silhouettes, decorative toy details, floating dust motes, themed backgrounds for TitleScene and GameOverScene."
+  task_number: 9
+  next_task: "[US-23] Implement floating spark collection — SparkEntity, spawn/drift/click-to-collect, collection animation, remove passive income timer, configurable constants, visual distinction from projectiles."
   last_result: pass
   consecutive_fails: 0
 
