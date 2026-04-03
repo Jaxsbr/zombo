@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 3
-  next_task: "[US-15] Investigate: plan distinct shape rendering for DefenderEntity (Water Pistol, Jack-in-the-Box, Block Tower) and EnemyEntity (Dust Bunny, Cleaning Robot)"
+  task_number: 4
+  next_task: "[US-15] Implement Toy Box Siege developer art — distinct shapes for defenders/enemies, bedroom carpet grid, wood-toned HUD"
   last_result: pass
   consecutive_fails: 0
 

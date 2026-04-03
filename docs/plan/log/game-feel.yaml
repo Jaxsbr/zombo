@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "DefenderEntity: fillRect with color map, EnemyEntity: fillCircle with color map. Both need per-key shape dispatch. Grid carpet color also needed."
     tokens: ~2k
+  - task: 4
+    story: US-15
+    description: "Investigation — plan distinct shapes, grid carpet, HUD styling"
+    result: pass
+    notes: "Grid: 0x3a7d32/0x2d6b27 green → brown/tan carpet. HUD: 0x1a1a2e → dark wood. Defenders: fillRect → per-key shapes (pistol, box, blocks). Enemies: fillCircle → per-key shapes (fluffy blob, boxy robot). All rendering-only, no test impact."
+    tokens: ~2k
