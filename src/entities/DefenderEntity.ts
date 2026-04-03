@@ -161,6 +161,47 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
     // Hidden at full health — drawHealthBar only renders when damaged
 
     scene.add.existing(this);
+
+    // Per-key idle animation
+    this.startIdleAnimation(scene);
+  }
+
+  private startIdleAnimation(scene: Phaser.Scene): void {
+    switch (this.defenderKey) {
+      case 'shooter':
+        // Water Pistol — continuous gentle bob
+        scene.tweens.add({
+          targets: this,
+          y: this.y - 3,
+          duration: 1500,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'generator':
+        // Jack-in-the-Box — spring wiggle (rotation oscillation)
+        scene.tweens.add({
+          targets: this,
+          angle: 3,
+          duration: 800,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'wall':
+        // Block Tower — subtle sway
+        scene.tweens.add({
+          targets: this,
+          angle: 1.5,
+          duration: 2000,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+    }
   }
 
   drawHealthBar(): void {
