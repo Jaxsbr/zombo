@@ -62,6 +62,20 @@ export class WaveManager {
     return this._waveState;
   }
 
+  /** Progress through the current delay state (0→1). Returns 0 during spawning/complete. */
+  get delayProgress(): number {
+    if (this._waveState === 'setup' && this.setupDelay > 0) {
+      return Math.min(1, this.waveTimer / this.setupDelay);
+    }
+    if (this._waveState === 'announcing' && this.announceDuration > 0) {
+      return Math.min(1, this.waveTimer / this.announceDuration);
+    }
+    if (this._waveState === 'waiting' && this.interWaveDelay > 0) {
+      return Math.min(1, this.waveTimer / this.interWaveDelay);
+    }
+    return 0;
+  }
+
   update(deltaSeconds: number): EnemySpawn[] {
     if (this._waveState === 'complete') {
       return [];

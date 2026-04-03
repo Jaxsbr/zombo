@@ -39,6 +39,8 @@ export class GameScene extends Phaser.Scene {
   private balanceText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
   private announcementText!: Phaser.GameObjects.Text;
+  private countdownBar!: Phaser.GameObjects.Graphics;
+  private countdownLabel!: Phaser.GameObjects.Text;
   private progressDots: Phaser.GameObjects.Graphics[] = [];
   private lastWaveState: WaveState = 'setup';
   private selectedDefenderKey: string | null = null;
@@ -80,6 +82,7 @@ export class GameScene extends Phaser.Scene {
     this.createGridClickZones();
     this.createAnnouncementText();
     this.createProgressDots();
+    this.createCountdownBar();
 
     // Passive sky-drop income
     this.time.addEvent({
@@ -182,29 +185,37 @@ export class GameScene extends Phaser.Scene {
     bg.fillRoundedRect(0, 0, width, height, 6);
     container.add(bg);
 
-    // Sprite preview — same shape as the placed entity, scaled down
-    const previewContainer = this.add.container(28, height / 2);
+    // Sprite preview — centered, larger
+    const previewContainer = this.add.container(width / 2, 24);
     const previewGfx = this.add.graphics();
     const drawFn = DRAW_DEFENDER[key];
     if (drawFn) {
       drawFn(previewGfx);
     }
     previewContainer.add(previewGfx);
-    previewContainer.setScale(0.45);
+    previewContainer.setScale(0.55);
     container.add(previewContainer);
 
-    const nameText = this.add.text(56, 8, type.name, {
-      fontSize: '11px',
+    // Name — centered, clipped to card width
+    const nameText = this.add.text(width / 2, 2, type.name, {
+      fontSize: '10px',
       color: '#e2e8f0',
       fontFamily: 'monospace',
     });
+    nameText.setOrigin(0.5, 0);
+    // Clip names that would overflow the card
+    if (nameText.width > width - 8) {
+      nameText.setScale((width - 8) / nameText.width);
+    }
     container.add(nameText);
 
-    const costText = this.add.text(56, 26, `${type.cost}`, {
-      fontSize: '13px',
+    // Cost — centered at bottom
+    const costText = this.add.text(width / 2, height - 14, `${type.cost}`, {
+      fontSize: '12px',
       color: '#ffc107',
       fontFamily: 'monospace',
     });
+    costText.setOrigin(0.5, 0);
     container.add(costText);
 
     const zone = this.add.zone(0, 0, width, height).setOrigin(0).setInteractive({ useHandCursor: true });
@@ -367,6 +378,41 @@ export class GameScene extends Phaser.Scene {
     return messages[(wave - 1) % messages.length];
   }
 
+  private createCountdownBar(): void {
+    this.countdownBar = this.add.graphics();
+    this.countdownLabel = this.add.text(10, 52, '', {
+      fontSize: '10px',
+      color: '#8d6e63',
+      fontFamily: 'monospace',
+    });
+  }
+
+  private updateCountdownBar(): void {
+    this.countdownBar.clear();
+    const state = this.waveManager.waveState;
+    const progress = this.waveManager.delayProgress;
+
+    if (state === 'setup' || state === 'waiting') {
+      const barX = 10;
+      const barY = 64;
+      const barWidth = 115;
+      const barHeight = 6;
+
+      // Background
+      this.countdownBar.fillStyle(0x3e2723, 1);
+      this.countdownBar.fillRoundedRect(barX, barY, barWidth, barHeight, 2);
+      // Fill
+      this.countdownBar.fillStyle(0xffc107, 0.8);
+      this.countdownBar.fillRoundedRect(barX, barY, barWidth * progress, barHeight, 2);
+
+      const label = state === 'setup' ? 'Get ready...' : 'Next wave...';
+      this.countdownLabel.setText(label);
+      this.countdownLabel.setVisible(true);
+    } else {
+      this.countdownLabel.setVisible(false);
+    }
+  }
+
   private updateAnnouncement(): void {
     const state = this.waveManager.waveState;
 
@@ -513,6 +559,7 @@ export class GameScene extends Phaser.Scene {
     this.updatePanelHighlight();
     this.updateAnnouncement();
     this.updateProgressDots();
+    this.updateCountdownBar();
   }
 
 }
