@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 1
-  next_task: null
+  next_task: "[US-12] Implement DefenderEntity, EnemyEntity, and ProjectileEntity Phaser game objects"
   last_result: null
   consecutive_fails: 0
 

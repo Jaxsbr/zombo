@@ -1,4 +1,10 @@
 # Phase log — playable
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: US-12
+    description: "Investigation — greenfield entities, queued entity game objects task"
+    result: pass
+    notes: "No src/entities/ exists. Need DefenderEntity, EnemyEntity, ProjectileEntity as Phaser containers with colored shapes + health bars."
+    tokens: ~5k
