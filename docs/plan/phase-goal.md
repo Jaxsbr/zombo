@@ -26,8 +26,8 @@ Build a playable tower defense core loop — grid-based lane map, resource econo
 - [x] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
 - [x] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
 - [x] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
-- [ ] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
-- [ ] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
+- [x] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
+- [x] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
 
 ### Golden principles (phase-relevant)
 - no-silent-pass (every module must have real implementation, not stubs)

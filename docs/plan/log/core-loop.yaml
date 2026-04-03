@@ -62,3 +62,31 @@ entries:
     result: pass
     notes: "GameFlow: playing/won/lost state machine. Lose at col 0, win when waves+enemies done. Reset tested. 11 new tests, 67 total. ✓ US-11 complete"
     tokens: ~5k
+  - task: 11
+    story: phase
+    description: "Update AGENTS.md + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated with full src/ layout, running commands, testing conventions, architecture. All 18 done-when criteria verified. 67 tests pass. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - package.json: phaser 3.90, typescript; npm run build succeeds
+      - tsconfig.json: strict: true; tsc --noEmit clean
+      - src/main.ts: creates Phaser.Game with [GameScene, GameOverScene]
+      - Grid: 5×9, cellCount=45, test passes (6 tests)
+      - Economy: getBalance/spend/addIncome, configurable start, spend rejects (8 tests)
+      - Defenders: 3 types (generator, shooter, wall) with name/cost/health (6 tests)
+      - Placement: occupied tracking, empty=success+deduct, occupied=reject (6 tests)
+      - Enemies: 2 types (basic, tough) with distinct health/speed (3 tests)
+      - WaveManager: 3-wave sample level, staggered spawns (8 tests)
+      - EnemyMovement: x decreases after tick (4 tests)
+      - Combat: shooter damage in range, enemy 100-25=75, dead at 0, wall blocks+takes damage (15 tests)
+      - GameFlow: lost at col 0, won when waves done+no enemies, reset (11 tests)
+      - GameOverScene: win/lose display + restart click handler
+      - 9 test files covering all modules; npm test: 67 pass
+      - AGENTS.md: updated with src/ layout, commands, testing, architecture
+    tokens: ~2k
