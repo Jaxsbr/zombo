@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 6
-  next_task: null
+  task_number: 7
+  next_task: "[US-10] Implement combat system — shooter attacks, projectile damage, wall blocking with tests"
   last_result: pass
   consecutive_fails: 0
 

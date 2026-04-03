@@ -38,3 +38,9 @@ entries:
     result: pass
     notes: "2 enemy types (basic, tough), WaveManager with 3-wave sample level, EnemyMovement leftward. 15 new tests, 41 total. ✓ US-09 complete"
     tokens: ~6k
+  - task: 7
+    story: US-10
+    description: "Investigation — queued combat system implementation"
+    result: pass
+    notes: "US-09 complete. Next: combat system with shooter attacks, projectile damage, wall blocking."
+    tokens: ~1k
