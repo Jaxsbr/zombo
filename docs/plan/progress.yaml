@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 2
-  next_task: "[US-19] Implement defender idle animations — Water Pistol continuous bob, Jack-in-the-Box spring wiggle, Block Tower subtle sway. Add tweens in DefenderEntity constructor per key."
+  task_number: 3
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "Tweens on Container y/angle/scale. Defender idle: bob/wiggle/sway per key. Enemy: bounce/rock per key. Combat reactions: public methods on DefenderEntity called from GameScene (fire line ~491, generator line ~103). Queued defender idle implementation."
     tokens: ~5k
+  - task: 3
+    story: US-19
+    description: "Implement defender idle animations — bob, wiggle, sway per key"
+    result: pass
+    notes: "Water Pistol: y -3 bob 1500ms. Jack-in-the-Box: angle 3° wiggle 800ms. Block Tower: angle 1.5° sway 2000ms. All Sine.easeInOut yoyo infinite. 88 tests pass."
+    tokens: ~3k
