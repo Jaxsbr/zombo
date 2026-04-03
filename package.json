@@ -1,0 +1,26 @@
+{
+  "name": "zombo",
+  "version": "0.1.0",
+  "description": "A Plants vs Zombies-inspired tower defense game with alternative mechanics.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jaxsbr/zombo.git"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "phaser": "^3.90.0"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.2",
+    "vite": "^8.0.3",
+    "vitest": "^4.1.2"
+  }
+}

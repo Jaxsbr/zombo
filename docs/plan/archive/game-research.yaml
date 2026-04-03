@@ -1,6 +1,14 @@
 # Phase log — game-research
 # Each entry: { task, story, description, result, notes, tokens }
 
+reconciliation_status:
+  r0: done  # no legacy inline stories in PRD
+  r1: done  # no code shipped — docs-only phase, architecture doc N/A
+  r2: done  # per-phase file already exists with Status: shipped, PRD index current
+  r3: done  # AGENTS.md updated during phase (task 8)
+  r4: done  # no user docs — internal reference phase
+  r5: done
+
 entries:
   - task: 1
     story: US-01

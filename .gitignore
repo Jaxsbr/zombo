@@ -10,6 +10,9 @@ node_modules/
 *.pem
 credentials.json
 
+# Build output
+dist/
+
 # Build loop
 .build-loop.lock
 

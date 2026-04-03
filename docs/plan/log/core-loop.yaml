@@ -1,0 +1,110 @@
+# Phase log — core-loop
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-07
+    description: "Investigation — greenfield, queued scaffolding task"
+    result: pass
+    notes: "No src/ or package.json exists. First task: scaffold Phaser 3 + TS + Vite project."
+    tokens: ~3k
+  - task: 2
+    story: US-07
+    description: "Scaffold Phaser 3 + TypeScript + Vite project with game grid"
+    result: pass
+    notes: "Phaser 3.90, TS strict, Vite, Vitest. Grid(5,9) with cell API. GameScene + GameOverScene. 6 tests passing. ✓ US-07 complete"
+    tokens: ~8k
+  - task: 3
+    story: US-08
+    description: "Investigation — queued economy, defenders, and placement task"
+    result: pass
+    notes: "US-07 complete. Next: economy module, 3 defender types, placement module with occupancy tracking."
+    tokens: ~2k
+  - task: 4
+    story: US-08
+    description: "Implement economy, defender registry, and placement systems"
+    result: pass
+    notes: "Economy with spend/income/reset. 3 defenders (generator, shooter, wall). Placement with occupancy tracking. 20 new tests, 26 total. ✓ US-08 complete"
+    tokens: ~6k
+  - task: 5
+    story: US-09
+    description: "Investigation — queued enemy types, wave config, and movement"
+    result: pass
+    notes: "US-08 complete. Next: enemy type config, wave manager, movement logic."
+    tokens: ~1k
+  - task: 6
+    story: US-09
+    description: "Implement enemy types, wave manager, and movement system"
+    result: pass
+    notes: "2 enemy types (basic, tough), WaveManager with 3-wave sample level, EnemyMovement leftward. 15 new tests, 41 total. ✓ US-09 complete"
+    tokens: ~6k
+  - task: 7
+    story: US-10
+    description: "Investigation — queued combat system implementation"
+    result: pass
+    notes: "US-09 complete. Next: combat system with shooter attacks, projectile damage, wall blocking."
+    tokens: ~1k
+  - task: 8
+    story: US-10
+    description: "Implement combat system — shooter attacks, projectile damage, wall blocking"
+    result: pass
+    notes: "Shooter/projectile/wall combat. applyDamage, isDead, wallBlocks. 15 new tests, 56 total. ✓ US-10 complete"
+    tokens: ~6k
+  - task: 9
+    story: US-11
+    description: "Investigation — queued game flow implementation"
+    result: pass
+    notes: "US-10 complete. Next: GameFlow state machine with win/lose/restart."
+    tokens: ~1k
+  - task: 10
+    story: US-11
+    description: "Implement game flow — win/lose detection, state machine, restart"
+    result: pass
+    notes: "GameFlow: playing/won/lost state machine. Lose at col 0, win when waves+enemies done. Reset tested. 11 new tests, 67 total. ✓ US-11 complete"
+    tokens: ~5k
+  - task: 11
+    story: phase
+    description: "Update AGENTS.md + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated with full src/ layout, running commands, testing conventions, architecture. All 18 done-when criteria verified. 67 tests pass. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - package.json: phaser 3.90, typescript; npm run build succeeds
+      - tsconfig.json: strict: true; tsc --noEmit clean
+      - src/main.ts: creates Phaser.Game with [GameScene, GameOverScene]
+      - Grid: 5×9, cellCount=45, test passes (6 tests)
+      - Economy: getBalance/spend/addIncome, configurable start, spend rejects (8 tests)
+      - Defenders: 3 types (generator, shooter, wall) with name/cost/health (6 tests)
+      - Placement: occupied tracking, empty=success+deduct, occupied=reject (6 tests)
+      - Enemies: 2 types (basic, tough) with distinct health/speed (3 tests)
+      - WaveManager: 3-wave sample level, staggered spawns (8 tests)
+      - EnemyMovement: x decreases after tick (4 tests)
+      - Combat: shooter damage in range, enemy 100-25=75, dead at 0, wall blocks+takes damage (15 tests)
+      - GameFlow: lost at col 0, won when waves done+no enemies, reset (11 tests)
+      - GameOverScene: win/lose display + restart click handler
+      - 9 test files covering all modules; npm test: 67 pass
+      - AGENTS.md: updated with src/ layout, commands, testing, architecture
+    tokens: ~2k
+  - task: 12
+    story: review
+    description: "Create PR #2 and schedule review"
+    result: pass
+    notes: "PR created: https://github.com/Jaxsbr/zombo/pull/2"
+    tokens: ~3k
+  - task: 13
+    story: review
+    description: "review-pr pr=2 — automated PR review"
+    result: pass
+    notes: "0 critical, 0 concern, 0 nit. Clean code PR with good architecture."
+    tokens: ~5k
+  - task: 14
+    story: review
+    description: "handle-pr-review pr=2 — handle review comments"
+    result: pass
+    notes: "No inline comments to handle. Posted summary comment. Review complete."
+    tokens: ~2k
