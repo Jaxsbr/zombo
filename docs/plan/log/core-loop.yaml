@@ -1,0 +1,4 @@
+# Phase log — core-loop
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries: []

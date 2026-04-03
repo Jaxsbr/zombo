@@ -22,3 +22,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | Phase | Status | Stories | Spec |
 |---|---|---|---|
 | game-research | Shipped | US-01, US-02, US-03, US-04, US-05, US-06 | [phases/game-research.md](phases/game-research.md) |
+| core-loop | Draft | US-07, US-08, US-09, US-10, US-11 | [phases/core-loop.md](phases/core-loop.md) |

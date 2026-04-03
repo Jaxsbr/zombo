@@ -1,31 +1,36 @@
 ## Phase goal
 
-Research and document PvZ1's game design — plants, zombies, levels, core systems, art/audio direction — to build a comprehensive reference library for designing Zombo's own mechanics. Culminates in 2 creative spin-off proposals for differentiation.
+Build a playable tower defense core loop — grid-based lane map, resource economy, placeable defenders, enemy waves, combat, and win/lose conditions. All using placeholder art (colored shapes). Theme-agnostic foundation that both spin-off directions (Critter Kitchen, Toy Box Siege) can build on.
 
 ### Stories in scope
-- US-01 — Plant catalogue
-- US-02 — Zombie catalogue
-- US-03 — Level and map reference
-- US-04 — Game systems reference
-- US-05 — Art and audio direction reference
-- US-06 — Creative spin-off proposals
+- US-07 — Project scaffolding and game grid
+- US-08 — Resource economy and defender placement
+- US-09 — Enemy waves and lane movement
+- US-10 — Combat and health system
+- US-11 — Game flow: win, lose, restart
 
 ### Done-when (observable)
-- [x] `docs/reference/plants.md` exists and contains a table with columns: Name, Cost (sun), Recharge, Damage/Effect, Range, Unlock-level — minimum 30 plant entries covering all PvZ1 plants [US-01]
-- [x] Each plant entry includes a 1-2 sentence behaviour description (e.g., "Fires peas in a straight line at regular intervals") [US-01]
-- [x] `docs/reference/zombies.md` exists and contains a table with columns: Name, Health, Speed, Special-ability, First-appears — minimum 20 zombie entries covering all PvZ1 zombie types [US-02]
-- [x] Each zombie entry includes a 1-2 sentence behaviour description and known counters [US-02]
-- [x] `docs/reference/levels.md` exists and documents all PvZ1 level types with columns: World, Level-range, Grid-layout (rows x cols), Day/Night, Special-mechanic — covering at minimum: Day, Night, Pool, Fog, Roof [US-03]
-- [x] Each level type entry includes a description of unique mechanics (e.g., "Night levels: no passive sun production, mushrooms are free to plant") [US-03]
-- [x] `docs/reference/systems.md` exists and documents: sun economy (generation rates, starting sun, sun drop values), wave/round structure (wave count per level, zombie spawn timing, flag waves), and progression unlocks (what unlocks after which level) [US-04]
-- [x] `docs/reference/systems.md` includes a wave timing section with at minimum: initial delay, wave interval range, flag wave frequency, and final wave indicator [US-04]
-- [x] `docs/reference/systems.md` includes a Crazy Dave section documenting his role (shop, tutorials, hints) and when he appears [US-04]
-- [x] `docs/reference/art-and-audio.md` exists and describes the PvZ1 visual style (colour palette feel, character design language, animation style, UI aesthetic) in sufficient detail to serve as an AI image-generation style brief [US-05]
-- [x] `docs/reference/art-and-audio.md` includes a music/sound section describing the audio tone, key tracks (e.g., "Grasswalk" main theme), and sound effect categories [US-05]
-- [x] `docs/reference/spinoff-ideas.md` exists and contains exactly 2 creative spin-off proposals [US-06]
-- [x] Each spin-off proposal includes: title, 1-paragraph concept pitch, 3+ unique mechanics that differentiate it from PvZ, target audience note, and a "why kids will love it" sentence [US-06]
-- [x] All files in `docs/reference/` use consistent markdown formatting (tables render correctly, no broken links) [phase]
+- [ ] `package.json` lists `phaser` (>=3.60) and `typescript` as dependencies; `npm run build` succeeds without errors [US-07]
+- [ ] `tsconfig.json` has `"strict": true`; `npx tsc --noEmit` completes with zero errors [US-07]
+- [ ] `src/main.ts` exists and creates a `Phaser.Game` instance with a configured scene list [US-07]
+- [ ] A grid module in `src/` defines grid dimensions (rows=5, cols=9) and provides a cell-coordinate API; unit test verifies grid cell count equals 45 [US-07]
+- [ ] An economy module exposes `getBalance()`, `spend(amount)`, and `addIncome(amount)` functions; unit test verifies starting balance is configurable and `spend` rejects when insufficient funds [US-08]
+- [ ] At least 3 defender types are defined in a config/registry, each with `name`, `cost`, `health` properties; unit test verifies all three types exist with valid numeric costs [US-08]
+- [ ] A placement module tracks occupied cells; unit test verifies placing on an empty cell succeeds and deducts cost, placing on an occupied cell rejects [US-08]
+- [ ] At least 2 enemy types are defined, each with `name`, `health`, `speed` properties; unit test verifies both types exist with distinct health/speed values [US-09]
+- [ ] A wave configuration module defines waves as arrays of enemy spawn descriptors (type, count, lane, delay); unit test verifies a sample level has at least 3 waves [US-09]
+- [ ] Enemy movement logic moves enemies leftward by their speed per tick; unit test verifies an enemy's x-position decreases after a movement tick [US-09]
+- [ ] Shooter defenders have `damage`, `range`, and `fireRate` properties; unit test verifies a shooter deals its configured damage to an enemy in the same lane within range [US-10]
+- [ ] Enemy health decreases when hit by a projectile; unit test verifies an enemy at health=100 hit by damage=25 has health=75, and an enemy reaching health<=0 is flagged for removal [US-10]
+- [ ] Wall defenders block enemy movement; unit test verifies an enemy stops advancing when it reaches a wall's grid position, and the wall's health decreases as the enemy attacks it [US-10]
+- [ ] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
+- [ ] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
+- [ ] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
+- [ ] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
+- [ ] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
 
 ### Golden principles (phase-relevant)
-- no-silent-pass (every research file must have substantive content, not placeholder stubs)
-- agents-consistency (AGENTS.md should reflect the new docs/reference/ directory when this phase ships)
+- no-silent-pass (every module must have real implementation, not stubs)
+- no-bare-except (catch specific errors, not generic catch-all)
+- error-path-coverage (error paths in game logic — invalid placement, insufficient funds — must be handled)
+- agents-consistency (AGENTS.md must reflect new project structure when phase ships)
