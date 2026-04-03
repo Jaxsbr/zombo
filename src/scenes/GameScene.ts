@@ -22,6 +22,15 @@ import {
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
+import {
+  playSfxPlace,
+  playSfxFire,
+  playSfxHit,
+  playSfxDeath,
+  playSfxAnnounce,
+  setSfxMuted,
+  isSfxMuted,
+} from '../systems/SFX';
 
 const STARTING_BALANCE = 500;
 const PASSIVE_INCOME_INTERVAL = 8000; // ms
@@ -141,6 +150,22 @@ export class GameScene extends Phaser.Scene {
       fontSize: '14px',
       color: '#94a3b8',
       fontFamily: 'monospace',
+    });
+
+    // Mute toggle
+    const muteBtn = this.add.text(GRID_COLS * CELL_SIZE - 10, 8, isSfxMuted() ? 'MUTE' : 'SFX', {
+      fontSize: '12px',
+      color: '#94a3b8',
+      fontFamily: 'monospace',
+      backgroundColor: '#1e293b',
+      padding: { x: 6, y: 3 },
+    });
+    muteBtn.setOrigin(1, 0);
+    muteBtn.setInteractive({ useHandCursor: true });
+    muteBtn.on('pointerdown', () => {
+      setSfxMuted(!isSfxMuted());
+      muteBtn.setText(isSfxMuted() ? 'MUTE' : 'SFX');
+      muteBtn.setColor(isSfxMuted() ? '#ef4444' : '#94a3b8');
     });
 
     this.updateHUDText();
@@ -294,6 +319,7 @@ export class GameScene extends Phaser.Scene {
     const result = this.placement.place({ row, col }, type);
 
     if (result.ok) {
+      playSfxPlace();
       const entity = new DefenderEntity(this, row, col, this.selectedDefenderKey, type);
       this.defenders.push(entity);
       this.updateHUDText();
@@ -424,6 +450,7 @@ export class GameScene extends Phaser.Scene {
     if (state === 'announcing' && this.lastWaveState !== 'announcing') {
       this.announcementText.setText(this.getWaveAnnouncement());
       this.announcementText.setVisible(true);
+      playSfxAnnounce();
       // Camera shake on final wave
       if (this.waveManager.currentWaveNumber === this.waveManager.totalWaves) {
         this.cameras.main.shake(400, 0.003);
@@ -541,6 +568,7 @@ export class GameScene extends Phaser.Scene {
 
       if (proj) {
         def.playRecoil();
+        playSfxFire();
         const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, proj.speed);
         this.projectiles.push(projEntity);
       }
@@ -566,6 +594,7 @@ export class GameScene extends Phaser.Scene {
           applyDamage(enemy, proj.damage);
           enemy.drawHealthBar();
           enemy.playHitFlash();
+          playSfxHit();
           this.spawnImpactBurst(proj.x, proj.y);
           proj.destroy();
           break;
@@ -579,6 +608,7 @@ export class GameScene extends Phaser.Scene {
         const e = this.enemies[i];
         const deathColor = e.enemyKey === 'basic' ? 0xf48fb1 : 0xb388ff;
         this.spawnDeathParticles(e.x, e.y, deathColor);
+        playSfxDeath(e.enemyKey);
         e.destroy();
         this.enemies.splice(i, 1);
       }
