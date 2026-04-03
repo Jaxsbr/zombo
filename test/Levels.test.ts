@@ -1,9 +1,36 @@
 import { describe, it, expect } from 'vitest';
 import { LEVEL_1 } from '../src/config/levels';
+import { ENEMY_TYPES } from '../src/config/enemies';
 
 describe('Levels', () => {
-  it('LEVEL_1 has at least 5 waves', () => {
-    expect(LEVEL_1.waves.length).toBeGreaterThanOrEqual(5);
+  it('LEVEL_1 has exactly 3 waves', () => {
+    expect(LEVEL_1.waves.length).toBe(3);
+  });
+
+  it('LEVEL_1 wave 1 has <= 2 spawns, all basic type', () => {
+    const wave1 = LEVEL_1.waves[0];
+    expect(wave1.spawns.length).toBeLessThanOrEqual(2);
+    for (const spawn of wave1.spawns) {
+      expect(spawn.type).toBe(ENEMY_TYPES.basic);
+    }
+  });
+
+  it('LEVEL_1 wave 2 has 3-4 spawns with mixed enemy types', () => {
+    const wave2 = LEVEL_1.waves[1];
+    expect(wave2.spawns.length).toBeGreaterThanOrEqual(3);
+    expect(wave2.spawns.length).toBeLessThanOrEqual(4);
+    const types = new Set(wave2.spawns.map((s) => s.type));
+    expect(types.size).toBeGreaterThanOrEqual(2);
+  });
+
+  it('LEVEL_1 wave 3 has 5-6 spawns with >= 2 tough across >= 3 lanes', () => {
+    const wave3 = LEVEL_1.waves[2];
+    expect(wave3.spawns.length).toBeGreaterThanOrEqual(5);
+    expect(wave3.spawns.length).toBeLessThanOrEqual(6);
+    const toughCount = wave3.spawns.filter((s) => s.type === ENEMY_TYPES.tough).length;
+    expect(toughCount).toBeGreaterThanOrEqual(2);
+    const lanes = new Set(wave3.spawns.map((s) => s.lane));
+    expect(lanes.size).toBeGreaterThanOrEqual(3);
   });
 
   it('every wave has at least one spawn', () => {
