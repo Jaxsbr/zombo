@@ -16,9 +16,10 @@ A Plants vs Zombies clone with alternative mechanics, built as a gift for Jaco's
 | Directory | Contents |
 |---|---|
 | `src/main.ts` | Entry point — creates `Phaser.Game` instance |
-| `src/config/` | Game configuration — Phaser config (`game.ts`), defender type registry (`defenders.ts`), enemy type registry (`enemies.ts`) |
+| `src/config/` | Game configuration — Phaser config (`game.ts`), defender type registry (`defenders.ts`), enemy type registry (`enemies.ts`), level config (`levels.ts`) |
 | `src/scenes/` | Phaser scenes — `GameScene.ts` (gameplay), `GameOverScene.ts` (win/lose + restart) |
 | `src/systems/` | Pure game logic modules — `Grid.ts`, `Economy.ts`, `Placement.ts`, `WaveManager.ts`, `EnemyMovement.ts`, `Combat.ts`, `GameFlow.ts` |
+| `src/entities/` | Phaser game objects — `DefenderEntity.ts`, `EnemyEntity.ts`, `ProjectileEntity.ts` (rendering wrappers over config types) |
 | `test/` | Vitest unit tests — one test file per game logic module |
 | `docs/reference/` | PvZ1 game design reference library — plant catalogue, zombie catalogue, level/map reference, game systems, art/audio direction, spin-off proposals |
 | `docs/product/` | Product specs — PRD, per-phase spec files |

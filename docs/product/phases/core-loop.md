@@ -1,10 +1,10 @@
 # Phase: core-loop
 
-Status: draft
+Status: shipped
 
 ## Stories
 
-### US-07 — Project scaffolding and game grid
+### US-07 — Project scaffolding and game grid [Shipped]
 
 As a developer, I want a Phaser 3 + TypeScript project with a rendered lane grid, so that I have a foundation to build gameplay on.
 
@@ -18,7 +18,7 @@ As a developer, I want a Phaser 3 + TypeScript project with a rendered lane grid
 
 **Design rationale:** Vite is the standard fast bundler for modern TS/Phaser projects. 5×9 grid matches PvZ Day layout — the simplest starting point before world-specific mechanics.
 
-### US-08 — Resource economy and defender placement
+### US-08 — Resource economy and defender placement [Shipped]
 
 As a player, I want to collect resources and spend them to place defenders on the grid, so that I can build my defence before enemies arrive.
 
@@ -36,7 +36,7 @@ As a player, I want to collect resources and spend them to place defenders on th
 
 **Design rationale:** Three defender types (generator, shooter, wall) is the minimum set to create interesting placement decisions — pure economy vs offence vs defence. This mirrors PvZ's Sunflower/Peashooter/Wall-nut trinity.
 
-### US-09 — Enemy waves and lane movement
+### US-09 — Enemy waves and lane movement [Shipped]
 
 As a player, I want enemies to spawn in waves and walk toward my base, so that there's a threat I need to defend against.
 
@@ -54,7 +54,7 @@ As a player, I want enemies to spawn in waves and walk toward my base, so that t
 
 **Design rationale:** Two enemy types is the minimum to force strategic choice — the "tough" type punishes players who only build shooters and skip walls. Wave staggering follows PvZ's 1-3 second spawn delay to prevent instant overwhelm.
 
-### US-10 — Combat and health system
+### US-10 — Combat and health system [Shipped]
 
 As a player, I want my defenders to attack enemies and enemies to take damage, so that I can defeat the incoming waves.
 
@@ -73,7 +73,7 @@ As a player, I want my defenders to attack enemies and enemies to take damage, s
 
 **Design rationale:** Auto-attacking defenders follow PvZ convention — the player's skill is in placement strategy, not aiming. Walls that block and absorb damage create the classic front-line/back-line dynamic that makes lane defence interesting.
 
-### US-11 — Game flow: win, lose, restart
+### US-11 — Game flow: win, lose, restart [Shipped]
 
 As a player, I want to win when I survive all waves and lose if an enemy reaches my base, so that the game has a clear objective and replayability.
 
@@ -92,24 +92,24 @@ As a player, I want to win when I survive all waves and lose if an enemy reaches
 
 ## Done-when (observable)
 
-- [ ] `package.json` lists `phaser` (>=3.60) and `typescript` as dependencies; `npm run build` succeeds without errors [US-07]
-- [ ] `tsconfig.json` has `"strict": true`; `npx tsc --noEmit` completes with zero errors [US-07]
-- [ ] `src/main.ts` exists and creates a `Phaser.Game` instance with a configured scene list [US-07]
-- [ ] A grid module in `src/` defines grid dimensions (rows=5, cols=9) and provides a cell-coordinate API; unit test verifies grid cell count equals 45 [US-07]
-- [ ] An economy module exposes `getBalance()`, `spend(amount)`, and `addIncome(amount)` functions; unit test verifies starting balance is configurable and `spend` rejects when insufficient funds [US-08]
-- [ ] At least 3 defender types are defined in a config/registry, each with `name`, `cost`, `health` properties; unit test verifies all three types exist with valid numeric costs [US-08]
-- [ ] A placement module tracks occupied cells; unit test verifies placing on an empty cell succeeds and deducts cost, placing on an occupied cell rejects [US-08]
-- [ ] At least 2 enemy types are defined, each with `name`, `health`, `speed` properties; unit test verifies both types exist with distinct health/speed values [US-09]
-- [ ] A wave configuration module defines waves as arrays of enemy spawn descriptors (type, count, lane, delay); unit test verifies a sample level has at least 3 waves [US-09]
-- [ ] Enemy movement logic moves enemies leftward by their speed per tick; unit test verifies an enemy's x-position decreases after a movement tick [US-09]
-- [ ] Shooter defenders have `damage`, `range`, and `fireRate` properties; unit test verifies a shooter deals its configured damage to an enemy in the same lane within range [US-10]
-- [ ] Enemy health decreases when hit by a projectile; unit test verifies an enemy at health=100 hit by damage=25 has health=75, and an enemy reaching health<=0 is flagged for removal [US-10]
-- [ ] Wall defenders block enemy movement; unit test verifies an enemy stops advancing when it reaches a wall's grid position, and the wall's health decreases as the enemy attacks it [US-10]
-- [ ] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
-- [ ] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
-- [ ] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
-- [ ] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
-- [ ] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
+- [x] `package.json` lists `phaser` (>=3.60) and `typescript` as dependencies; `npm run build` succeeds without errors [US-07]
+- [x] `tsconfig.json` has `"strict": true`; `npx tsc --noEmit` completes with zero errors [US-07]
+- [x] `src/main.ts` exists and creates a `Phaser.Game` instance with a configured scene list [US-07]
+- [x] A grid module in `src/` defines grid dimensions (rows=5, cols=9) and provides a cell-coordinate API; unit test verifies grid cell count equals 45 [US-07]
+- [x] An economy module exposes `getBalance()`, `spend(amount)`, and `addIncome(amount)` functions; unit test verifies starting balance is configurable and `spend` rejects when insufficient funds [US-08]
+- [x] At least 3 defender types are defined in a config/registry, each with `name`, `cost`, `health` properties; unit test verifies all three types exist with valid numeric costs [US-08]
+- [x] A placement module tracks occupied cells; unit test verifies placing on an empty cell succeeds and deducts cost, placing on an occupied cell rejects [US-08]
+- [x] At least 2 enemy types are defined, each with `name`, `health`, `speed` properties; unit test verifies both types exist with distinct health/speed values [US-09]
+- [x] A wave configuration module defines waves as arrays of enemy spawn descriptors (type, count, lane, delay); unit test verifies a sample level has at least 3 waves [US-09]
+- [x] Enemy movement logic moves enemies leftward by their speed per tick; unit test verifies an enemy's x-position decreases after a movement tick [US-09]
+- [x] Shooter defenders have `damage`, `range`, and `fireRate` properties; unit test verifies a shooter deals its configured damage to an enemy in the same lane within range [US-10]
+- [x] Enemy health decreases when hit by a projectile; unit test verifies an enemy at health=100 hit by damage=25 has health=75, and an enemy reaching health<=0 is flagged for removal [US-10]
+- [x] Wall defenders block enemy movement; unit test verifies an enemy stops advancing when it reaches a wall's grid position, and the wall's health decreases as the enemy attacks it [US-10]
+- [x] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
+- [x] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
+- [x] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
+- [x] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
+- [x] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
 
 ## Golden principles (phase-relevant)
 - no-silent-pass (every module must have real implementation, not stubs)

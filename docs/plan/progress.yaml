@@ -23,7 +23,7 @@ config:
 
 state:
   # --- Lifecycle (owner: iterator) ---
-  phase: core-loop
+  phase: playable
   phase_complete: true
   status: running
 
@@ -36,10 +36,10 @@ state:
   # --- Review (owner: iterator) ---
   review_stage: review_posted
   review_complete: true
-  pr_number: 2
+  pr_number: 3
 
   # --- Retrospective (owner: retro) ---
   retro_complete: true
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-07, US-08, US-09, US-10, US-11]
+  completed_stories: [US-12, US-13, US-14]

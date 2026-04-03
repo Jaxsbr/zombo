@@ -1,0 +1,103 @@
+# Phase log — playable
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-12
+    description: "Investigation — greenfield entities, queued entity game objects task"
+    result: pass
+    notes: "No src/entities/ exists. Need DefenderEntity, EnemyEntity, ProjectileEntity as Phaser containers with colored shapes + health bars."
+    tokens: ~5k
+  - task: 2
+    story: US-12
+    description: "Implement DefenderEntity, EnemyEntity, ProjectileEntity game objects"
+    result: pass
+    notes: "3 Phaser container classes with colored shapes + health bars. Build compiles, 67 tests pass. ✓ US-12 complete"
+    tokens: ~4k
+  - task: 3
+    story: US-13
+    description: "Investigation — queued HUD and defender selection task"
+    result: pass
+    notes: "US-12 complete. Next: wire Economy + WaveManager display in HUD, add defender card panel with click-to-select, click-to-place."
+    tokens: ~1k
+  - task: 4
+    story: US-13
+    description: "Implement HUD with economy display, wave counter, and defender selection panel"
+    result: pass
+    notes: "GameScene rewritten: Economy/Grid/Placement/WaveManager/GameFlow init. HUD shows balance + wave. 3 defender cards with select-then-place. 67 tests pass. ✓ US-13 complete"
+    tokens: ~6k
+  - task: 5
+    story: US-14
+    description: "Investigation — queued levels.ts with 5-wave config + unit test"
+    result: pass
+    notes: "US-13 complete. Next: levels.ts with 5 waves of escalating difficulty, plus test verifying waves.length >= 5."
+    tokens: ~1k
+  - task: 6
+    story: US-14
+    description: "Create levels.ts with 5-wave config and unit test"
+    result: pass
+    notes: "LEVEL_1 with 5 waves of escalating difficulty (basic → mixed → tough-heavy). 5 tests verify structure. 72 total tests pass."
+    tokens: ~3k
+  - task: 7
+    story: US-14
+    description: "Investigation — queued full game loop wiring in GameScene"
+    result: pass
+    notes: "levels.ts done. Need to wire: WaveManager with LEVEL_1, enemy spawning, combat loop, GameFlow transitions, passive + generator income, restart."
+    tokens: ~1k
+  - task: 8
+    story: US-14
+    description: "Wire full game loop in GameScene — spawning, combat, income, win/lose"
+    result: pass
+    notes: "GameScene.update: WaveManager spawns, enemy movement, wall blocking, shooter firing, projectile hits, dead removal, GameFlow transitions. Passive + generator income via timers. Build + 72 tests pass. ✓ US-14 complete"
+    tokens: ~8k
+  - task: 9
+    story: phase
+    description: "Investigation — AGENTS.md needs entities/ and levels.ts"
+    result: pass
+    notes: "All stories complete. Remaining: AGENTS.md update for new entities/ dir and levels.ts."
+    tokens: ~1k
+  - task: 10
+    story: phase
+    description: "Update AGENTS.md + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated with entities/ and levels.ts. All 17 done-when criteria verified. 72 tests pass, build clean. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - DefenderEntity: colored rect (green/blue/gray) + health bar, imports DefenderType
+      - EnemyEntity: colored circle (red/purple) + health bar, imports EnemyType
+      - ProjectileEntity: yellow circle
+      - GameScene HUD: Economy balance text + WaveManager wave counter
+      - Defender panel: 3 cards with name/cost/preview, pointerdown select
+      - Grid click zones: pointerdown → Placement.place → DefenderEntity
+      - levels.ts: LEVEL_1 with 5 waves (3→4→3→5→6 enemies), unit tested
+      - GameScene.update: waveManager.update → EnemyEntity spawn
+      - Combat loop: updateShooterCooldown, tryFire, moveProjectile, checkProjectileHit, applyDamage, isDead removal
+      - GameFlow: gameFlow.update → scene.start('GameOverScene', {won})
+      - Income: time.addEvent passive (8s/25) + generator (5s/type.generatesIncome)
+      - Restart: GameScene.create initializes all systems fresh
+      - 10 test files, 72 tests pass, npm run build clean
+      - AGENTS.md: entities/ dir + levels.ts in config/
+    tokens: ~2k
+  - task: 11
+    story: review
+    description: "Create PR #3 and schedule review"
+    result: pass
+    notes: "PR created: https://github.com/Jaxsbr/zombo/pull/3"
+    tokens: ~3k
+  - task: 12
+    story: review
+    description: "review-pr pr=3 — automated PR review"
+    result: pass
+    notes: "0 critical, 2 concern (stale ARCHITECTURE.md filenames, fragile getEnemyKey), 1 nit (health bar duplication). Posted as COMMENT."
+    tokens: ~5k
+  - task: 13
+    story: review
+    description: "handle-pr-review pr=3 — handle review comments"
+    result: pass
+    notes: "Fixed 2 concerns (ARCHITECTURE.md filenames + annotation, enemy key registry lookup). Skipped 1 nit (health bar duplication). Posted summary. Review complete."
+    tokens: ~5k
