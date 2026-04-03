@@ -83,3 +83,9 @@ entries:
       - 10 test files, 72 tests pass, npm run build clean
       - AGENTS.md: entities/ dir + levels.ts in config/
     tokens: ~2k
+  - task: 11
+    story: review
+    description: "Create PR #3 and schedule review"
+    result: pass
+    notes: "PR created: https://github.com/Jaxsbr/zombo/pull/3"
+    tokens: ~3k
