@@ -50,3 +50,9 @@ entries:
     result: pass
     notes: "Shooter/projectile/wall combat. applyDamage, isDead, wallBlocks. 15 new tests, 56 total. ✓ US-10 complete"
     tokens: ~6k
+  - task: 9
+    story: US-11
+    description: "Investigation — queued game flow implementation"
+    result: pass
+    notes: "US-10 complete. Next: GameFlow state machine with win/lose/restart."
+    tokens: ~1k

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 8
-  next_task: null
+  task_number: 9
+  next_task: "[US-11] Implement game flow — win/lose detection, game state machine, restart with tests"
   last_result: pass
   consecutive_fails: 0
 
