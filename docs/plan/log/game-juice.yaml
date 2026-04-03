@@ -8,3 +8,9 @@ entries:
     result: pass
     notes: "DefenderEntity/EnemyEntity are Containers with static Graphics. Tweens attach to Container y/scale/angle. Combat reactions triggered from GameScene.update. No external sprites. 88 tests pass. Queued investigation task for detailed plan."
     tokens: ~8k
+  - task: 2
+    story: US-19
+    description: "Investigation — detailed animation plan, integration points identified"
+    result: pass
+    notes: "Tweens on Container y/angle/scale. Defender idle: bob/wiggle/sway per key. Enemy: bounce/rock per key. Combat reactions: public methods on DefenderEntity called from GameScene (fire line ~491, generator line ~103). Queued defender idle implementation."
+    tokens: ~5k
