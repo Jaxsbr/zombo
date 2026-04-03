@@ -56,3 +56,9 @@ entries:
     result: pass
     notes: "US-10 complete. Next: GameFlow state machine with win/lose/restart."
     tokens: ~1k
+  - task: 10
+    story: US-11
+    description: "Implement game flow — win/lose detection, state machine, restart"
+    result: pass
+    notes: "GameFlow: playing/won/lost state machine. Lose at col 0, win when waves+enemies done. Reset tested. 11 new tests, 67 total. ✓ US-11 complete"
+    tokens: ~5k

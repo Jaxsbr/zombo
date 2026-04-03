@@ -23,9 +23,9 @@ Build a playable tower defense core loop — grid-based lane map, resource econo
 - [x] Shooter defenders have `damage`, `range`, and `fireRate` properties; unit test verifies a shooter deals its configured damage to an enemy in the same lane within range [US-10]
 - [x] Enemy health decreases when hit by a projectile; unit test verifies an enemy at health=100 hit by damage=25 has health=75, and an enemy reaching health<=0 is flagged for removal [US-10]
 - [x] Wall defenders block enemy movement; unit test verifies an enemy stops advancing when it reaches a wall's grid position, and the wall's health decreases as the enemy attacks it [US-10]
-- [ ] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
-- [ ] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
-- [ ] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
+- [x] Game state changes to "lost" when any enemy's x-position reaches column 0; unit test verifies [US-11]
+- [x] Game state changes to "won" when all waves are exhausted and no enemies remain alive; unit test verifies [US-11]
+- [x] A game-over scene/overlay displays the win/lose result and a restart mechanism resets game state; unit test verifies game state resets to initial values after restart [US-11]
 - [ ] All game logic modules have corresponding test files; `npm test` runs and all tests pass [phase]
 - [ ] AGENTS.md reflects the new `src/` directory layout and module structure introduced in this phase [phase]
 

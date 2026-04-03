@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 9
-  next_task: "[US-11] Implement game flow — win/lose detection, game state machine, restart with tests"
+  task_number: 10
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-07, US-08, US-09, US-10]
+  completed_stories: [US-07, US-08, US-09, US-10, US-11]
