@@ -28,13 +28,15 @@ import {
   playSfxHit,
   playSfxDeath,
   playSfxAnnounce,
+  playSfxCollect,
   setSfxMuted,
   isSfxMuted,
 } from '../systems/SFX';
 
 const STARTING_BALANCE = 500;
-const PASSIVE_INCOME_INTERVAL = 8000; // ms
-const PASSIVE_INCOME_AMOUNT = 25;
+const SPARK_SPAWN_INTERVAL = 8000; // ms between spark spawns
+const SPARK_VALUE = 25; // sparks balance added per collection
+const SPARK_FALL_SPEED = 30; // pixels per second
 const GENERATOR_INCOME_INTERVAL = 5000; // ms
 const FADE_DURATION = 600;
 
@@ -58,6 +60,7 @@ export class GameScene extends Phaser.Scene {
   private enemies: EnemyEntity[] = [];
   private projectiles: ProjectileEntity[] = [];
   private cellZones: Phaser.GameObjects.Zone[] = [];
+  private sparks: Phaser.GameObjects.Container[] = [];
   private transitioning = false;
 
   constructor() {
@@ -82,6 +85,7 @@ export class GameScene extends Phaser.Scene {
     this.enemies = [];
     this.projectiles = [];
     this.cellZones = [];
+    this.sparks = [];
     this.progressDots = [];
     this.lastWaveState = 'setup';
 
@@ -94,10 +98,10 @@ export class GameScene extends Phaser.Scene {
     this.createProgressDots();
     this.createCountdownBar();
 
-    // Passive sky-drop income
+    // Spark spawner (replaces passive income timer)
     this.time.addEvent({
-      delay: PASSIVE_INCOME_INTERVAL,
-      callback: () => this.economy.addIncome(PASSIVE_INCOME_AMOUNT),
+      delay: SPARK_SPAWN_INTERVAL,
+      callback: () => this.spawnSpark(),
       loop: true,
     });
 
@@ -546,6 +550,84 @@ export class GameScene extends Phaser.Scene {
     this.lastWaveState = state;
   }
 
+  private spawnSpark(): void {
+    const x = Math.random() * (GRID_COLS * CELL_SIZE - 40) + 20;
+    const y = HUD_HEIGHT - 10; // just above the grid
+
+    const spark = this.add.container(x, y);
+    spark.setDepth(10);
+
+    // Draw spark shape — diamond/star glow (distinct from yellow circle projectiles)
+    const gfx = this.add.graphics();
+    // Outer glow
+    gfx.fillStyle(0x81d4fa, 0.4);
+    gfx.fillCircle(0, 0, 12);
+    // Inner diamond
+    gfx.fillStyle(0x4fc3f7, 0.9);
+    gfx.beginPath();
+    gfx.moveTo(0, -8);
+    gfx.lineTo(6, 0);
+    gfx.lineTo(0, 8);
+    gfx.lineTo(-6, 0);
+    gfx.closePath();
+    gfx.fillPath();
+    // Center bright spot
+    gfx.fillStyle(0xffffff, 0.8);
+    gfx.fillCircle(0, 0, 3);
+    spark.add(gfx);
+
+    // Clickable zone
+    const zone = this.add.zone(0, 0, 24, 24).setInteractive({ useHandCursor: true });
+    spark.add(zone);
+
+    zone.on('pointerdown', () => {
+      this.collectSpark(spark);
+    });
+
+    this.sparks.push(spark);
+  }
+
+  private collectSpark(spark: Phaser.GameObjects.Container): void {
+    this.economy.addIncome(SPARK_VALUE);
+    playSfxCollect();
+    this.updateHUDText();
+
+    // Collection animation — burst outward and fade
+    const x = spark.x;
+    const y = spark.y;
+    spark.destroy();
+    this.sparks = this.sparks.filter(s => s !== spark);
+
+    // Particle burst effect
+    for (let i = 0; i < 6; i++) {
+      const angle = (i / 6) * Math.PI * 2;
+      const dot = this.add.circle(x, y, 2, 0x4fc3f7, 0.8);
+      dot.setDepth(50);
+      this.tweens.add({
+        targets: dot,
+        x: x + Math.cos(angle) * 25,
+        y: y + Math.sin(angle) * 25,
+        alpha: 0,
+        duration: 250,
+        ease: 'Quad.easeOut',
+        onComplete: () => dot.destroy(),
+      });
+    }
+  }
+
+  private updateSparks(dt: number): void {
+    const gridBottom = HUD_HEIGHT + GRID_ROWS * CELL_SIZE;
+    for (let i = this.sparks.length - 1; i >= 0; i--) {
+      const spark = this.sparks[i];
+      spark.y += SPARK_FALL_SPEED * dt;
+      // Remove uncollected sparks past grid bottom
+      if (spark.y > gridBottom) {
+        spark.destroy();
+        this.sparks.splice(i, 1);
+      }
+    }
+  }
+
   private spawnDeathParticles(x: number, y: number, color: number): void {
     const count = 8;
     for (let i = 0; i < count; i++) {
@@ -733,6 +815,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
 
+    this.updateSparks(dt);
     this.updateHUDText();
     this.updatePanelHighlight();
     this.updateAnnouncement();
