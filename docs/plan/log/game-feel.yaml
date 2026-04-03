@@ -62,3 +62,9 @@ entries:
     result: pass
     notes: "HUD waveText exists (Wave N/M). No announcement system yet. GameScene.update() doesn't read waveState. Need: announcement overlay during announcing state, final wave distinct text, progress dots/bar."
     tokens: ~2k
+  - task: 11
+    story: US-17
+    description: "Implement wave progress dots and themed wave announcements"
+    result: pass
+    notes: "Progress dots in HUD (gold/white/dim). Announcement overlay during 'announcing' state. Final wave: 'A HUGE mess is coming!'. Earlier waves: themed messages. 88 tests pass. ✓ US-17 complete"
+    tokens: ~5k

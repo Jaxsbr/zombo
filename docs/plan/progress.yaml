@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 9
-  next_task: "[US-17] Implement wave progress indicator and themed wave announcements in GameScene"
+  task_number: 10
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
