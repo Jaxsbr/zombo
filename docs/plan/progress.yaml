@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 7
-  next_task: "[US-16] Rebalance LEVEL_1 to 3 waves with PvZ-style escalation + update level test"
+  task_number: 8
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

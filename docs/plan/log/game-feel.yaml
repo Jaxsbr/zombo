@@ -50,3 +50,9 @@ entries:
     result: pass
     notes: "WaveManager: 5-state machine (setup/announcing/spawning/waiting/complete). Defaults: setupDelay=25, interWaveDelay=18, announceDuration=2.5. Pre-spawn states chain within tick, spawning breaks. 13 new tests, 85 total pass. LEVEL_1 rebalance still needed."
     tokens: ~8k
+  - task: 9
+    story: US-16
+    description: "Rebalance LEVEL_1 to 3 PvZ-style waves + update level tests"
+    result: pass
+    notes: "Wave 1: 2 Dust Bunnies. Wave 2: 4 mixed. Wave 3: 6 enemies, 3 Cleaning Robots, 4 lanes. setupDelay=25, interWaveDelay=18. 88 total tests pass. ✓ US-16 complete"
+    tokens: ~3k
