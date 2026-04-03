@@ -204,6 +204,32 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
     }
   }
 
+  /** Water Pistol recoil — brief scale kick on fire */
+  playRecoil(): void {
+    if (this.defenderKey !== 'shooter') return;
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: 0.85,
+      scaleY: 1.1,
+      duration: 80,
+      ease: 'Quad.easeOut',
+      yoyo: true,
+    });
+  }
+
+  /** Jack-in-the-Box produce — body pulse on income tick */
+  playProduce(): void {
+    if (this.defenderKey !== 'generator') return;
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: 1.15,
+      scaleY: 1.15,
+      duration: 150,
+      ease: 'Back.easeOut',
+      yoyo: true,
+    });
+  }
+
   drawHealthBar(): void {
     this.healthBar.clear();
     const fraction = Math.max(0, this.health / this.maxHealth);

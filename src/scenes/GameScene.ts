@@ -103,6 +103,7 @@ export class GameScene extends Phaser.Scene {
     for (const def of this.defenders) {
       if (def.defenderType.generatesIncome > 0 && !isDead(def)) {
         this.economy.addIncome(def.defenderType.generatesIncome);
+        def.playProduce();
       }
     }
   }
@@ -488,6 +489,7 @@ export class GameScene extends Phaser.Scene {
       def.setData('fireCooldown', shooter.fireCooldown);
 
       if (proj) {
+        def.playRecoil();
         const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, proj.speed);
         this.projectiles.push(projEntity);
       }
