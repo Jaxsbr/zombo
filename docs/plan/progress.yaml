@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 3
-  next_task: null
+  next_task: "[US-19] Implement defender combat reactions — Water Pistol recoil on fire (scale kick), Jack-in-the-Box produce pulse on income tick. Add public methods to DefenderEntity, call from GameScene."
   last_result: pass
   consecutive_fails: 0
 
