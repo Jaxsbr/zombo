@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 5
-  next_task: "[US-20] Implement hit flash, death particles, defender destruction, placement bounce-in, projectile impact burst, and camera shake. Modify EnemyEntity, DefenderEntity, GameScene."
+  task_number: 6
+  next_task: "[US-21] Implement SFX.ts — pure TypeScript Web Audio API sound module with lazy AudioContext, named trigger functions (place, fire, hit, death, collect, announce), and mute toggle support."
   last_result: pass
   consecutive_fails: 0
 

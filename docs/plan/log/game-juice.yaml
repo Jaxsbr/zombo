@@ -44,3 +44,9 @@ entries:
     result: pass
     notes: "US-20 needs: enemy hit flash (white tint), death particles per type, defender destruction effect, placement bounce-in, projectile impact burst, camera shake on final wave. All rendering-only changes in entities + GameScene."
     tokens: ~1k
+  - task: 8
+    story: US-20
+    description: "Implement hit reactions and death effects — all 7 criteria"
+    result: pass
+    notes: "Enemy hit flash: white overlay 150ms. Death particles: 8 circles expanding outward (pink for Dust Bunny, purple for Robot). Defender destruction: fade+scale-down 350ms. Placement bounce-in: scale 0.3→1 Back.easeOut 300ms. Projectile impact: expanding white circle 200ms. Camera shake: 400ms 0.003 intensity on final wave. 88 tests pass. ✓ US-20 complete"
+    tokens: ~5k
