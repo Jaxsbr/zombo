@@ -109,6 +109,38 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     // Hidden at full health — drawHealthBar only renders when damaged
 
     scene.add.existing(this);
+
+    // Per-key movement animation
+    this.startMovementAnimation(scene);
+  }
+
+  private startMovementAnimation(scene: Phaser.Scene): void {
+    switch (this.enemyKey) {
+      case 'basic':
+        // Dust Bunny — bouncing squash-stretch
+        scene.tweens.add({
+          targets: this,
+          scaleY: 0.8,
+          scaleX: 1.2,
+          y: this.y - 4,
+          duration: 400,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'tough':
+        // Cleaning Robot — rocking side to side
+        scene.tweens.add({
+          targets: this,
+          angle: 4,
+          duration: 600,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+    }
   }
 
   updatePosition(): void {
