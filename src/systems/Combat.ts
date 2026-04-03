@@ -12,7 +12,7 @@ export interface ShooterEntity extends CombatEntity {
 }
 
 export interface EnemyCombatEntity extends CombatEntity {
-  damage: number; // damage per second to walls
+  damage: number; // damage per second to defenders
 }
 
 export interface ProjectileState {
@@ -38,20 +38,24 @@ export function tryFire(
     return null;
   }
 
-  // Find nearest enemy in lane within range (to the right of the shooter)
+  // Find nearest enemy in lane within range (at or to the right of the shooter)
   const inRange = enemiesInLane.filter(
-    (e) => e.col > shooter.col && e.col - shooter.col <= shooter.range && e.health > 0,
+    (e) => e.col >= shooter.col - 0.5 && e.col - shooter.col <= shooter.range && e.health > 0,
   );
 
   if (inRange.length === 0) {
     return null;
   }
 
+  const nearest = inRange.reduce((a, b) => (a.col < b.col ? a : b));
+
   shooter.fireCooldown = 1 / shooter.fireRate;
 
+  // Spawn projectile at the nearer of col+1 or the enemy position
+  // so point-blank shots connect immediately
   return {
     lane: shooter.lane,
-    x: shooter.col + 1,
+    x: Math.min(shooter.col + 1, nearest.col),
     damage: shooter.damage,
     speed: PROJECTILE_SPEED,
   };

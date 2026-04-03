@@ -7,13 +7,13 @@ export interface EnemyType {
 
 export const ENEMY_TYPES: Record<string, EnemyType> = {
   basic: {
-    name: 'Basic',
+    name: 'Dust Bunny',
     health: 100,
     speed: 0.5,
     damage: 20,
   },
   tough: {
-    name: 'Tough',
+    name: 'Cleaning Robot',
     health: 300,
     speed: 0.25,
     damage: 30,

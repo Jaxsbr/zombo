@@ -2,7 +2,7 @@
 
 ## Purpose
 
-A Plants vs Zombies clone with alternative mechanics, built as a gift for Jaco's kids. They already breeze through backyard-day (level 1) and backyard-night (level 2), so the goal is more levels and unique gameplay twists — good clean fun they can enjoy together.
+**Toy Box Siege** — a bedroom-themed tower defense game inspired by Plants vs Zombies, built as a gift for Jaco's kids. Defenders are toys (Water Pistol, Jack-in-the-Box, Block Tower), enemies are household nuisances (Dust Bunnies, Cleaning Robots). The game starts with a title screen, uses PvZ-style wave pacing with setup periods and announcements, and ends with themed win/lose results.
 
 ## Tech stack
 
@@ -17,9 +17,9 @@ A Plants vs Zombies clone with alternative mechanics, built as a gift for Jaco's
 |---|---|
 | `src/main.ts` | Entry point — creates `Phaser.Game` instance |
 | `src/config/` | Game configuration — Phaser config (`game.ts`), defender type registry (`defenders.ts`), enemy type registry (`enemies.ts`), level config (`levels.ts`) |
-| `src/scenes/` | Phaser scenes — `GameScene.ts` (gameplay), `GameOverScene.ts` (win/lose + restart) |
+| `src/scenes/` | Phaser scenes — `TitleScene.ts` (title + play), `GameScene.ts` (gameplay), `GameOverScene.ts` (win/lose + restart) |
 | `src/systems/` | Pure game logic modules — `Grid.ts`, `Economy.ts`, `Placement.ts`, `WaveManager.ts`, `EnemyMovement.ts`, `Combat.ts`, `GameFlow.ts` |
-| `src/entities/` | Phaser game objects — `DefenderEntity.ts`, `EnemyEntity.ts`, `ProjectileEntity.ts` (rendering wrappers over config types) |
+| `src/entities/` | Phaser game objects — `DefenderEntity.ts` (per-key shape drawing), `EnemyEntity.ts` (per-key shape drawing), `ProjectileEntity.ts` (yellow circle) |
 | `test/` | Vitest unit tests — one test file per game logic module |
 | `docs/reference/` | PvZ1 game design reference library — plant catalogue, zombie catalogue, level/map reference, game systems, art/audio direction, spin-off proposals |
 | `docs/product/` | Product specs — PRD, per-phase spec files |
@@ -39,9 +39,9 @@ A Plants vs Zombies clone with alternative mechanics, built as a gift for Jaco's
 
 - **Grid** (5 rows × 9 cols): cell-coordinate API, bounds validation, occupancy via Placement
 - **Economy**: balance tracking, spend with rejection, passive income, reset
-- **Defenders**: 3 types — Generator (produces income), Shooter (ranged projectile attack), Wall (high-health blocker)
-- **Enemies**: 2 types — Basic (fast, low health) and Tough (slow, high health)
-- **WaveManager**: drives enemy spawning across configurable waves with staggered delays
+- **Defenders**: 3 types — Jack-in-the-Box/generator (produces income), Water Pistol/shooter (ranged projectile attack), Block Tower/wall (high-health blocker). Each has distinct Phaser Graphics shapes (not just colored rectangles).
+- **Enemies**: 2 types — Dust Bunny/basic (fast, low health, fluffy pink blob) and Cleaning Robot/tough (slow, high health, boxy purple robot). Each has distinct shapes.
+- **WaveManager**: state machine driving wave progression: setup (delay before first wave) → announcing (wave announcement text) → spawning (enemy spawns) → waiting (inter-wave delay) → complete. Exposes typed `waveState` property. Configurable `setupDelay`, `interWaveDelay`, `announceDuration`.
 - **Combat**: shooter auto-fires projectiles at nearest lane enemy in range; walls block enemies and take damage
 - **GameFlow**: playing/won/lost state machine — lose when enemy reaches col 0, win when all waves spent and no enemies alive
 

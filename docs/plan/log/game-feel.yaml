@@ -1,0 +1,128 @@
+# Phase log — game-feel
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-15
+    description: "Investigation — catalog config key/name references before theme rename"
+    result: pass
+    notes: "Config keys (generator/shooter/wall/basic/tough) used in gameplay logic — keep keys, change name fields only. Test at Defenders.test.ts:39 checks name 'Wall' — needs update. 72 tests pass."
+    tokens: ~5k
+  - task: 2
+    story: US-15
+    description: "Rename config display names to Toy Box Siege theme, HUD Energy→Sparks, fix test name assertions"
+    result: pass
+    notes: "Defender names: Generator→Jack-in-the-Box, Shooter→Water Pistol, Wall→Block Tower. Enemy names: Basic→Dust Bunny, Tough→Cleaning Robot. HUD: Energy→Sparks. Config keys unchanged. 72 tests pass."
+    tokens: ~3k
+  - task: 3
+    story: US-15
+    description: "Investigation — entity rendering code reviewed, queue distinct shapes task"
+    result: pass
+    notes: "DefenderEntity: fillRect with color map, EnemyEntity: fillCircle with color map. Both need per-key shape dispatch. Grid carpet color also needed."
+    tokens: ~2k
+  - task: 4
+    story: US-15
+    description: "Investigation — plan distinct shapes, grid carpet, HUD styling"
+    result: pass
+    notes: "Grid: 0x3a7d32/0x2d6b27 green → brown/tan carpet. HUD: 0x1a1a2e → dark wood. Defenders: fillRect → per-key shapes (pistol, box, blocks). Enemies: fillCircle → per-key shapes (fluffy blob, boxy robot). All rendering-only, no test impact."
+    tokens: ~2k
+  - task: 5
+    story: US-15
+    description: "Implement developer art — distinct shapes, carpet grid, wood HUD"
+    result: pass
+    notes: "Defenders: Water Pistol (L-shape), Jack-in-the-Box (box+spring+head), Block Tower (stacked blocks). Enemies: Dust Bunny (fluffy blob+eyes), Cleaning Robot (boxy+antenna). Grid: brown/tan carpet. HUD: dark walnut. 72 tests pass. ✓ US-15 complete"
+    tokens: ~5k
+  - task: 6
+    story: US-16
+    description: "Investigation — plan WaveManager state machine, queue refactor"
+    result: pass
+    notes: "WaveManager needs: setupDelay (>=20), interWaveDelay (>=15), waveState (setup→announcing→spawning→waiting→complete). 7 existing tests need updating for new delay behavior. LEVEL_1 rebalance to 3 waves is separate concern."
+    tokens: ~2k
+  - task: 7
+    story: US-16
+    description: "Investigation — confirm WaveManager refactor plan"
+    result: pass
+    notes: "Add optional setupDelay/interWaveDelay/announceDuration to LevelConfig. State machine internal to update(). Existing tests pass setupDelay:0/interWaveDelay:0 to preserve behavior. New tests verify state transitions. GameScene reads waveState for US-17."
+    tokens: ~1k
+  - task: 8
+    story: US-16
+    description: "Implement WaveManager state machine with tests"
+    result: pass
+    notes: "WaveManager: 5-state machine (setup/announcing/spawning/waiting/complete). Defaults: setupDelay=25, interWaveDelay=18, announceDuration=2.5. Pre-spawn states chain within tick, spawning breaks. 13 new tests, 85 total pass. LEVEL_1 rebalance still needed."
+    tokens: ~8k
+  - task: 9
+    story: US-16
+    description: "Rebalance LEVEL_1 to 3 PvZ-style waves + update level tests"
+    result: pass
+    notes: "Wave 1: 2 Dust Bunnies. Wave 2: 4 mixed. Wave 3: 6 enemies, 3 Cleaning Robots, 4 lanes. setupDelay=25, interWaveDelay=18. 88 total tests pass. ✓ US-16 complete"
+    tokens: ~3k
+  - task: 10
+    story: US-17
+    description: "Investigation — GameScene HUD and waveState integration points"
+    result: pass
+    notes: "HUD waveText exists (Wave N/M). No announcement system yet. GameScene.update() doesn't read waveState. Need: announcement overlay during announcing state, final wave distinct text, progress dots/bar."
+    tokens: ~2k
+  - task: 11
+    story: US-17
+    description: "Implement wave progress dots and themed wave announcements"
+    result: pass
+    notes: "Progress dots in HUD (gold/white/dim). Announcement overlay during 'announcing' state. Final wave: 'A HUGE mess is coming!'. Earlier waves: themed messages. 88 tests pass. ✓ US-17 complete"
+    tokens: ~5k
+  - task: 12
+    story: US-18
+    description: "Investigation — scene registration, GameOverScene, Phaser camera fade API"
+    result: pass
+    notes: "game.ts: scenes=[GameScene,GameOverScene], need TitleScene first. GameOverScene: generic text + bare scene.start. Phaser fade: cameras.main.fadeOut(ms) + camerafadeoutcomplete. Queue scene flow implementation."
+    tokens: ~2k
+  - task: 13
+    story: US-18
+    description: "Implement TitleScene, camera fade transitions, themed GameOverScene"
+    result: pass
+    notes: "TitleScene: 'Toy Box Siege' + Play button. Camera fades on all transitions. GameOverScene: 'Fort Defended!'/'The Mess Wins!' + Play Again. Clean restart. 88 tests + build pass. ✓ US-18 complete"
+    tokens: ~5k
+  - task: 14
+    story: phase
+    description: "Update AGENTS.md + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated: Toy Box Siege theme, TitleScene, WaveManager state machine, entity per-key shapes. All 25 done-when criteria verified. 88 tests pass, build clean. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - defenders.ts: "Water Pistol", "Jack-in-the-Box", "Block Tower" names
+      - enemies.ts: "Dust Bunny", "Cleaning Robot" names
+      - DefenderEntity: drawWaterPistol, drawJackInTheBox, drawBlockTower (distinct shapes)
+      - EnemyEntity: drawDustBunny, drawCleaningRobot (distinct shapes)
+      - Grid: 0xc4a882/0xb0956e brown/tan carpet
+      - HUD: "Sparks" label
+      - WaveManager: 5-state machine, setupDelay=25, interWaveDelay=18
+      - LEVEL_1: 3 waves (2 basic, 4 mixed, 6 with 3 tough)
+      - Progress dots + themed announcements (final: "A HUGE mess is coming!")
+      - TitleScene: "Toy Box Siege" + Play, registered first in game config
+      - Camera fades on all transitions
+      - GameOverScene: "Fort Defended!"/"The Mess Wins!" + Play Again
+      - Clean restart via Play Again
+      - AGENTS.md: updated for all game-feel changes
+      - 10 test files, 88 tests pass, npm run build clean
+    tokens: ~3k
+  - task: 15
+    story: review
+    description: "Create PR #4 and schedule review"
+    result: pass
+    notes: "PR created: https://github.com/Jaxsbr/zombo/pull/4"
+    tokens: ~2k
+  - task: 16
+    story: review
+    description: "review-pr pr=4 — automated PR review"
+    result: pass
+    notes: "0 critical, 1 concern (ARCHITECTURE.md stale: missing TitleScene, old entity descriptions, 'planned' language for shipped changes), 0 nit. Posted as COMMENT."
+    tokens: ~5k
+  - task: 17
+    story: review
+    description: "handle-pr-review pr=4 — handle review comments"
+    result: pass
+    notes: "Fixed 1 concern (ARCHITECTURE.md: added TitleScene, corrected entity descriptions, updated design decisions, converted planned→shipped section). Thread resolved. Posted summary. Review complete."
+    tokens: ~5k

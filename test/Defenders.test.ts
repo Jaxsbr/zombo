@@ -36,7 +36,7 @@ describe('Defender types', () => {
 
   it('wall has high health relative to other types', () => {
     const wall = DEFENDER_TYPES.wall;
-    const others = Object.values(DEFENDER_TYPES).filter((d) => d.name !== 'Wall');
+    const others = Object.values(DEFENDER_TYPES).filter((d) => d.name !== 'Block Tower');
     for (const other of others) {
       expect(wall.health).toBeGreaterThan(other.health);
     }

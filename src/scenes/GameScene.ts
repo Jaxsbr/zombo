@@ -6,7 +6,7 @@ import { LEVEL_1 } from '../config/levels';
 import { Grid } from '../systems/Grid';
 import { Economy } from '../systems/Economy';
 import { Placement } from '../systems/Placement';
-import { WaveManager } from '../systems/WaveManager';
+import { WaveManager, WaveState } from '../systems/WaveManager';
 import { GameFlow } from '../systems/GameFlow';
 import {
   ShooterEntity as ShooterState,
@@ -19,7 +19,7 @@ import {
   isDead,
   wallBlocks,
 } from '../systems/Combat';
-import { DefenderEntity } from '../entities/DefenderEntity';
+import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
 
@@ -27,6 +27,7 @@ const STARTING_BALANCE = 500;
 const PASSIVE_INCOME_INTERVAL = 8000; // ms
 const PASSIVE_INCOME_AMOUNT = 25;
 const GENERATOR_INCOME_INTERVAL = 5000; // ms
+const FADE_DURATION = 600;
 
 export class GameScene extends Phaser.Scene {
   private grid!: Grid;
@@ -37,18 +38,27 @@ export class GameScene extends Phaser.Scene {
 
   private balanceText!: Phaser.GameObjects.Text;
   private waveText!: Phaser.GameObjects.Text;
+  private announcementText!: Phaser.GameObjects.Text;
+  private countdownBar!: Phaser.GameObjects.Graphics;
+  private countdownLabel!: Phaser.GameObjects.Text;
+  private progressDots: Phaser.GameObjects.Graphics[] = [];
+  private lastWaveState: WaveState = 'setup';
   private selectedDefenderKey: string | null = null;
   private panelCards: Map<string, Phaser.GameObjects.Container> = new Map();
   private defenders: DefenderEntity[] = [];
   private enemies: EnemyEntity[] = [];
   private projectiles: ProjectileEntity[] = [];
   private cellZones: Phaser.GameObjects.Zone[] = [];
+  private transitioning = false;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
   create(): void {
+    this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
+    this.transitioning = false;
+
     // Initialize systems
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
     this.economy = new Economy(STARTING_BALANCE);
@@ -63,11 +73,16 @@ export class GameScene extends Phaser.Scene {
     this.enemies = [];
     this.projectiles = [];
     this.cellZones = [];
+    this.progressDots = [];
+    this.lastWaveState = 'setup';
 
     this.drawGrid();
     this.createHUD();
     this.createDefenderPanel();
     this.createGridClickZones();
+    this.createAnnouncementText();
+    this.createProgressDots();
+    this.createCountdownBar();
 
     // Passive sky-drop income
     this.time.addEvent({
@@ -100,17 +115,17 @@ export class GameScene extends Phaser.Scene {
         const x = col * CELL_SIZE;
         const y = HUD_HEIGHT + row * CELL_SIZE;
 
-        const shade = (row + col) % 2 === 0 ? 0x3a7d32 : 0x2d6b27;
+        const shade = (row + col) % 2 === 0 ? 0xc4a882 : 0xb0956e;
         graphics.fillStyle(shade, 1);
         graphics.fillRect(x, y, CELL_SIZE, CELL_SIZE);
 
-        graphics.lineStyle(1, 0x1a5c14, 0.3);
+        graphics.lineStyle(1, 0x8b7355, 0.3);
         graphics.strokeRect(x, y, CELL_SIZE, CELL_SIZE);
       }
     }
 
     // HUD background
-    graphics.fillStyle(0x1a1a2e, 1);
+    graphics.fillStyle(0x3e2723, 1);
     graphics.fillRect(0, 0, GRID_COLS * CELL_SIZE, HUD_HEIGHT);
   }
 
@@ -131,7 +146,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private updateHUDText(): void {
-    this.balanceText.setText(`Energy: ${this.economy.getBalance()}`);
+    this.balanceText.setText(`Sparks: ${this.economy.getBalance()}`);
     this.waveText.setText(
       `Wave ${this.waveManager.currentWaveNumber}/${this.waveManager.totalWaves}`,
     );
@@ -139,10 +154,10 @@ export class GameScene extends Phaser.Scene {
 
   private createDefenderPanel(): void {
     const keys = Object.keys(DEFENDER_TYPES);
-    const panelStartX = 180;
-    const cardWidth = 110;
+    const panelStartX = 140;
+    const cardWidth = 130;
     const cardHeight = 60;
-    const cardGap = 8;
+    const cardGap = 6;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -170,29 +185,38 @@ export class GameScene extends Phaser.Scene {
     bg.fillRoundedRect(0, 0, width, height, 6);
     container.add(bg);
 
-    const nameText = this.add.text(8, 6, type.name, {
-      fontSize: '12px',
+    // Name — centered at top
+    const nameText = this.add.text(width / 2, 3, type.name, {
+      fontSize: '10px',
       color: '#e2e8f0',
       fontFamily: 'monospace',
     });
+    nameText.setOrigin(0.5, 0);
+    if (nameText.width > width - 8) {
+      nameText.setScale((width - 8) / nameText.width);
+    }
     container.add(nameText);
 
-    const costText = this.add.text(8, 24, `Cost: ${type.cost}`, {
-      fontSize: '11px',
-      color: '#94a3b8',
+    // Bottom row: sprite (left) + cost (right), side by side
+    const bottomY = 36;
+
+    const previewContainer = this.add.container(width / 3, bottomY);
+    const previewGfx = this.add.graphics();
+    const drawFn = DRAW_DEFENDER[key];
+    if (drawFn) {
+      drawFn(previewGfx);
+    }
+    previewContainer.add(previewGfx);
+    previewContainer.setScale(0.5);
+    container.add(previewContainer);
+
+    const costText = this.add.text(width * 2 / 3, bottomY, `${type.cost}`, {
+      fontSize: '14px',
+      color: '#ffc107',
       fontFamily: 'monospace',
     });
+    costText.setOrigin(0.5, 0.5);
     container.add(costText);
-
-    const previewColors: Record<string, number> = {
-      generator: 0x22c55e,
-      shooter: 0x3b82f6,
-      wall: 0x9ca3af,
-    };
-    const preview = this.add.graphics();
-    preview.fillStyle(previewColors[key] ?? 0xffffff, 1);
-    preview.fillRect(width - 28, 8, 20, 20);
-    container.add(preview);
 
     const zone = this.add.zone(0, 0, width, height).setOrigin(0).setInteractive({ useHandCursor: true });
     container.add(zone);
@@ -225,12 +249,16 @@ export class GameScene extends Phaser.Scene {
       bg.clear();
       if (key === this.selectedDefenderKey) {
         bg.fillStyle(0x475569, 1);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.lineStyle(3, 0xffc107, 1);
+        bg.strokeRoundedRect(0, 0, 130, 60, 6);
       } else if (!canAfford) {
         bg.fillStyle(0x1e293b, 0.6);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
       } else {
         bg.fillStyle(0x334155, 1);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
       }
-      bg.fillRoundedRect(0, 0, 110, 60, 6);
 
       const nameText = card.getData('nameText') as Phaser.GameObjects.Text;
       const costText = card.getData('costText') as Phaser.GameObjects.Text;
@@ -272,6 +300,136 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private createAnnouncementText(): void {
+    const centerX = (GRID_COLS * CELL_SIZE) / 2;
+    const centerY = HUD_HEIGHT + (GRID_ROWS * CELL_SIZE) / 2;
+
+    this.announcementText = this.add.text(centerX, centerY, '', {
+      fontSize: '28px',
+      color: '#ffc107',
+      fontFamily: 'monospace',
+      stroke: '#000000',
+      strokeThickness: 4,
+      align: 'center',
+    });
+    this.announcementText.setOrigin(0.5);
+    this.announcementText.setDepth(100);
+    this.announcementText.setVisible(false);
+  }
+
+  private createProgressDots(): void {
+    const totalWaves = this.waveManager.totalWaves;
+    const dotSize = 8;
+    const gap = 6;
+    const totalWidth = totalWaves * dotSize + (totalWaves - 1) * gap;
+    const startX = (GRID_COLS * CELL_SIZE) - totalWidth - 10;
+    const y = 56;
+
+    for (let i = 0; i < totalWaves; i++) {
+      const dot = this.add.graphics();
+      dot.x = startX + i * (dotSize + gap);
+      dot.y = y;
+      dot.fillStyle(0x5d4037, 1);
+      dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      dot.lineStyle(1, 0x8d6e63, 1);
+      dot.strokeCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      this.progressDots.push(dot);
+    }
+  }
+
+  private updateProgressDots(): void {
+    const currentWave = this.waveManager.currentWaveNumber;
+    const dotSize = 8;
+
+    for (let i = 0; i < this.progressDots.length; i++) {
+      const dot = this.progressDots[i];
+      dot.clear();
+      if (i < currentWave - 1) {
+        // Completed wave — bright gold
+        dot.fillStyle(0xffc107, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      } else if (i === currentWave - 1) {
+        // Current wave — pulsing white
+        dot.fillStyle(0xffffff, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      } else {
+        // Future wave — dim
+        dot.fillStyle(0x5d4037, 1);
+        dot.fillCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+        dot.lineStyle(1, 0x8d6e63, 1);
+        dot.strokeCircle(dotSize / 2, dotSize / 2, dotSize / 2);
+      }
+    }
+  }
+
+  private getWaveAnnouncement(): string {
+    const wave = this.waveManager.currentWaveNumber;
+    const total = this.waveManager.totalWaves;
+
+    if (wave === total) {
+      return 'A HUGE mess is coming!';
+    }
+
+    const messages = [
+      'Dust bunnies incoming!',
+      'Here comes trouble!',
+      'More mess approaching!',
+    ];
+    return messages[(wave - 1) % messages.length];
+  }
+
+  private createCountdownBar(): void {
+    this.countdownBar = this.add.graphics();
+    this.countdownLabel = this.add.text(10, 52, '', {
+      fontSize: '10px',
+      color: '#8d6e63',
+      fontFamily: 'monospace',
+    });
+  }
+
+  private updateCountdownBar(): void {
+    this.countdownBar.clear();
+    const state = this.waveManager.waveState;
+    const progress = this.waveManager.delayProgress;
+
+    if (state === 'setup' || state === 'waiting') {
+      const barX = 10;
+      const barY = 64;
+      const barWidth = 115;
+      const barHeight = 6;
+
+      // Track background (visible full width)
+      this.countdownBar.fillStyle(0x1a1a1a, 0.6);
+      this.countdownBar.fillRoundedRect(barX, barY, barWidth, barHeight, 2);
+      this.countdownBar.lineStyle(1, 0x8d6e63, 0.5);
+      this.countdownBar.strokeRoundedRect(barX, barY, barWidth, barHeight, 2);
+      // Fill (progress)
+      if (progress > 0.01) {
+        this.countdownBar.fillStyle(0xffc107, 0.8);
+        this.countdownBar.fillRoundedRect(barX, barY, barWidth * progress, barHeight, 2);
+      }
+
+      const label = state === 'setup' ? 'Get ready...' : 'Next wave...';
+      this.countdownLabel.setText(label);
+      this.countdownLabel.setVisible(true);
+    } else {
+      this.countdownLabel.setVisible(false);
+    }
+  }
+
+  private updateAnnouncement(): void {
+    const state = this.waveManager.waveState;
+
+    if (state === 'announcing' && this.lastWaveState !== 'announcing') {
+      this.announcementText.setText(this.getWaveAnnouncement());
+      this.announcementText.setVisible(true);
+    } else if (state !== 'announcing' && this.lastWaveState === 'announcing') {
+      this.announcementText.setVisible(false);
+    }
+
+    this.lastWaveState = state;
+  }
+
   update(_time: number, delta: number): void {
     const dt = delta / 1000;
 
@@ -288,10 +446,10 @@ export class GameScene extends Phaser.Scene {
     for (const enemy of this.enemies) {
       if (isDead(enemy)) continue;
 
-      // Check wall blocking
+      // Check defender blocking — enemies attack any defender they reach
       let blocked = false;
       for (const def of this.defenders) {
-        if (def.defenderKey === 'wall' && !isDead(def)) {
+        if (!isDead(def)) {
           if (wallBlocks(def, enemy, dt)) {
             blocked = true;
             def.drawHealthBar();
@@ -391,13 +549,21 @@ export class GameScene extends Phaser.Scene {
     this.gameFlow.update(flowEnemies, this.waveManager.isComplete);
 
     const state = this.gameFlow.getState();
-    if (state !== 'playing') {
-      this.scene.start('GameOverScene', { won: state === 'won' });
+    if (state !== 'playing' && !this.transitioning) {
+      this.transitioning = true;
+      const won = state === 'won';
+      this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
+      this.cameras.main.once('camerafadeoutcomplete', () => {
+        this.scene.start('GameOverScene', { won });
+      });
       return;
     }
 
     this.updateHUDText();
     this.updatePanelHighlight();
+    this.updateAnnouncement();
+    this.updateProgressDots();
+    this.updateCountdownBar();
   }
 
 }

@@ -1,6 +1,14 @@
 # Phase log — playable
 # Each entry: { task, story, description, result, notes, tokens }
 
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done
+
 entries:
   - task: 1
     story: US-12
@@ -24,7 +32,7 @@ entries:
     story: US-13
     description: "Implement HUD with economy display, wave counter, and defender selection panel"
     result: pass
-    notes: "GameScene rewritten: Economy/Grid/Placement/WaveManager/GameFlow init. HUD shows balance + wave. 3 defender cards with select-then-place. 67 tests pass. ✓ US-13 complete"
+    notes: "GameScene rewritten: Economy/Grid/Placement/WaveManager/GameFlow init. HUD shows balance + wave. 3 defender cards with name/cost/preview. 67 tests pass. ✓ US-13 complete"
     tokens: ~6k
   - task: 5
     story: US-14

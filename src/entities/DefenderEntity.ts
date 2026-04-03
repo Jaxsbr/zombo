@@ -2,14 +2,112 @@ import Phaser from 'phaser';
 import { DefenderType } from '../config/defenders';
 import { CELL_SIZE, HUD_HEIGHT } from '../config/game';
 
-const DEFENDER_COLORS: Record<string, number> = {
-  generator: 0x22c55e,
-  shooter: 0x3b82f6,
-  wall: 0x9ca3af,
-};
+const HEALTH_BAR_HEIGHT = 8;
+const HEALTH_BAR_BOTTOM_OFFSET = 6;
+const OUTLINE = 2;
 
-const HEALTH_BAR_HEIGHT = 4;
-const HEALTH_BAR_OFFSET = 4;
+function drawWaterPistol(g: Phaser.GameObjects.Graphics): void {
+  // Body — bright blue rectangle
+  g.fillStyle(0x2196f3, 1);
+  g.fillRect(-12, -6, 24, 14);
+  // Nozzle — narrow barrel extending right
+  g.fillStyle(0x64b5f6, 1);
+  g.fillRect(12, -3, 10, 8);
+  // Handle/trigger — below body
+  g.fillStyle(0x1565c0, 1);
+  g.fillRect(-4, 8, 10, 10);
+  // Trigger — small bump
+  g.fillStyle(0xff9800, 1);
+  g.fillRect(2, 10, 4, 4);
+  // Thick outline
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-12, -6, 24, 14);
+  g.strokeRect(12, -3, 10, 8);
+  g.strokeRect(-4, 8, 10, 10);
+}
+
+function drawJackInTheBox(g: Phaser.GameObjects.Graphics): void {
+  // Large box — bright yellow, prominent
+  g.fillStyle(0xffc107, 1);
+  g.fillRect(-16, 0, 32, 22);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-16, 0, 32, 22);
+  // Box pattern — star/diamond on front
+  g.fillStyle(0xff9800, 1);
+  g.fillRect(-6, 6, 12, 10);
+  g.lineStyle(1, 0xe65100, 1);
+  g.strokeRect(-6, 6, 12, 10);
+  // Open lid — hinged at back, tilted
+  g.fillStyle(0xffca28, 1);
+  g.beginPath();
+  g.moveTo(-16, 0);
+  g.lineTo(-14, -8);
+  g.lineTo(14, -8);
+  g.lineTo(16, 0);
+  g.closePath();
+  g.fillPath();
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.beginPath();
+  g.moveTo(-16, 0);
+  g.lineTo(-14, -8);
+  g.lineTo(14, -8);
+  g.lineTo(16, 0);
+  g.closePath();
+  g.strokePath();
+  // Jester head — big, colorful, popping out of box
+  g.fillStyle(0xf44336, 1);
+  g.fillCircle(0, -16, 9);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeCircle(0, -16, 9);
+  // Jester hat points
+  g.fillStyle(0x9c27b0, 1);
+  g.fillCircle(-8, -22, 4);
+  g.fillCircle(8, -22, 4);
+  g.lineStyle(1, 0x000000, 1);
+  g.strokeCircle(-8, -22, 4);
+  g.strokeCircle(8, -22, 4);
+  // Face — big googly eyes + smile
+  g.fillStyle(0xffffff, 1);
+  g.fillCircle(-4, -17, 3);
+  g.fillCircle(4, -17, 3);
+  g.fillStyle(0x000000, 1);
+  g.fillCircle(-3, -16, 1.5);
+  g.fillCircle(5, -16, 1.5);
+  // Smile
+  g.lineStyle(1.5, 0x000000, 1);
+  g.beginPath();
+  g.arc(0, -14, 4, 0, Math.PI, false);
+  g.strokePath();
+  // Crank handle on side
+  g.lineStyle(2, 0x795548, 1);
+  g.lineBetween(16, 10, 22, 10);
+  g.fillStyle(0x795548, 1);
+  g.fillCircle(24, 10, 3);
+}
+
+function drawBlockTower(g: Phaser.GameObjects.Graphics): void {
+  // Bottom block — red
+  g.fillStyle(0xf44336, 1);
+  g.fillRect(-14, 8, 28, 12);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-14, 8, 28, 12);
+  // Middle block — blue, slightly offset
+  g.fillStyle(0x2196f3, 1);
+  g.fillRect(-11, -4, 22, 12);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-11, -4, 22, 12);
+  // Top block — yellow, smaller
+  g.fillStyle(0xffc107, 1);
+  g.fillRect(-8, -16, 16, 12);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-8, -16, 16, 12);
+}
+
+export const DRAW_DEFENDER: Record<string, (g: Phaser.GameObjects.Graphics) => void> = {
+  shooter: drawWaterPistol,
+  generator: drawJackInTheBox,
+  wall: drawBlockTower,
+};
 
 export class DefenderEntity extends Phaser.GameObjects.Container {
   readonly defenderType: DefenderType;
@@ -42,41 +140,52 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
     this.health = type.health;
     this.maxHealth = type.health;
 
-    const color = DEFENDER_COLORS[key] ?? 0xffffff;
-    const padding = 6;
-    const rect = scene.add.graphics();
-    rect.fillStyle(color, 1);
-    rect.fillRect(
-      -CELL_SIZE / 2 + padding,
-      -CELL_SIZE / 2 + padding,
-      CELL_SIZE - padding * 2,
-      CELL_SIZE - padding * 2,
-    );
-    this.add(rect);
+    const shape = scene.add.graphics();
+    const drawFn = DRAW_DEFENDER[key];
+    if (drawFn) {
+      drawFn(shape);
+    } else {
+      shape.fillStyle(0xffffff, 1);
+      const padding = 6;
+      shape.fillRect(
+        -CELL_SIZE / 2 + padding,
+        -CELL_SIZE / 2 + padding,
+        CELL_SIZE - padding * 2,
+        CELL_SIZE - padding * 2,
+      );
+    }
+    this.add(shape);
 
     this.healthBar = scene.add.graphics();
     this.add(this.healthBar);
-    this.drawHealthBar();
+    // Hidden at full health — drawHealthBar only renders when damaged
 
     scene.add.existing(this);
   }
 
   drawHealthBar(): void {
     this.healthBar.clear();
-    const barWidth = CELL_SIZE - 12;
     const fraction = Math.max(0, this.health / this.maxHealth);
 
-    const barY = -CELL_SIZE / 2 + HEALTH_BAR_OFFSET;
+    // Only show health bar when damaged
+    if (fraction >= 1) return;
 
-    // Background (red)
-    this.healthBar.fillStyle(0xef4444, 1);
-    this.healthBar.fillRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT);
+    const barWidth = CELL_SIZE - 12;
+    const barY = CELL_SIZE / 2 - HEALTH_BAR_BOTTOM_OFFSET - HEALTH_BAR_HEIGHT;
+
+    // Background (dark)
+    this.healthBar.fillStyle(0x1a1a1a, 0.8);
+    this.healthBar.fillRoundedRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT, 2);
 
     // Foreground (green → red gradient via fraction)
     const green = Math.floor(fraction * 0x88);
     const red = Math.floor((1 - fraction) * 0xee);
     const barColor = (red << 16) | (green << 8) | 0x22;
     this.healthBar.fillStyle(barColor, 1);
-    this.healthBar.fillRect(-barWidth / 2, barY, barWidth * fraction, HEALTH_BAR_HEIGHT);
+    this.healthBar.fillRoundedRect(-barWidth / 2, barY, barWidth * fraction, HEALTH_BAR_HEIGHT, 2);
+
+    // Border
+    this.healthBar.lineStyle(1, 0x000000, 0.5);
+    this.healthBar.strokeRoundedRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT, 2);
   }
 }
