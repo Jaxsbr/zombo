@@ -56,3 +56,30 @@ entries:
     result: pass
     notes: "All stories complete. Remaining: AGENTS.md update for new entities/ dir and levels.ts."
     tokens: ~1k
+  - task: 10
+    story: phase
+    description: "Update AGENTS.md + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated with entities/ and levels.ts. All 17 done-when criteria verified. 72 tests pass, build clean. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - DefenderEntity: colored rect (green/blue/gray) + health bar, imports DefenderType
+      - EnemyEntity: colored circle (red/purple) + health bar, imports EnemyType
+      - ProjectileEntity: yellow circle
+      - GameScene HUD: Economy balance text + WaveManager wave counter
+      - Defender panel: 3 cards with name/cost/preview, pointerdown select
+      - Grid click zones: pointerdown → Placement.place → DefenderEntity
+      - levels.ts: LEVEL_1 with 5 waves (3→4→3→5→6 enemies), unit tested
+      - GameScene.update: waveManager.update → EnemyEntity spawn
+      - Combat loop: updateShooterCooldown, tryFire, moveProjectile, checkProjectileHit, applyDamage, isDead removal
+      - GameFlow: gameFlow.update → scene.start('GameOverScene', {won})
+      - Income: time.addEvent passive (8s/25) + generator (5s/type.generatesIncome)
+      - Restart: GameScene.create initializes all systems fresh
+      - 10 test files, 72 tests pass, npm run build clean
+      - AGENTS.md: entities/ dir + levels.ts in config/
+    tokens: ~2k

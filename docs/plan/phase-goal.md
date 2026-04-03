@@ -22,9 +22,9 @@ Bridge the pure logic systems from core-loop to a playable game — create Phase
 - [x] GameScene.update() calls `GameFlow.update()` and transitions to `GameOverScene` with `{ won }` data when state is no longer `playing`; verified by grep for `gameFlow` and `scene.start('GameOverScene'` in GameScene [US-14]
 - [x] Economy generates passive income on a timed interval and generator defenders call `addIncome`; verified by grep for `time.addEvent` or equivalent timer and `addIncome` in GameScene [US-14]
 - [x] Restarting from GameOverScene produces a fresh game state; GameScene.create() initializes all systems from scratch (new Economy, Grid, Placement, WaveManager, GameFlow); verified by grep for system constructors in GameScene.create [US-14]
-- [ ] All existing unit tests still pass; `npm test` reports 0 failures and >= 67 passing tests [phase]
-- [ ] `npm run build` succeeds without TypeScript errors [phase]
-- [ ] AGENTS.md reflects the new `src/entities/` directory and `src/config/levels.ts` [phase]
+- [x] All existing unit tests still pass; `npm test` reports 0 failures and >= 67 passing tests [phase]
+- [x] `npm run build` succeeds without TypeScript errors [phase]
+- [x] AGENTS.md reflects the new `src/entities/` directory and `src/config/levels.ts` [phase]
 
 ### Golden principles (phase-relevant)
 - no-silent-pass (new test for level config must have real assertions, not stubs)
