@@ -151,10 +151,10 @@ export class GameScene extends Phaser.Scene {
 
   private createDefenderPanel(): void {
     const keys = Object.keys(DEFENDER_TYPES);
-    const panelStartX = 180;
-    const cardWidth = 110;
+    const panelStartX = 140;
+    const cardWidth = 130;
     const cardHeight = 60;
-    const cardGap = 8;
+    const cardGap = 6;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
@@ -183,7 +183,7 @@ export class GameScene extends Phaser.Scene {
     container.add(bg);
 
     const nameText = this.add.text(8, 6, type.name, {
-      fontSize: '12px',
+      fontSize: '11px',
       color: '#e2e8f0',
       fontFamily: 'monospace',
     });
@@ -237,12 +237,16 @@ export class GameScene extends Phaser.Scene {
       bg.clear();
       if (key === this.selectedDefenderKey) {
         bg.fillStyle(0x475569, 1);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.lineStyle(3, 0xffc107, 1);
+        bg.strokeRoundedRect(0, 0, 130, 60, 6);
       } else if (!canAfford) {
         bg.fillStyle(0x1e293b, 0.6);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
       } else {
         bg.fillStyle(0x334155, 1);
+        bg.fillRoundedRect(0, 0, 130, 60, 6);
       }
-      bg.fillRoundedRect(0, 0, 110, 60, 6);
 
       const nameText = card.getData('nameText') as Phaser.GameObjects.Text;
       const costText = card.getData('costText') as Phaser.GameObjects.Text;

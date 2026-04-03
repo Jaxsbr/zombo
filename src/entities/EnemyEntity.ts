@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 import { EnemyType } from '../config/enemies';
 import { CELL_SIZE, HUD_HEIGHT } from '../config/game';
 
-const HEALTH_BAR_HEIGHT = 4;
-const HEALTH_BAR_OFFSET = 4;
+const HEALTH_BAR_HEIGHT = 8;
+const HEALTH_BAR_BOTTOM_OFFSET = 6;
 const OUTLINE = 2;
 
 function drawDustBunny(g: Phaser.GameObjects.Graphics): void {
@@ -99,7 +99,6 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     if (drawFn) {
       drawFn(shape);
     } else {
-      // Fallback: plain circle
       shape.fillStyle(0xffffff, 1);
       shape.fillCircle(0, 0, 22);
     }
@@ -107,7 +106,7 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
 
     this.healthBar = scene.add.graphics();
     this.add(this.healthBar);
-    this.drawHealthBar();
+    // Hidden at full health — drawHealthBar only renders when damaged
 
     scene.add.existing(this);
   }
@@ -118,18 +117,27 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
 
   drawHealthBar(): void {
     this.healthBar.clear();
-    const barWidth = CELL_SIZE - 12;
     const fraction = Math.max(0, this.health / this.maxHealth);
 
-    const barY = -CELL_SIZE / 2 + HEALTH_BAR_OFFSET;
+    // Only show health bar when damaged
+    if (fraction >= 1) return;
 
-    this.healthBar.fillStyle(0xef4444, 1);
-    this.healthBar.fillRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT);
+    const barWidth = CELL_SIZE - 12;
+    const barY = CELL_SIZE / 2 - HEALTH_BAR_BOTTOM_OFFSET - HEALTH_BAR_HEIGHT;
 
+    // Background (dark)
+    this.healthBar.fillStyle(0x1a1a1a, 0.8);
+    this.healthBar.fillRoundedRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT, 2);
+
+    // Foreground (green → red gradient via fraction)
     const green = Math.floor(fraction * 0x88);
     const red = Math.floor((1 - fraction) * 0xee);
     const barColor = (red << 16) | (green << 8) | 0x22;
     this.healthBar.fillStyle(barColor, 1);
-    this.healthBar.fillRect(-barWidth / 2, barY, barWidth * fraction, HEALTH_BAR_HEIGHT);
+    this.healthBar.fillRoundedRect(-barWidth / 2, barY, barWidth * fraction, HEALTH_BAR_HEIGHT, 2);
+
+    // Border
+    this.healthBar.lineStyle(1, 0x000000, 0.5);
+    this.healthBar.strokeRoundedRect(-barWidth / 2, barY, barWidth, HEALTH_BAR_HEIGHT, 2);
   }
 }
