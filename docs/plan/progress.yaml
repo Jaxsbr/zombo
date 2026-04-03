@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 6
-  next_task: "[US-06] Create docs/reference/spinoff-ideas.md — exactly 2 creative spin-off proposals with title, pitch, 3+ unique mechanics, target audience, and 'why kids will love it'"
+  task_number: 7
+  next_task: "[phase] Update AGENTS.md to reflect new docs/reference/ directory — agents-consistency golden principle"
   last_result: pass
   consecutive_fails: 0
 

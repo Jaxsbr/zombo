@@ -38,3 +38,9 @@ entries:
     result: pass
     notes: "Visual style (palette, characters, animation, UI) + audio (mood, 8 key tracks, 12 SFX categories). ✓ US-05 complete"
     tokens: ~10k
+  - task: 7
+    story: US-06
+    description: "Create docs/reference/spinoff-ideas.md — 2 creative spin-off proposals"
+    result: pass
+    notes: "Critter Kitchen (food combos, critter moods, co-op) and Toy Box Siege (battery system, room rotation, drafting). ✓ US-06 complete"
+    tokens: ~8k
