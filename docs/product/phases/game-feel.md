@@ -1,6 +1,6 @@
 # Phase: game-feel
 
-Status: draft
+Status: shipped
 
 ## Design direction
 
@@ -76,31 +76,31 @@ As a player, I want a title screen and smooth transitions between game states, s
 
 ## Done-when (observable)
 
-- [ ] `src/config/defenders.ts` exports defender types with Toy Box Siege names: "Water Pistol", "Jack-in-the-Box", "Block Tower" [US-15]
-- [ ] `src/config/enemies.ts` exports enemy types with Toy Box Siege names: "Dust Bunny", "Cleaning Robot" [US-15]
-- [ ] DefenderEntity contains distinct rendering code paths per defender key — each key draws a different shape composition (not just a color variation of the same fillRect) [US-15]
-- [ ] EnemyEntity contains distinct rendering code paths per enemy key — each key draws a different shape composition (not just a color variation of the same fillCircle) [US-15]
-- [ ] Grid `drawGrid()` uses bedroom carpet palette — fillStyle hex values are in the brown/tan range, not green [US-15]
-- [ ] HUD displays "Sparks" label instead of "Energy" [US-15]
-- [ ] All existing tests pass after theme renaming (`npm test` exits 0) [US-15]
-- [ ] WaveManager accepts a `setupDelay` config parameter (seconds before first wave) with default >= 20 [US-16]
-- [ ] WaveManager accepts an `interWaveDelay` config parameter (seconds between waves) with default >= 15 [US-16]
-- [ ] WaveManager.update() returns no spawns during setup and inter-wave delay periods [US-16]
-- [ ] WaveManager exposes a `waveState` property with values from set: setup, announcing, spawning, waiting, complete [US-16]
-- [ ] LEVEL_1 config wave 1 has <= 2 spawns, all basic (Dust Bunny) type [US-16]
-- [ ] LEVEL_1 config wave 2 has 3-4 spawns with mixed enemy types [US-16]
-- [ ] LEVEL_1 config wave 3 has 5-6 spawns including >= 2 tough (Cleaning Robot) across >= 3 different lanes [US-16]
-- [ ] Unit tests verify: setup delay holds spawns, inter-wave delay holds spawns, wave state transitions through all states correctly (`npm test` exits 0) [US-16]
-- [ ] GameScene renders a wave progress indicator showing current wave number and total waves [US-17]
-- [ ] A text announcement (themed, e.g. "Dust bunnies incoming!") appears on screen during the announcing wave state, displayed for >= 2 seconds before spawning begins [US-17]
-- [ ] The final wave announcement uses distinct text different from earlier waves (e.g., "A HUGE mess is coming!") [US-17]
-- [ ] Wave progress indicator updates to reflect current wave number after each wave completes [US-17]
-- [ ] `src/scenes/TitleScene.ts` exists and is registered as the first scene in the Phaser game config [US-18]
-- [ ] TitleScene displays "Toy Box Siege" text and a clickable "Play" element [US-18]
-- [ ] Transitions between TitleScene -> GameScene and GameScene -> GameOverScene use Phaser camera fade (or equivalent visual effect), not bare `scene.start()` [US-18]
-- [ ] GameOverScene displays themed text ("Fort Defended!" on win, "The Mess Wins!" on loss) and a "Play Again" button with transition [US-18]
-- [ ] Restarting via "Play Again" resets all game state — a second playthrough behaves identically to the first (no stale defenders, enemies, or timers) [US-18]
-- [ ] AGENTS.md reflects Toy Box Siege theme, new TitleScene, WaveManager wave-state system, and updated entity rendering descriptions [phase]
+- [x] [Shipped] `src/config/defenders.ts` exports defender types with Toy Box Siege names: "Water Pistol", "Jack-in-the-Box", "Block Tower" [US-15]
+- [x] [Shipped] `src/config/enemies.ts` exports enemy types with Toy Box Siege names: "Dust Bunny", "Cleaning Robot" [US-15]
+- [x] [Shipped] DefenderEntity contains distinct rendering code paths per defender key — each key draws a different shape composition (not just a color variation of the same fillRect) [US-15]
+- [x] [Shipped] EnemyEntity contains distinct rendering code paths per enemy key — each key draws a different shape composition (not just a color variation of the same fillCircle) [US-15]
+- [x] [Shipped] Grid `drawGrid()` uses bedroom carpet palette — fillStyle hex values are in the brown/tan range, not green [US-15]
+- [x] [Shipped] HUD displays "Sparks" label instead of "Energy" [US-15]
+- [x] [Shipped] All existing tests pass after theme renaming (`npm test` exits 0) [US-15]
+- [x] [Shipped] WaveManager accepts a `setupDelay` config parameter (seconds before first wave) with default >= 20 [US-16]
+- [x] [Shipped] WaveManager accepts an `interWaveDelay` config parameter (seconds between waves) with default >= 15 [US-16]
+- [x] [Shipped] WaveManager.update() returns no spawns during setup and inter-wave delay periods [US-16]
+- [x] [Shipped] WaveManager exposes a `waveState` property with values from set: setup, announcing, spawning, waiting, complete [US-16]
+- [x] [Shipped] LEVEL_1 config wave 1 has <= 2 spawns, all basic (Dust Bunny) type [US-16]
+- [x] [Shipped] LEVEL_1 config wave 2 has 3-4 spawns with mixed enemy types [US-16]
+- [x] [Shipped] LEVEL_1 config wave 3 has 5-6 spawns including >= 2 tough (Cleaning Robot) across >= 3 different lanes [US-16]
+- [x] [Shipped] Unit tests verify: setup delay holds spawns, inter-wave delay holds spawns, wave state transitions through all states correctly (`npm test` exits 0) [US-16]
+- [x] [Shipped] GameScene renders a wave progress indicator showing current wave number and total waves [US-17]
+- [x] [Shipped] A text announcement (themed, e.g. "Dust bunnies incoming!") appears on screen during the announcing wave state, displayed for >= 2 seconds before spawning begins [US-17]
+- [x] [Shipped] The final wave announcement uses distinct text different from earlier waves (e.g., "A HUGE mess is coming!") [US-17]
+- [x] [Shipped] Wave progress indicator updates to reflect current wave number after each wave completes [US-17]
+- [x] [Shipped] `src/scenes/TitleScene.ts` exists and is registered as the first scene in the Phaser game config [US-18]
+- [x] [Shipped] TitleScene displays "Toy Box Siege" text and a clickable "Play" element [US-18]
+- [x] [Shipped] Transitions between TitleScene -> GameScene and GameScene -> GameOverScene use Phaser camera fade (or equivalent visual effect), not bare `scene.start()` [US-18]
+- [x] [Shipped] GameOverScene displays themed text ("Fort Defended!" on win, "The Mess Wins!" on loss) and a "Play Again" button with transition [US-18]
+- [x] [Shipped] Restarting via "Play Again" resets all game state — a second playthrough behaves identically to the first (no stale defenders, enemies, or timers) [US-18]
+- [x] [Shipped] AGENTS.md reflects Toy Box Siege theme, new TitleScene, WaveManager wave-state system, and updated entity rendering descriptions [phase]
 
 ## Golden principles (phase-relevant)
 - **Game logic separated from Phaser rendering** — wave state logic (setup delay, inter-wave delay, state machine) lives in WaveManager (pure TS, testable), visual announcements and progress bar live in GameScene
