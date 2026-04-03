@@ -114,3 +114,9 @@ entries:
     result: pass
     notes: "PR created: https://github.com/Jaxsbr/zombo/pull/4"
     tokens: ~2k
+  - task: 16
+    story: review
+    description: "review-pr pr=4 — automated PR review"
+    result: pass
+    notes: "0 critical, 1 concern (ARCHITECTURE.md stale: missing TitleScene, old entity descriptions, 'planned' language for shipped changes), 0 nit. Posted as COMMENT."
+    tokens: ~5k
