@@ -50,3 +50,9 @@ entries:
     result: pass
     notes: "GameScene.update: WaveManager spawns, enemy movement, wall blocking, shooter firing, projectile hits, dead removal, GameFlow transitions. Passive + generator income via timers. Build + 72 tests pass. ✓ US-14 complete"
     tokens: ~8k
+  - task: 9
+    story: phase
+    description: "Investigation — AGENTS.md needs entities/ and levels.ts"
+    result: pass
+    notes: "All stories complete. Remaining: AGENTS.md update for new entities/ dir and levels.ts."
+    tokens: ~1k
