@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 3
-  next_task: null
+  next_task: "[US-03] Create docs/reference/levels.md — PvZ1 level types and map reference with World, Level-range, Grid-layout, Day/Night, Special-mechanic, and unique mechanics descriptions"
   last_result: pass
   consecutive_fails: 0
 
