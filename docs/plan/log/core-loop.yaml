@@ -1,4 +1,10 @@
 # Phase log — core-loop
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: US-07
+    description: "Investigation — greenfield, queued scaffolding task"
+    result: pass
+    notes: "No src/ or package.json exists. First task: scaffold Phaser 3 + TS + Vite project."
+    tokens: ~3k
