@@ -19,8 +19,9 @@ src/
 │   ├── enemies.ts       # Enemy type registry (name, health, speed)
 │   └── levels.ts        # Level config registry (waves, enemy composition, difficulty)
 ├── scenes/
+│   ├── TitleScene.ts    # Title screen — "Toy Box Siege" branding, Play button
 │   ├── GameScene.ts     # Main gameplay scene — grid, HUD, placement, combat loop
-│   └── GameOverScene.ts # Win/lose display, restart button
+│   └── GameOverScene.ts # Win/lose display ("Fort Defended!"/"The Mess Wins!"), restart
 ├── systems/
 │   ├── Grid.ts          # Grid state — cell coordinates, occupancy tracking
 │   ├── Economy.ts       # Resource balance — income, spend, passive generation
@@ -30,8 +31,8 @@ src/
 │   ├── Combat.ts        # Projectile firing, damage application, health tracking
 │   └── GameFlow.ts      # Win/lose detection, game state machine
 └── entities/
-    ├── DefenderEntity.ts  # Defender game object — colored rectangle, health bar
-    ├── EnemyEntity.ts     # Enemy game object — colored circle, health bar
+    ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks), health bar
+    ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot), health bar
     └── ProjectileEntity.ts # Projectile game object — yellow circle, movement
 ```
 
@@ -57,7 +58,7 @@ GameOverScene → restart → reset all systems
 
 - **Game logic separated from Phaser rendering:** `systems/` modules contain pure logic (grid, economy, combat math) testable without Phaser. Scenes consume these systems but rendering is not required for unit tests.
 - **Config-driven entities:** Defender and enemy types are defined in `config/` registries, not hardcoded in entity classes. Adding a new type is a config addition, not a code change.
-- **No theme coupling:** All names, colors, and labels are generic placeholders. Theming is a separate concern for a future phase.
+- **Toy Box Siege theme:** Defenders are toys (Water Pistol, Jack-in-the-Box, Block Tower), enemies are household nuisances (Dust Bunny, Cleaning Robot). Theme names in config registries, distinct Phaser Graphics shapes per entity type, bedroom carpet grid, "Sparks" resource label.
 
 ## AGENTS.md sections affected by playable phase
 
@@ -65,35 +66,16 @@ GameOverScene → restart → reset all systems
 - Game logic architecture (entity layer bridges systems and rendering)
 - Testing conventions (level config unit test added)
 
-## Structural intent — game-feel phase (planned)
+## Scene flow (shipped in `game-feel` phase)
 
-### New modules
-- `src/scenes/TitleScene.ts` (planned for `game-feel` phase) — title screen with "Toy Box Siege" branding and Play button
-
-### Modified modules
-- `src/systems/WaveManager.ts` — adds wave state machine (setup → announcing → spawning → waiting → complete), setupDelay, interWaveDelay parameters
-- `src/entities/DefenderEntity.ts` — replaces single fillRect with per-key shape drawing (Water Pistol, Jack-in-the-Box, Block Tower)
-- `src/entities/EnemyEntity.ts` — replaces single fillCircle with per-key shape drawing (Dust Bunny, Cleaning Robot)
-- `src/config/defenders.ts` — renames to Toy Box Siege theme names
-- `src/config/enemies.ts` — renames to Toy Box Siege theme names
-- `src/scenes/GameScene.ts` — bedroom carpet grid, themed HUD ("Sparks"), wave progress indicator, wave announcements, camera fade transitions
-- `src/scenes/GameOverScene.ts` — themed win/lose messaging, camera fade transitions
-- `src/config/game.ts` — registers TitleScene as first scene
-- `src/config/levels.ts` — rebalances LEVEL_1 to 3 waves with PvZ-style escalation
-
-### Data flow change
 ```
 Game launch → TitleScene (Play button) → fade → GameScene
                                                     ↓
-WaveManager state: setup (20-30s) → announcing (2-3s) → spawning → waiting (15-20s) → announcing → ...
+WaveManager state: setup (25s) → announcing (2.5s) → spawning → waiting (18s) → announcing → ...
                                                     ↓
-GameScene reads waveState → renders progress bar + announcements
+GameScene reads waveState → renders progress dots + announcements
                                                     ↓
 GameFlow win/lose → fade → GameOverScene → fade → GameScene (restart)
 ```
 
-### AGENTS.md sections affected by game-feel phase
-- Purpose (add Toy Box Siege theme identity)
-- Directory layout (new TitleScene)
-- Game logic architecture (WaveManager wave-state system, theme names)
-- Entity descriptions (developer art rendering per key)
+All scene transitions use Phaser camera fades. WaveManager drives wave pacing via a 5-state machine (setup → announcing → spawning → waiting → complete).
