@@ -1,6 +1,6 @@
 # Phase: game-research
 
-Status: draft
+Status: shipped
 
 ## Stories
 
