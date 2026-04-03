@@ -38,3 +38,9 @@ entries:
     result: pass
     notes: "LEVEL_1 with 5 waves of escalating difficulty (basic → mixed → tough-heavy). 5 tests verify structure. 72 total tests pass."
     tokens: ~3k
+  - task: 7
+    story: US-14
+    description: "Investigation — queued full game loop wiring in GameScene"
+    result: pass
+    notes: "levels.ts done. Need to wire: WaveManager with LEVEL_1, enemy spawning, combat loop, GameFlow transitions, passive + generator income, restart."
+    tokens: ~1k
