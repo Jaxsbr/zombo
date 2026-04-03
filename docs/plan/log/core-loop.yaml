@@ -102,3 +102,9 @@ entries:
     result: pass
     notes: "0 critical, 0 concern, 0 nit. Clean code PR with good architecture."
     tokens: ~5k
+  - task: 14
+    story: review
+    description: "handle-pr-review pr=2 — handle review comments"
+    result: pass
+    notes: "No inline comments to handle. Posted summary comment. Review complete."
+    tokens: ~2k
