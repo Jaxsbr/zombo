@@ -50,3 +50,9 @@ entries:
     result: pass
     notes: "Enemy hit flash: white overlay 150ms. Death particles: 8 circles expanding outward (pink for Dust Bunny, purple for Robot). Defender destruction: fade+scale-down 350ms. Placement bounce-in: scale 0.3→1 Back.easeOut 300ms. Projectile impact: expanding white circle 200ms. Camera shake: 400ms 0.003 intensity on final wave. 88 tests pass. ✓ US-20 complete"
     tokens: ~5k
+  - task: 9
+    story: US-21
+    description: "Create SFX.ts — procedural sound module with Web Audio API"
+    result: pass
+    notes: "Pure TS, lazy AudioContext, 6 trigger functions (place/fire/hit/death/collect/announce), mute toggle. No Phaser dependency. 88 tests pass."
+    tokens: ~3k

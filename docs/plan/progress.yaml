@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 6
-  next_task: "[US-21] Implement SFX.ts — pure TypeScript Web Audio API sound module with lazy AudioContext, named trigger functions (place, fire, hit, death, collect, announce), and mute toggle support."
+  task_number: 7
+  next_task: "[US-21] Wire SFX calls into GameScene code paths (placement, fire, hit, death, announce) and add mute toggle button to HUD."
   last_result: pass
   consecutive_fails: 0
 
