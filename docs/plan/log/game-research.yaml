@@ -65,3 +65,21 @@ entries:
       - All files use consistent markdown formatting, no broken links
       - AGENTS.md updated with docs/reference/ directory layout
     tokens: ~2k
+  - task: 9
+    story: review
+    description: "Create PR #1 and schedule review"
+    result: pass
+    notes: "PR created: https://github.com/Jaxsbr/zombo/pull/1"
+    tokens: ~2k
+  - task: 10
+    story: review
+    description: "review-pr pr=1 — automated PR review"
+    result: pass
+    notes: "0 critical, 0 concern, 0 nit. Clean documentation PR."
+    tokens: ~5k
+  - task: 11
+    story: review
+    description: "handle-pr-review pr=1 — handle review comments"
+    result: pass
+    notes: "No inline comments to handle. Posted summary comment. Review complete."
+    tokens: ~2k
