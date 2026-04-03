@@ -68,3 +68,9 @@ entries:
     result: pass
     notes: "Progress dots in HUD (gold/white/dim). Announcement overlay during 'announcing' state. Final wave: 'A HUGE mess is coming!'. Earlier waves: themed messages. 88 tests pass. ✓ US-17 complete"
     tokens: ~5k
+  - task: 12
+    story: US-18
+    description: "Investigation — scene registration, GameOverScene, Phaser camera fade API"
+    result: pass
+    notes: "game.ts: scenes=[GameScene,GameOverScene], need TitleScene first. GameOverScene: generic text + bare scene.start. Phaser fade: cameras.main.fadeOut(ms) + camerafadeoutcomplete. Queue scene flow implementation."
+    tokens: ~2k

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 10
-  next_task: "[US-18] Investigate: review game.ts scene registration, GameOverScene, and Phaser camera fade API before implementing scene flow"
+  task_number: 11
+  next_task: "[US-18] Implement TitleScene, camera fade transitions, themed GameOverScene with Play Again"
   last_result: pass
   consecutive_fails: 0
 
