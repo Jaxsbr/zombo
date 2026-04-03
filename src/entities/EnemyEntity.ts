@@ -17,6 +17,7 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
   readonly lane: number;
   health: number;
   col: number;
+  readonly damage: number; // EnemyCombatEntity interface
   private readonly maxHealth: number;
   private readonly healthBar: Phaser.GameObjects.Graphics;
 
@@ -37,6 +38,7 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     this.col = col;
     this.health = type.health;
     this.maxHealth = type.health;
+    this.damage = type.damage;
 
     const color = ENEMY_COLORS[key] ?? 0xffffff;
     const circle = scene.add.graphics();

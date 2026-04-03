@@ -17,6 +17,10 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
   readonly gridRow: number;
   readonly gridCol: number;
   health: number;
+
+  // CombatEntity interface
+  get lane(): number { return this.gridRow; }
+  get col(): number { return this.gridCol; }
   private readonly maxHealth: number;
   private readonly healthBar: Phaser.GameObjects.Graphics;
 
