@@ -28,12 +28,12 @@ src/
 │   ├── Combat.ts        # Projectile firing, damage application, health tracking
 │   └── GameFlow.ts      # Win/lose detection, game state machine
 └── entities/
-    ├── Defender.ts      # Defender game object — sprite, health, attack behaviour
-    ├── Enemy.ts         # Enemy game object — sprite, health, lane movement
-    └── Projectile.ts    # Projectile game object — movement, collision
+    ├── DefenderEntity.ts  # Defender game object — colored rectangle, health bar
+    ├── EnemyEntity.ts     # Enemy game object — colored circle, health bar
+    └── ProjectileEntity.ts # Projectile game object — yellow circle, movement
 ```
 
-(shipped in `core-loop` phase; `entities/` and `config/levels.ts` planned for `playable` phase)
+(shipped in `core-loop` phase; `entities/` and `config/levels.ts` shipped in `playable` phase)
 
 ## Data flow
 

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GRID_ROWS, GRID_COLS, CELL_SIZE, HUD_HEIGHT } from '../config/game';
 import { DEFENDER_TYPES, DefenderType } from '../config/defenders';
+import { ENEMY_TYPES } from '../config/enemies';
 import { LEVEL_1 } from '../config/levels';
 import { Grid } from '../systems/Grid';
 import { Economy } from '../systems/Economy';
@@ -278,7 +279,8 @@ export class GameScene extends Phaser.Scene {
     const spawns = this.waveManager.update(dt);
     for (const spawn of spawns) {
       const spawnCol = GRID_COLS; // right edge
-      const enemy = new EnemyEntity(this, spawn.lane, spawnCol, this.getEnemyKey(spawn.type), spawn.type);
+      const enemyKey = Object.entries(ENEMY_TYPES).find(([, v]) => v === spawn.type)?.[0] ?? 'basic';
+      const enemy = new EnemyEntity(this, spawn.lane, spawnCol, enemyKey, spawn.type);
       this.enemies.push(enemy);
     }
 
@@ -398,7 +400,4 @@ export class GameScene extends Phaser.Scene {
     this.updatePanelHighlight();
   }
 
-  private getEnemyKey(type: { name: string }): string {
-    return type.name.toLowerCase();
-  }
 }
