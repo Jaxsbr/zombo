@@ -24,7 +24,7 @@ Research and document PvZ1's game design — plants, zombies, levels, core syste
 - [x] `docs/reference/art-and-audio.md` includes a music/sound section describing the audio tone, key tracks (e.g., "Grasswalk" main theme), and sound effect categories [US-05]
 - [x] `docs/reference/spinoff-ideas.md` exists and contains exactly 2 creative spin-off proposals [US-06]
 - [x] Each spin-off proposal includes: title, 1-paragraph concept pitch, 3+ unique mechanics that differentiate it from PvZ, target audience note, and a "why kids will love it" sentence [US-06]
-- [ ] All files in `docs/reference/` use consistent markdown formatting (tables render correctly, no broken links) [phase]
+- [x] All files in `docs/reference/` use consistent markdown formatting (tables render correctly, no broken links) [phase]
 
 ### Golden principles (phase-relevant)
 - no-silent-pass (every research file must have substantive content, not placeholder stubs)

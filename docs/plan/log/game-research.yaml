@@ -44,3 +44,24 @@ entries:
     result: pass
     notes: "Critter Kitchen (food combos, critter moods, co-op) and Toy Box Siege (battery system, room rotation, drafting). ✓ US-06 complete"
     tokens: ~8k
+  - task: 8
+    story: phase
+    description: "Update AGENTS.md with docs/reference/ directory layout + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated. All 14 done-when criteria verified. Phase complete."
+    tokens: ~3k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - plants.md: 49 entries with all required columns and behaviour descriptions
+      - zombies.md: 26 entries with all required columns, behaviours, and counters
+      - levels.md: 5 world types (Day, Night, Pool, Fog, Roof) with all required columns and unique mechanics
+      - systems.md: sun economy, wave structure + timing section, progression unlocks, Crazy Dave section
+      - art-and-audio.md: visual style (palette, characters, animation, UI) + audio (mood, tracks, SFX)
+      - spinoff-ideas.md: 2 proposals (Critter Kitchen, Toy Box Siege) each with title, pitch, 3+ mechanics, audience, why-kids-love-it
+      - All files use consistent markdown formatting, no broken links
+      - AGENTS.md updated with docs/reference/ directory layout
+    tokens: ~2k
