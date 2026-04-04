@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 15
-  next_task: null
+  task_number: 16
+  next_task: "[phase] Update AGENTS.md to reflect army-builder phase additions: new defender types (bomb, mine), enemy types (armored, jumper), level configs (LEVEL_1-LEVEL_5), LevelSelectScene, progression system (localStorage), loadout mechanic, new system modules"
   last_result: pass
   consecutive_fails: 0
 
