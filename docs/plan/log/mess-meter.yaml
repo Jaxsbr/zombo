@@ -62,3 +62,9 @@ entries:
     result: pass
     notes: "Dots grouped with 14px round gaps after dots 3 and 6 (vs 6px between dots within a round). 106 tests pass. ✓ US-25 complete"
     tokens: ~3k
+  - task: 11
+    story: US-26
+    description: "Investigation — queued cleanup mini-game analysis"
+    result: pass
+    notes: "US-26 needs: new cleanup WaveManager state, debris interactivity during cleanup, countdown bar, combat pause. Complex — needs careful state machine planning."
+    tokens: ~1k

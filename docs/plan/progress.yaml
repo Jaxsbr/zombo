@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 10
-  next_task: null
+  task_number: 11
+  next_task: "[US-26] Investigate: Cleanup mini-game — plan new 'cleanup' WaveManager state, debris interactivity, countdown bar, combat pause, state transitions"
   last_result: pass
   consecutive_fails: 0
 
