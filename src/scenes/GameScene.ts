@@ -134,6 +134,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private tickGeneratorIncome(): void {
+    if (this.isCleanupActive || this.isMumActive) return; // combat paused
     for (const def of this.defenders) {
       if (def.defenderType.generatesIncome > 0 && !isDead(def)) {
         this.economy.addIncome(def.defenderType.generatesIncome);
@@ -248,27 +249,26 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createHUD(): void {
-    this.balanceText = this.add.text(10, 8, '', {
-      fontSize: '16px',
+    this.balanceText = this.add.text(10, 6, '', {
+      fontSize: '14px',
       color: '#fbbf24',
       fontFamily: 'monospace',
     });
 
-    this.waveText = this.add.text(10, 30, '', {
-      fontSize: '14px',
+    this.waveText = this.add.text(10, 24, '', {
+      fontSize: '12px',
       color: '#94a3b8',
       fontFamily: 'monospace',
     });
 
-    // Mute toggle
-    const muteBtn = this.add.text(GRID_COLS * CELL_SIZE - 10, 8, isSfxMuted() ? 'MUTE' : 'SFX', {
-      fontSize: '12px',
+    // Mute toggle — left column, below countdown area
+    const muteBtn = this.add.text(10, 68, isSfxMuted() ? 'MUTE' : 'SFX', {
+      fontSize: '10px',
       color: '#94a3b8',
       fontFamily: 'monospace',
       backgroundColor: '#1e293b',
-      padding: { x: 6, y: 3 },
+      padding: { x: 4, y: 2 },
     });
-    muteBtn.setOrigin(1, 0);
     muteBtn.setInteractive({ useHandCursor: true });
     muteBtn.on('pointerdown', () => {
       setSfxMuted(!isSfxMuted());
@@ -455,19 +455,15 @@ export class GameScene extends Phaser.Scene {
 
   private createProgressDots(): void {
     const totalWaves = this.waveManager.totalWaves;
-    const dotSize = 8;
-    const gap = 6;
-    const roundGap = 14; // wider gap between round groups
+    const dotSize = 6;
+    const gap = 4;
+    const roundGap = 10; // wider gap between round groups
     // Round boundaries: after dot 3 (index 2) and after dot 6 (index 5)
     const roundBreaks = [3, 6];
 
-    // Calculate total width with round gaps
-    let totalWidth = totalWaves * dotSize;
-    for (let i = 1; i < totalWaves; i++) {
-      totalWidth += roundBreaks.includes(i) ? roundGap : gap;
-    }
-    const startX = (GRID_COLS * CELL_SIZE) - totalWidth - 10;
-    const y = 56;
+    // Position: left column, right of wave text
+    const startX = 90;
+    const y = 26;
 
     let offsetX = 0;
     for (let i = 0; i < totalWaves; i++) {
@@ -488,7 +484,7 @@ export class GameScene extends Phaser.Scene {
 
   private updateProgressDots(): void {
     const currentWave = this.waveManager.currentWaveNumber;
-    const dotSize = 8;
+    const dotSize = 6;
 
     for (let i = 0; i < this.progressDots.length; i++) {
       const dot = this.progressDots[i];
@@ -530,7 +526,7 @@ export class GameScene extends Phaser.Scene {
   private createCountdownBar(): void {
     this.countdownBar = this.add.graphics();
     this.countdownLabel = this.add.text(10, 52, '', {
-      fontSize: '10px',
+      fontSize: '9px',
       color: '#8d6e63',
       fontFamily: 'monospace',
     });
@@ -543,9 +539,9 @@ export class GameScene extends Phaser.Scene {
 
     if (state === 'setup' || state === 'waiting') {
       const barX = 10;
-      const barY = 64;
+      const barY = 62;
       const barWidth = 115;
-      const barHeight = 6;
+      const barHeight = 5;
 
       // Track background (visible full width)
       this.countdownBar.fillStyle(0x1a1a1a, 0.6);
@@ -575,10 +571,10 @@ export class GameScene extends Phaser.Scene {
     this.messBarBg.clear();
     this.messBarFill.clear();
 
-    const barX = GRID_COLS * CELL_SIZE - 130;
-    const barY = 36;
+    const barX = 10;
+    const barY = 40;
     const barWidth = 115;
-    const barHeight = 10;
+    const barHeight = 8;
     const level = this.mess.getLevel();
 
     // Track background
@@ -606,9 +602,9 @@ export class GameScene extends Phaser.Scene {
     }
 
     const barX = 10;
-    const barY = 64;
+    const barY = 62;
     const barWidth = 115;
-    const barHeight = 6;
+    const barHeight = 5;
     const progress = this.cleanupTimer / CLEANUP_DURATION; // drains as time runs out
 
     // Track background
@@ -631,7 +627,7 @@ export class GameScene extends Phaser.Scene {
     const cy = HUD_HEIGHT + gridRow * CELL_SIZE + CELL_SIZE / 2 + (Math.random() - 0.5) * 20;
 
     const gfx = this.add.graphics();
-    gfx.setDepth(-5); // below defenders/enemies but above atmosphere
+    gfx.setDepth(2); // above grid tiles, below entities and UI
     gfx.setAlpha(0.3);
 
     // Random debris type — cute toy mess
@@ -685,6 +681,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnSpark(): void {
+    if (this.isCleanupActive || this.isMumActive) return; // combat paused
     const x = Math.random() * (GRID_COLS * CELL_SIZE - 40) + 20;
     const y = HUD_HEIGHT - 10; // just above the grid
 
