@@ -50,3 +50,9 @@ entries:
     result: pass
     notes: "WaveManager has currentWave (0-indexed) and currentWaveNumber (1-indexed). Need currentRound (1/2/0) and isRoundBoundary getters. levels.ts: 3→7 waves. Tests: 35 existing, need round tests. Queued implementation."
     tokens: ~5k
+  - task: 9
+    story: US-25
+    description: "Expand to 7 waves, add currentRound/isRoundBoundary to WaveManager + tests"
+    result: pass
+    notes: "7 waves (2→8 enemies). currentRound: 1/2/0 based on waveNumber. isRoundBoundary: true in 'waiting' after waves 3/6. 8 new round tests. Levels.test.ts updated for 7 waves. 106 total tests. Still need progress dot gaps."
+    tokens: ~8k

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 8
-  next_task: "[US-25] Expand levels.ts to 7 waves, add currentRound/isRoundBoundary to WaveManager, update tests"
+  task_number: 9
+  next_task: "[US-25] Update progress dots in HUD to show visual gap between round groups (dots 1-3, gap, 4-6, gap, 7)"
   last_result: pass
   consecutive_fails: 0
 
