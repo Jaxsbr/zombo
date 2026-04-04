@@ -62,3 +62,9 @@ entries:
     result: pass
     notes: "US-28+US-29 complete. Next: US-30 multi-level structure. Need LEVEL_1-LEVEL_5 configs, LevelSelectScene, localStorage, scene flow change. Queued investigation."
     tokens: ~1k
+  - task: 11
+    story: US-30
+    description: "Investigation — levels.ts, game.ts, TitleScene, GameOverScene, WaveManager for multi-level plan"
+    result: pass
+    notes: "LEVEL_1 needs fix (basic only, not tough). GameScene hardcodes LEVEL_1 L78 — pass via data. game.ts L19 needs LevelSelectScene. TitleScene L79 → LevelSelectScene. GameOverScene L66 → LevelSelectScene + pass level result. Need LevelProgress module for localStorage. Queued full implementation."
+    tokens: ~5k
