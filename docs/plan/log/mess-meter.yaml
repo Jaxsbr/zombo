@@ -86,3 +86,9 @@ entries:
     result: pass
     notes: "US-27: Mum evaluation at round boundaries (after waves 3 and 6, post-cleanup). High mess > 0.7: speech bubble + random defender confiscation. Low mess: speech bubble + free defender. Reset mess after. Wave 7 skips."
     tokens: ~1k
+  - task: 15
+    story: US-27
+    description: "Investigation — Mum's ultimatum detailed plan"
+    result: pass
+    notes: "Trigger in exitCleanup when isRoundBoundary. Mum evaluation: async sequence (speech bubble 3s, animation, then skipToAnnouncing + reset mess). Need Placement.remove for confiscation, Placement.placeAt for reward. Edge cases: 0 defenders, 0 empty cells. Wave 7 → complete, no cleanup/Mum. Queued implementation."
+    tokens: ~3k

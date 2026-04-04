@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 14
-  next_task: "[US-27] Investigate: Mum's ultimatum — plan evaluation trigger at round boundaries, speech bubble, confiscation/reward logic, mess reset"
+  task_number: 15
+  next_task: "[US-27] Implement Mum's ultimatum — evaluation at round boundaries, speech bubble, confiscation/reward, mess reset, wave 7 skip"
   last_result: pass
   consecutive_fails: 0
 
