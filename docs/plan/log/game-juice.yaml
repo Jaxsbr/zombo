@@ -93,3 +93,9 @@ entries:
       - US-23: spark tokens (blue diamond, 8s spawn, 25 value, 30px/s fall). Click to collect with SFX and particle burst. Passive income timer replaced. Generator income unchanged.
       - Phase criteria: scene cleanup via Phaser lifecycle, AGENTS.md updated, 88 tests pass.
     tokens: ~3k
+  - task: 14
+    story: review
+    description: "review-pr pr=5 — automated PR review"
+    result: pass
+    notes: "0 critical, 1 concern (ARCHITECTURE.md 'Planned for game-juice' section stale — should reflect shipped state, SparkEntity.ts predicted but not created). Posted as COMMENT."
+    tokens: ~5k
