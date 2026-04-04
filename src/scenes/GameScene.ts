@@ -277,20 +277,26 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
+  private cardWidth = 130;
+  private cardHeight = 60;
+
   private createDefenderPanel(): void {
     const keys = this.activeLoadout;
     const panelStartX = 140;
-    const cardWidth = 130;
-    const cardHeight = 60;
+    const muteButtonSpace = 50;
+    const availableWidth = GRID_COLS * CELL_SIZE - panelStartX - muteButtonSpace;
     const cardGap = 6;
+    // Dynamic card width: shrink to fit when many cards
+    this.cardWidth = Math.min(130, Math.floor((availableWidth - (keys.length - 1) * cardGap) / keys.length));
+    this.cardHeight = 60;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const type = DEFENDER_TYPES[key];
-      const x = panelStartX + i * (cardWidth + cardGap);
+      const x = panelStartX + i * (this.cardWidth + cardGap);
       const y = 10;
 
-      const card = this.createDefenderCard(x, y, cardWidth, cardHeight, key, type);
+      const card = this.createDefenderCard(x, y, this.cardWidth, this.cardHeight, key, type);
       this.panelCards.set(key, card);
     }
   }
@@ -373,27 +379,27 @@ export class GameScene extends Phaser.Scene {
       const rechargeRemaining = this.rechargeTimers.get(key) ?? 0;
       const onCooldown = rechargeRemaining > 0;
 
+      const cw = this.cardWidth;
+      const ch = this.cardHeight;
       bg.clear();
       if (onCooldown) {
-        // Cooldown overlay — dark with progress fill
         bg.fillStyle(0x1e293b, 0.8);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
-        // Cooldown progress bar at bottom of card
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
         const rechargeTime = type.rechargeTime ?? 1;
         const progress = 1 - rechargeRemaining / rechargeTime;
         bg.fillStyle(0xffc107, 0.4);
-        bg.fillRoundedRect(0, 52, 130 * progress, 8, 3);
+        bg.fillRoundedRect(0, ch - 8, cw * progress, 8, 3);
       } else if (key === this.selectedDefenderKey) {
         bg.fillStyle(0x475569, 1);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
         bg.lineStyle(3, 0xffc107, 1);
-        bg.strokeRoundedRect(0, 0, 130, 60, 6);
+        bg.strokeRoundedRect(0, 0, cw, ch, 6);
       } else if (!canAfford) {
         bg.fillStyle(0x1e293b, 0.6);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
       } else {
         bg.fillStyle(0x334155, 1);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
       }
 
       const nameText = card.getData('nameText') as Phaser.GameObjects.Text;

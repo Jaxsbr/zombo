@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/game';
 import { DEFENDER_TYPES } from '../config/defenders';
+import { DRAW_DEFENDER } from '../entities/DefenderEntity';
 import { ALL_LEVELS } from '../config/levels';
 import { loadProgress, saveProgress, completeLevel, getLevelState, ProgressData } from '../systems/LevelProgress';
 import { loadUnlocks, saveUnlocks, updateUnlocksAfterLevel, needsLoadoutSelection, MAX_LOADOUT } from '../systems/DefenderUnlocks';
@@ -14,6 +15,8 @@ export class LevelSelectScene extends Phaser.Scene {
   private loadoutMode: boolean = false;
   private selectedLoadout: Set<string> = new Set();
   private loadoutCards: Map<string, { container: Phaser.GameObjects.Container; bg: Phaser.GameObjects.Graphics }> = new Map();
+  private loadoutCardWidth: number = 100;
+  private loadoutCardHeight: number = 120;
   private goButton!: Phaser.GameObjects.Container;
 
   constructor() {
@@ -162,13 +165,18 @@ export class LevelSelectScene extends Phaser.Scene {
     }).setOrigin(0.5);
     subtitle.setDepth(11);
 
-    // Defender cards
-    const cardWidth = 90;
-    const cardHeight = 100;
-    const gap = 10;
+    // Defender cards — dynamic width to fit game area
+    const padding = 30;
+    const gap = 8;
+    const maxCardWidth = 100;
+    const availableWidth = GAME_WIDTH - 2 * padding;
+    const cardWidth = Math.min(maxCardWidth, Math.floor((availableWidth - (this.unlocked.length - 1) * gap) / this.unlocked.length));
+    const cardHeight = 120;
+    this.loadoutCardWidth = cardWidth;
+    this.loadoutCardHeight = cardHeight;
     const totalWidth = this.unlocked.length * cardWidth + (this.unlocked.length - 1) * gap;
     const startX = (GAME_WIDTH - totalWidth) / 2;
-    const startY = 120;
+    const startY = 110;
 
     for (let i = 0; i < this.unlocked.length; i++) {
       const key = this.unlocked[i];
@@ -183,13 +191,24 @@ export class LevelSelectScene extends Phaser.Scene {
       bg.fillRoundedRect(0, 0, cardWidth, cardHeight, 6);
       container.add(bg);
 
-      const nameText = this.add.text(cardWidth / 2, 8, type.name, {
+      const nameText = this.add.text(cardWidth / 2, 6, type.name, {
         fontSize: '10px', color: '#e2e8f0', fontFamily: 'monospace',
       }).setOrigin(0.5, 0);
       if (nameText.width > cardWidth - 8) nameText.setScale((cardWidth - 8) / nameText.width);
       container.add(nameText);
 
-      const costText = this.add.text(cardWidth / 2, cardHeight - 14, `${type.cost}`, {
+      // Defender preview image
+      const previewContainer = this.add.container(cardWidth / 2, 55);
+      const previewGfx = this.add.graphics();
+      const drawFn = DRAW_DEFENDER[key];
+      if (drawFn) {
+        drawFn(previewGfx);
+      }
+      previewContainer.add(previewGfx);
+      previewContainer.setScale(0.55);
+      container.add(previewContainer);
+
+      const costText = this.add.text(cardWidth / 2, cardHeight - 16, `${type.cost}`, {
         fontSize: '14px', color: '#ffc107', fontFamily: 'monospace',
       }).setOrigin(0.5);
       container.add(costText);
@@ -245,16 +264,18 @@ export class LevelSelectScene extends Phaser.Scene {
   }
 
   private updateLoadoutVisuals(): void {
+    const cw = this.loadoutCardWidth;
+    const ch = this.loadoutCardHeight;
     for (const [key, { bg }] of this.loadoutCards) {
       bg.clear();
       if (this.selectedLoadout.has(key)) {
         bg.fillStyle(0x475569, 1);
-        bg.fillRoundedRect(0, 0, 90, 100, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
         bg.lineStyle(3, 0xffc107, 1);
-        bg.strokeRoundedRect(0, 0, 90, 100, 6);
+        bg.strokeRoundedRect(0, 0, cw, ch, 6);
       } else {
         bg.fillStyle(0x334155, 1);
-        bg.fillRoundedRect(0, 0, 90, 100, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
       }
     }
 
