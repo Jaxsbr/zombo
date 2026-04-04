@@ -74,3 +74,9 @@ entries:
     result: pass
     notes: "Plan: cleanup is a GameScene state (not WaveManager). Flow: WaveManager 'waiting' + all enemies dead → cleanup flag → pause WaveManager/combat → 5s timer → skipToAnnouncing. Split into 3 tasks: state mgmt, debris interactivity, UI polish. Queued state management task."
     tokens: ~5k
+  - task: 13
+    story: US-26
+    description: "Implement cleanup mini-game — state management, debris interactivity, countdown, SFX"
+    result: pass
+    notes: "enterCleanup: pause combat, show TIDY UP!, activate debris (glow/bob/interactive), countdown bar. exitCleanup: deactivate debris, skipToAnnouncing. tapDebris: removeMess, playSfxClean, pop animation. Grid clicks disabled during cleanup. WaveManager.skipToAnnouncing added. playSfxClean added to SFX.ts. 106 tests pass. ✓ US-26 complete"
+    tokens: ~15k

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 12
-  next_task: "[US-26] Add cleanup state to GameScene + WaveManager.skipToAnnouncing — combat pause, cleanup timer, state transitions"
+  task_number: 13
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
