@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 1
-  next_task: null
+  task_number: 2
+  next_task: "[US-28] Investigate: review DefenderType interface, Placement.place, Combat module, and GameScene to plan single-use defender implementation (bomb area damage, mine arm/trigger, recharge timers, HUD cooldown)"
   last_result: pass
   consecutive_fails: 0
 

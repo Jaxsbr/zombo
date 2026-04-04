@@ -1,4 +1,10 @@
 # Phase log — army-builder
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: phase
+    description: "Investigation — codebase structure, config registries, combat/placement systems, story ordering"
+    result: pass
+    notes: "DefenderType needs singleUse+behavior fields. EnemyType needs optional armor/jump fields. Combat.wallBlocks handles blocking — jump logic goes here. Levels.ts has LEVEL_1 only (needs L1-L5). Story order: US-28→US-29→US-30→US-31. 88 tests, 10 files. Queued US-28 investigation."
+    tokens: ~8k
