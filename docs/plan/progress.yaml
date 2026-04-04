@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 4
-  next_task: null
+  task_number: 5
+  next_task: "[US-28] Investigate: how to wire bomb detonation into GameScene.handleGridClick — area damage on placement, burst animation, self-destruct, remove from grid; also mine placement with arm timer and trigger in update loop"
   last_result: pass
   consecutive_fails: 0
 

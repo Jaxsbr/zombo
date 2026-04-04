@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "DefenderType extended with behavior (5 types) and singleUse fields. Bomb: cost 150, damage 9999, recharge 50s. Mine: cost 25, damage 9999, armDelay 10s, recharge 30s. SingleUse.ts: bombDetonate (Chebyshev dist 1), mineTriggerCheck, MineState arm timer. 10 new tests, 99 total pass."
     tokens: ~5k
+  - task: 4
+    story: US-28
+    description: "Investigation — queue bomb/mine GameScene integration"
+    result: pass
+    notes: "US-28 has config+logic+tests done. Remaining: wire into GameScene (bomb detonation on placement, mine arm timer + trigger in update loop, enemy movement bypass for mines). Queued investigation of GameScene integration points."
+    tokens: ~1k
