@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "Mess class: addMess, getMess, getLevel, reset, removeMess. Constants: MESS_SMALL=10, MESS_MEDIUM=30, MESS_LARGE=80, MESS_THRESHOLD=0.7. 10 new tests (98 total). Pure TS, no Phaser."
     tokens: ~5k
+  - task: 4
+    story: US-24
+    description: "Investigation — queued Mess wiring into GameScene"
+    result: pass
+    notes: "US-24 needs: addMess calls at projectile hit/enemy death/defender destruction, HUD mess bar, debris shapes. Queued investigate task."
+    tokens: ~1k
