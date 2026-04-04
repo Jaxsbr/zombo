@@ -15,20 +15,22 @@ describe('Levels', () => {
     }
   });
 
-  it('LEVEL_1 wave 2 has 3-4 spawns with mixed enemy types', () => {
+  it('LEVEL_1 wave 2 has 3-4 spawns, all basic (L1 = basic only)', () => {
     const wave2 = LEVEL_1.waves[1];
     expect(wave2.spawns.length).toBeGreaterThanOrEqual(3);
     expect(wave2.spawns.length).toBeLessThanOrEqual(4);
-    const types = new Set(wave2.spawns.map((s) => s.type));
-    expect(types.size).toBeGreaterThanOrEqual(2);
+    for (const spawn of wave2.spawns) {
+      expect(spawn.type).toBe(ENEMY_TYPES.basic);
+    }
   });
 
-  it('LEVEL_1 wave 3 has 5-6 spawns with >= 2 tough across >= 3 lanes', () => {
+  it('LEVEL_1 wave 3 has 5-6 spawns, all basic, across >= 3 lanes', () => {
     const wave3 = LEVEL_1.waves[2];
     expect(wave3.spawns.length).toBeGreaterThanOrEqual(5);
     expect(wave3.spawns.length).toBeLessThanOrEqual(6);
-    const toughCount = wave3.spawns.filter((s) => s.type === ENEMY_TYPES.tough).length;
-    expect(toughCount).toBeGreaterThanOrEqual(2);
+    for (const spawn of wave3.spawns) {
+      expect(spawn.type).toBe(ENEMY_TYPES.basic);
+    }
     const lanes = new Set(wave3.spawns.map((s) => s.lane));
     expect(lanes.size).toBeGreaterThanOrEqual(3);
   });

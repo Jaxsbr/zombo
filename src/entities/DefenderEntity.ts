@@ -103,10 +103,73 @@ function drawBlockTower(g: Phaser.GameObjects.Graphics): void {
   g.strokeRect(-8, -16, 16, 12);
 }
 
+function drawTeddyBomb(g: Phaser.GameObjects.Graphics): void {
+  // Round red teddy body
+  g.fillStyle(0xf44336, 1);
+  g.fillCircle(0, 2, 14);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeCircle(0, 2, 14);
+  // Ears
+  g.fillStyle(0xef5350, 1);
+  g.fillCircle(-10, -10, 6);
+  g.fillCircle(10, -10, 6);
+  g.lineStyle(1, 0x000000, 1);
+  g.strokeCircle(-10, -10, 6);
+  g.strokeCircle(10, -10, 6);
+  // Belly star
+  g.fillStyle(0xffeb3b, 1);
+  g.beginPath();
+  g.moveTo(0, -5);
+  g.lineTo(3, 1);
+  g.lineTo(8, 1);
+  g.lineTo(4, 5);
+  g.lineTo(5, 10);
+  g.lineTo(0, 7);
+  g.lineTo(-5, 10);
+  g.lineTo(-4, 5);
+  g.lineTo(-8, 1);
+  g.lineTo(-3, 1);
+  g.closePath();
+  g.fillPath();
+  // Eyes — X marks (explosive!)
+  g.lineStyle(2, 0x000000, 1);
+  g.lineBetween(-6, -2, -2, 2);
+  g.lineBetween(-2, -2, -6, 2);
+  g.lineBetween(2, -2, 6, 2);
+  g.lineBetween(6, -2, 2, 2);
+  // Fuse on top
+  g.lineStyle(2, 0x795548, 1);
+  g.lineBetween(0, -14, 2, -20);
+  g.fillStyle(0xff9800, 1);
+  g.fillCircle(2, -22, 3);
+}
+
+function drawMarbleMine(g: Phaser.GameObjects.Graphics): void {
+  // Cluster of coloured marbles
+  const marbles = [
+    { x: -6, y: -4, r: 7, color: 0x4caf50 },
+    { x: 6, y: -4, r: 7, color: 0x2196f3 },
+    { x: 0, y: 5, r: 7, color: 0xf44336 },
+    { x: -4, y: -10, r: 5, color: 0xffeb3b },
+    { x: 7, y: 4, r: 5, color: 0x9c27b0 },
+  ];
+  for (const m of marbles) {
+    g.fillStyle(m.color, 1);
+    g.fillCircle(m.x, m.y, m.r);
+    // Glass shine
+    g.fillStyle(0xffffff, 0.4);
+    g.fillCircle(m.x - m.r * 0.3, m.y - m.r * 0.3, m.r * 0.3);
+    g.lineStyle(1, 0x000000, 0.5);
+    g.strokeCircle(m.x, m.y, m.r);
+  }
+}
+
 export const DRAW_DEFENDER: Record<string, (g: Phaser.GameObjects.Graphics) => void> = {
   shooter: drawWaterPistol,
   generator: drawJackInTheBox,
   wall: drawBlockTower,
+  bomb: drawTeddyBomb,
+  mine: drawMarbleMine,
 };
 
 export class DefenderEntity extends Phaser.GameObjects.Container {

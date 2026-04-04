@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { GRID_ROWS, GRID_COLS, CELL_SIZE, HUD_HEIGHT } from '../config/game';
-import { DEFENDER_TYPES, DefenderType } from '../config/defenders';
+import { DEFENDER_TYPES, DefenderType, MINE_ARM_DELAY } from '../config/defenders';
 import { ENEMY_TYPES } from '../config/enemies';
 import { LEVEL_1 } from '../config/levels';
 import { Grid } from '../systems/Grid';
@@ -20,8 +20,10 @@ import {
   wallBlocks,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
+import { bombDetonate, mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
+import { attemptJump } from '../systems/EnemyMovement';
 import {
   playSfxPlace,
   playSfxFire,
@@ -61,21 +63,28 @@ export class GameScene extends Phaser.Scene {
   private projectiles: ProjectileEntity[] = [];
   private cellZones: Phaser.GameObjects.Zone[] = [];
   private sparks: Phaser.GameObjects.Container[] = [];
+  private mineStates: Map<DefenderEntity, MineState> = new Map();
+  private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
+  private currentLevelIndex: number = 0;
+  private activeLoadout: string[] = [];
   private transitioning = false;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
-  create(): void {
+  create(data?: { levelConfig?: import('../systems/WaveManager').LevelConfig; levelIndex?: number; loadout?: string[] }): void {
     this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
     this.transitioning = false;
+    this.currentLevelIndex = data?.levelIndex ?? 0;
+    this.activeLoadout = data?.loadout ?? Object.keys(DEFENDER_TYPES);
 
     // Initialize systems
+    const levelConfig = data?.levelConfig ?? LEVEL_1;
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
     this.economy = new Economy(STARTING_BALANCE);
     this.placement = new Placement(this.grid, this.economy);
-    this.waveManager = new WaveManager(LEVEL_1);
+    this.waveManager = new WaveManager(levelConfig);
     this.gameFlow = new GameFlow();
 
     // Reset state
@@ -86,6 +95,8 @@ export class GameScene extends Phaser.Scene {
     this.projectiles = [];
     this.cellZones = [];
     this.sparks = [];
+    this.mineStates = new Map();
+    this.rechargeTimers = new Map();
     this.progressDots = [];
     this.lastWaveState = 'setup';
 
@@ -266,20 +277,26 @@ export class GameScene extends Phaser.Scene {
     );
   }
 
+  private cardWidth = 130;
+  private cardHeight = 60;
+
   private createDefenderPanel(): void {
-    const keys = Object.keys(DEFENDER_TYPES);
+    const keys = this.activeLoadout;
     const panelStartX = 140;
-    const cardWidth = 130;
-    const cardHeight = 60;
+    const muteButtonSpace = 50;
+    const availableWidth = GRID_COLS * CELL_SIZE - panelStartX - muteButtonSpace;
     const cardGap = 6;
+    // Dynamic card width: shrink to fit when many cards
+    this.cardWidth = Math.min(130, Math.floor((availableWidth - (keys.length - 1) * cardGap) / keys.length));
+    this.cardHeight = 60;
 
     for (let i = 0; i < keys.length; i++) {
       const key = keys[i];
       const type = DEFENDER_TYPES[key];
-      const x = panelStartX + i * (cardWidth + cardGap);
+      const x = panelStartX + i * (this.cardWidth + cardGap);
       const y = 10;
 
-      const card = this.createDefenderCard(x, y, cardWidth, cardHeight, key, type);
+      const card = this.createDefenderCard(x, y, this.cardWidth, this.cardHeight, key, type);
       this.panelCards.set(key, card);
     }
   }
@@ -359,25 +376,37 @@ export class GameScene extends Phaser.Scene {
       const bg = card.getData('bg') as Phaser.GameObjects.Graphics;
       const type = DEFENDER_TYPES[key];
       const canAfford = this.economy.getBalance() >= type.cost;
+      const rechargeRemaining = this.rechargeTimers.get(key) ?? 0;
+      const onCooldown = rechargeRemaining > 0;
 
+      const cw = this.cardWidth;
+      const ch = this.cardHeight;
       bg.clear();
-      if (key === this.selectedDefenderKey) {
+      if (onCooldown) {
+        bg.fillStyle(0x1e293b, 0.8);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
+        const rechargeTime = type.rechargeTime ?? 1;
+        const progress = 1 - rechargeRemaining / rechargeTime;
+        bg.fillStyle(0xffc107, 0.4);
+        bg.fillRoundedRect(0, ch - 8, cw * progress, 8, 3);
+      } else if (key === this.selectedDefenderKey) {
         bg.fillStyle(0x475569, 1);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
         bg.lineStyle(3, 0xffc107, 1);
-        bg.strokeRoundedRect(0, 0, 130, 60, 6);
+        bg.strokeRoundedRect(0, 0, cw, ch, 6);
       } else if (!canAfford) {
         bg.fillStyle(0x1e293b, 0.6);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
       } else {
         bg.fillStyle(0x334155, 1);
-        bg.fillRoundedRect(0, 0, 130, 60, 6);
+        bg.fillRoundedRect(0, 0, cw, ch, 6);
       }
 
       const nameText = card.getData('nameText') as Phaser.GameObjects.Text;
       const costText = card.getData('costText') as Phaser.GameObjects.Text;
-      nameText.setAlpha(canAfford ? 1 : 0.4);
-      costText.setAlpha(canAfford ? 1 : 0.4);
+      const available = canAfford && !onCooldown;
+      nameText.setAlpha(available ? 1 : 0.4);
+      costText.setAlpha(available ? 1 : 0.4);
     }
   }
 
@@ -403,13 +432,49 @@ export class GameScene extends Phaser.Scene {
   private handleGridClick(row: number, col: number): void {
     if (!this.selectedDefenderKey) return;
 
-    const type = DEFENDER_TYPES[this.selectedDefenderKey];
+    const key = this.selectedDefenderKey;
+    const type = DEFENDER_TYPES[key];
+
+    // Check recharge cooldown for single-use types
+    if (type.singleUse && (this.rechargeTimers.get(key) ?? 0) > 0) return;
+
     const result = this.placement.place({ row, col }, type);
 
     if (result.ok) {
       playSfxPlace();
-      const entity = new DefenderEntity(this, row, col, this.selectedDefenderKey, type);
+      const entity = new DefenderEntity(this, row, col, key, type);
       this.defenders.push(entity);
+
+      if (type.behavior === 'bomb') {
+        // Bomb detonates immediately on placement
+        const hit = bombDetonate(row, col, this.enemies, type.damage);
+        for (const enemy of hit) {
+          const ent = this.enemies.find(e => e === enemy);
+          if (ent) {
+            ent.drawHealthBar();
+            ent.updateHelmet();
+            ent.playHitFlash();
+            playSfxHit();
+          }
+        }
+        // Burst animation — expanding circle
+        this.spawnBombBurst(entity.x, entity.y);
+        // Self-destruct
+        this.placement.remove({ row, col });
+        entity.destroy();
+        this.defenders = this.defenders.filter(d => d !== entity);
+      } else if (type.behavior === 'mine') {
+        // Mine starts dormant — grey/muted appearance
+        entity.setAlpha(0.5);
+        entity.setData('mineArmed', false);
+        this.mineStates.set(entity, createMineState(MINE_ARM_DELAY));
+      }
+
+      // Start recharge cooldown for single-use types
+      if (type.singleUse && type.rechargeTime) {
+        this.rechargeTimers.set(key, type.rechargeTime);
+      }
+
       this.updateHUDText();
       this.updatePanelHighlight();
     }
@@ -628,6 +693,33 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  private spawnBombBurst(x: number, y: number): void {
+    // Expanding red-orange burst
+    const burst = this.add.circle(x, y, 10, 0xf44336, 0.9);
+    burst.setDepth(50);
+    this.tweens.add({
+      targets: burst,
+      scaleX: 4,
+      scaleY: 4,
+      alpha: 0,
+      duration: 400,
+      ease: 'Quad.easeOut',
+      onComplete: () => burst.destroy(),
+    });
+    // Secondary flash ring
+    const ring = this.add.circle(x, y, 8, 0xffeb3b, 0.7);
+    ring.setDepth(51);
+    this.tweens.add({
+      targets: ring,
+      scaleX: 5,
+      scaleY: 5,
+      alpha: 0,
+      duration: 300,
+      ease: 'Quad.easeOut',
+      onComplete: () => ring.destroy(),
+    });
+  }
+
   private spawnDeathParticles(x: number, y: number, color: number): void {
     const count = 8;
     for (let i = 0; i < count; i++) {
@@ -692,14 +784,28 @@ export class GameScene extends Phaser.Scene {
       if (isDead(enemy)) continue;
 
       // Check defender blocking — enemies attack any defender they reach
+      // Mines don't block movement — enemies walk through them
       let blocked = false;
+      let blockingDef: DefenderEntity | null = null;
       for (const def of this.defenders) {
-        if (!isDead(def)) {
+        if (!isDead(def) && def.defenderType.behavior !== 'mine') {
           if (wallBlocks(def, enemy, dt)) {
             blocked = true;
+            blockingDef = def;
             def.drawHealthBar();
             break;
           }
+        }
+      }
+
+      // Sock Puppet jump: if blocked and has jumps remaining, jump over
+      if (blocked && blockingDef && enemy.jumpsRemaining > 0) {
+        const result = attemptJump(enemy.col, blockingDef.gridCol, enemy.jumpsRemaining);
+        if (result.jumped) {
+          enemy.col = result.newCol;
+          enemy.jumpsRemaining = result.newJumps;
+          enemy.playJumpArc();
+          blocked = false;
         }
       }
 
@@ -707,6 +813,56 @@ export class GameScene extends Phaser.Scene {
         enemy.col -= enemy.enemyType.speed * dt;
       }
       enemy.updatePosition();
+    }
+
+    // Mine arm timer + trigger check
+    for (const [def, mineState] of this.mineStates) {
+      if (isDead(def)) continue;
+      updateMineState(mineState, delta);
+      // Update visual state: dormant → armed
+      if (mineState.armed && !def.getData('mineArmed')) {
+        def.setData('mineArmed', true);
+        def.setAlpha(1);
+        // Pulse tween for armed state
+        this.tweens.add({
+          targets: def,
+          scaleX: 1.08,
+          scaleY: 1.08,
+          duration: 600,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+      }
+      if (mineState.armed) {
+        const target = mineTriggerCheck(def.gridRow, def.gridCol, this.enemies);
+        if (target) {
+          applyDamage(target, def.defenderType.damage);
+          const ent = this.enemies.find(e => e === target);
+          if (ent) {
+            ent.drawHealthBar();
+            ent.updateHelmet();
+            ent.playHitFlash();
+          }
+          playSfxHit();
+          // Mine self-destructs
+          this.spawnDestructionEffect(def.x, def.y);
+          this.placement.remove({ row: def.gridRow, col: def.gridCol });
+          this.mineStates.delete(def);
+          def.destroy();
+          this.defenders = this.defenders.filter(d => d !== def);
+        }
+      }
+    }
+
+    // Recharge timer countdown
+    for (const [key, remaining] of this.rechargeTimers) {
+      const updated = remaining - delta;
+      if (updated <= 0) {
+        this.rechargeTimers.delete(key);
+      } else {
+        this.rechargeTimers.set(key, updated);
+      }
     }
 
     // Shooter cooldowns and firing
@@ -759,6 +915,7 @@ export class GameScene extends Phaser.Scene {
         if (checkProjectileHit(projState, enemy)) {
           applyDamage(enemy, proj.damage);
           enemy.drawHealthBar();
+          enemy.updateHelmet();
           enemy.playHitFlash();
           playSfxHit();
           this.spawnImpactBurst(proj.x, proj.y);
@@ -772,7 +929,10 @@ export class GameScene extends Phaser.Scene {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       if (isDead(this.enemies[i])) {
         const e = this.enemies[i];
-        const deathColor = e.enemyKey === 'basic' ? 0xf48fb1 : 0xb388ff;
+        const deathColors: Record<string, number> = {
+          basic: 0xf48fb1, tough: 0xb388ff, armored: 0xf48fb1, jumper: 0xff8a65,
+        };
+        const deathColor = deathColors[e.enemyKey] ?? 0xffffff;
         this.spawnDeathParticles(e.x, e.y, deathColor);
         playSfxDeath(e.enemyKey);
         e.destroy();
@@ -786,6 +946,7 @@ export class GameScene extends Phaser.Scene {
         const d = this.defenders[i];
         this.spawnDestructionEffect(d.x, d.y);
         this.placement.remove({ row: d.gridRow, col: d.gridCol });
+        this.mineStates.delete(d); // cleanup if mine
         d.destroy();
         this.defenders.splice(i, 1);
       }
@@ -810,7 +971,7 @@ export class GameScene extends Phaser.Scene {
       const won = state === 'won';
       this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('GameOverScene', { won });
+        this.scene.start('GameOverScene', { won, levelIndex: this.currentLevelIndex });
       });
       return;
     }

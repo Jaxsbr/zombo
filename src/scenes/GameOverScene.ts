@@ -8,7 +8,7 @@ export class GameOverScene extends Phaser.Scene {
     super({ key: 'GameOverScene' });
   }
 
-  create(data: { won: boolean }): void {
+  create(data: { won: boolean; levelIndex?: number }): void {
     this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
     this.cameras.main.setBackgroundColor('#5d4037');
 
@@ -50,7 +50,7 @@ export class GameOverScene extends Phaser.Scene {
     btnBg.lineStyle(2, 0xffc107, 1);
     btnBg.strokeRoundedRect(GAME_WIDTH / 2 - 80, GAME_HEIGHT / 2 + 20, 160, 50, 8);
 
-    const playAgainText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 45, 'Play Again', {
+    const playAgainText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 45, 'Continue', {
       fontSize: '22px',
       color: '#ffc107',
       fontFamily: 'monospace',
@@ -63,7 +63,10 @@ export class GameOverScene extends Phaser.Scene {
     playAgainZone.on('pointerdown', () => {
       this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('GameScene');
+        this.scene.start('LevelSelectScene', {
+          completedLevel: data.won ? data.levelIndex : undefined,
+          won: data.won,
+        });
       });
     });
   }

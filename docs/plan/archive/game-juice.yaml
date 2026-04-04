@@ -105,3 +105,11 @@ entries:
     result: pass
     notes: "Fixed 1 concern: ARCHITECTURE.md 'Planned for game-juice' → 'Game juice layer (shipped)' with accurate descriptions. Thread resolved. Summary posted. Review complete."
     tokens: ~3k
+
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done

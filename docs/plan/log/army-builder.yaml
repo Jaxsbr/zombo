@@ -1,0 +1,106 @@
+# Phase log — army-builder
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: phase
+    description: "Investigation — codebase structure, config registries, combat/placement systems, story ordering"
+    result: pass
+    notes: "DefenderType needs singleUse+behavior fields. EnemyType needs optional armor/jump fields. Combat.wallBlocks handles blocking — jump logic goes here. Levels.ts has LEVEL_1 only (needs L1-L5). Story order: US-28→US-29→US-30→US-31. 88 tests, 10 files. Queued US-28 investigation."
+    tokens: ~8k
+  - task: 2
+    story: US-28
+    description: "Investigation — DefenderType interface, Placement, Combat, GameScene integration points for single-use defenders"
+    result: pass
+    notes: "DefenderType needs singleUse+behavior fields. handleGridClick (L403) = bomb detonation point. update loop (L691) = mine trigger check. wallBlocks must skip mines. createDefenderPanel needs recharge overlay. Placement.remove exists for self-destruct. LEVEL_1 has tough enemies (needs fix for spec L1=basic only). Queued config+test foundation task."
+    tokens: ~12k
+  - task: 3
+    story: US-28
+    description: "Extend DefenderType interface + bomb/mine config + SingleUse logic + 10 tests"
+    result: pass
+    notes: "DefenderType extended with behavior (5 types) and singleUse fields. Bomb: cost 150, damage 9999, recharge 50s. Mine: cost 25, damage 9999, armDelay 10s, recharge 30s. SingleUse.ts: bombDetonate (Chebyshev dist 1), mineTriggerCheck, MineState arm timer. 10 new tests, 99 total pass."
+    tokens: ~5k
+  - task: 4
+    story: US-28
+    description: "Investigation — queue bomb/mine GameScene integration"
+    result: pass
+    notes: "US-28 has config+logic+tests done. Remaining: wire into GameScene (bomb detonation on placement, mine arm timer + trigger in update loop, enemy movement bypass for mines). handleGridClick L403, update loop L690, wallBlocks L697. Queued implement task."
+    tokens: ~2k
+  - task: 5
+    story: US-28
+    description: "Investigation — plan bomb/mine GameScene integration"
+    result: pass
+    notes: "handleGridClick L403 for bomb detonation, update loop L691 for mine trigger, wallBlocks skip for mines. Queued implement task."
+    tokens: ~1k
+  - task: 6
+    story: US-28
+    description: "Wire bomb detonation, mine arm/trigger, recharge timers, draw functions into GameScene + DefenderEntity"
+    result: pass
+    notes: "Bomb: detonates on placement via bombDetonate, spawnBombBurst animation, self-destructs. Mine: dormant (alpha 0.5), arms after 10s with pulse tween, triggers on cell overlap. wallBlocks skips mines. Recharge: cooldown overlay on HUD cards. Draw: teddy (red, star, x-eyes, fuse) + marbles (5 colored with shine). 99 tests pass. TypeScript compiles clean. ✓ US-28 complete"
+    tokens: ~10k
+  - task: 7
+    story: US-29
+    description: "Investigation — queue US-29 enemy types investigation"
+    result: pass
+    notes: "US-28 complete. Next story: US-29 — Armored Bunny (300HP, helmet degradation) + Sock Puppet (jump over first defender). Queued investigation."
+    tokens: ~1k
+  - task: 8
+    story: US-29
+    description: "Investigation — EnemyType, EnemyMovement, Combat, EnemyEntity for armored/jumper"
+    result: pass
+    notes: "EnemyType needs jumpsRemaining. Armored: 300HP, 0.5 speed, draw = DustBunny+helmet (3-stage degrade). Sock Puppet: 150HP, 0.35 speed, jump over first defender. Jump intercept at wallBlocks check in update loop L756. Runtime jumpsRemaining on entity. Queued full implementation task."
+    tokens: ~5k
+  - task: 9
+    story: US-29
+    description: "Implement Armored Bunny + Sock Puppet — config, draw functions, jump logic, GameScene wiring, 8 tests"
+    result: pass
+    notes: "Armored: 300HP/0.5 speed, Dust Bunny + helmet overlay, 3-stage degrade (full/cracked/bare via updateHelmet). Jumper: 150HP/0.35 speed, attemptJump logic, arc tween, elongated sock shape. wallBlocks intercept for jump. Death colors for new types. 107 tests pass. ✓ US-29 complete"
+    tokens: ~12k
+  - task: 10
+    story: US-30
+    description: "Investigation — queue US-30 multi-level investigation"
+    result: pass
+    notes: "US-28+US-29 complete. Next: US-30 multi-level structure. Need LEVEL_1-LEVEL_5 configs, LevelSelectScene, localStorage, scene flow change. Queued investigation."
+    tokens: ~1k
+  - task: 11
+    story: US-30
+    description: "Investigation — levels.ts, game.ts, TitleScene, GameOverScene, WaveManager for multi-level plan"
+    result: pass
+    notes: "LEVEL_1 needs fix (basic only, not tough). GameScene hardcodes LEVEL_1 L78 — pass via data. game.ts L19 needs LevelSelectScene. TitleScene L79 → LevelSelectScene. GameOverScene L66 → LevelSelectScene + pass level result. Need LevelProgress module for localStorage. Queued full implementation."
+    tokens: ~5k
+  - task: 12
+    story: US-30
+    description: "Implement multi-level structure — L1-L5 configs, LevelSelectScene, scene flow, localStorage, tests"
+    result: pass
+    notes: "5 levels (L1 basic→L5 all types). LevelSelectScene with toy-box entries. LevelProgress module: loadProgress, saveProgress, completeLevel (pure TS). Scene flow: Title→LevelSelect→Game→GameOver→LevelSelect. GameScene accepts levelConfig+levelIndex via data. Updated Levels.test.ts (L1=basic only). 112 tests pass. ✓ US-30 complete"
+    tokens: ~15k
+  - task: 13
+    story: US-31
+    description: "Investigation — queue US-31 defender unlock + loadout implementation"
+    result: pass
+    notes: "US-28-30 complete. Last story: US-31 — defender unlock map, localStorage zombo_unlocks, loadout selection when >4 unlocked, GameScene HUD filtered. Queued full implementation (skipping separate investigate step since codebase is well-understood from US-30)."
+    tokens: ~1k
+  - task: 14
+    story: US-31
+    description: "Implement defender unlocks, loadout selection, GameScene HUD filtering, 5 tests"
+    result: pass
+    notes: "DefenderUnlocks module: unlock map L1=[shooter,generator,wall] L2→+bomb L3→+mine. localStorage zombo_unlocks. LevelSelectScene: loadout overlay when >4 unlocked, card selection (max 4), Go button. GameScene: activeLoadout filters createDefenderPanel. 117 tests pass. ✓ US-31 complete"
+    tokens: ~10k
+  - task: 15
+    story: phase
+    description: "AGENTS.md update for army-builder phase"
+    result: pass
+    notes: "AGENTS.md updated: 5 defender types (added bomb/mine), 4 enemy types (added armored/jumper), LevelSelectScene, LEVEL_1-LEVEL_5, SingleUse/LevelProgress/DefenderUnlocks/EnemyMovement modules, localStorage persistence, loadout mechanic."
+    tokens: ~3k
+  - task: 16
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All 41 done-when criteria met. Evidence:
+      - US-28: DefenderType extended, bomb (cost 150, 3x3 area damage, burst anim, 50s recharge), mine (cost 25, arm after 10s, cell trigger, no-block, 30s recharge). 10 tests.
+      - US-29: armored (300HP = 3x basic, 0.5 speed, helmet 3-stage degradation), jumper (150HP, 0.35 speed, attemptJump, arc tween). 8 tests.
+      - US-30: LEVEL_1-LEVEL_5 configs (L1 basic → L5 all types), LevelSelectScene (toy boxes), scene flow Title→LevelSelect→Game→GameOver→LevelSelect, localStorage zombo_progress. 5 tests.
+      - US-31: unlock map L1=[shooter,generator,wall] L2→+bomb L3→+mine, localStorage zombo_unlocks, loadout UI when >4 unlocked (max 4), GameScene HUD filtered. 5 tests.
+      - Phase: AGENTS.md updated, 117 tests pass.
+    tokens: ~5k

@@ -109,3 +109,33 @@ Passive income replaced by interactive spark collection (implemented inline in G
 - Uncollected sparks removed at grid bottom
 - Generator (Jack-in-the-Box) automatic income unchanged
 - Spawn rate/value defined as named constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE, SPARK_FALL_SPEED)
+
+## Unit expansion and level progression (planned for `army-builder` phase)
+
+### New defender types
+
+- **Teddy Bomb** (bomb) — 150 sparks, single-use. Instant area damage (3x3 Chebyshev) on placement, then self-destructs. Very Slow recharge. PvZ equivalent: Cherry Bomb.
+- **Marble Mine** (mine) — 25 sparks, single-use. Dormant for ~10s after placement, then arms. Instant-kills first enemy to enter its cell when armed. Does not block movement. Slow recharge. PvZ equivalent: Potato Mine.
+
+DefenderType interface extended with `singleUse` and `behavior` fields to support bomb/mine archetypes alongside existing shooter/wall/generator.
+
+### New enemy types
+
+- **Armored Bunny** (armored) — 300 HP, 0.5 cells/s (same speed as Dust Bunny, 3x health). Toy helmet overlay with 3-stage visual degradation (full → cracked → bare). PvZ equivalent: Buckethead.
+- **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s. Jumps over first defender encountered (jumpsRemaining=1), then walks normally. Arc tween for jump visual. PvZ equivalent: Pole Vaulter.
+
+### Multi-level structure
+
+5 levels with escalating difficulty (3-5 waves each). Enemy composition ramps: L1 basic only → L5 all types. Level progress and defender unlocks persisted to localStorage.
+
+### Scene flow change
+
+```
+TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene → GameOverScene → LevelSelectScene
+```
+
+LevelSelectScene replaces direct TitleScene→GameScene transition. Loadout selection appears only when player has more unlocked defenders than the 4-slot limit.
+
+### Defender unlock progression
+
+L1 start: Water Pistol, Jack-in-the-Box, Block Tower. L2 completion: +Teddy Bomb. L3 completion: +Marble Mine. Loadout selection (pick 4) activates after L3 completion.
