@@ -1,0 +1,4 @@
+# Phase log — mess-meter
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries: []

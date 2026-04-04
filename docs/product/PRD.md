@@ -26,3 +26,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | playable | Shipped | US-12, US-13, US-14 | [phases/playable.md](phases/playable.md) |
 | game-feel | Shipped | US-15, US-16, US-17, US-18 | [phases/game-feel.md](phases/game-feel.md) |
 | game-juice | Shipped | US-19, US-20, US-21, US-22, US-23 | [phases/game-juice.md](phases/game-juice.md) |
+| mess-meter | Draft | US-24, US-25, US-26, US-27 | [phases/mess-meter.md](phases/mess-meter.md) |

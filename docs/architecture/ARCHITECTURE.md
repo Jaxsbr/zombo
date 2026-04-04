@@ -109,3 +109,25 @@ Passive income replaced by interactive spark collection (implemented inline in G
 - Uncollected sparks removed at grid bottom
 - Generator (Jack-in-the-Box) automatic income unchanged
 - Spawn rate/value defined as named constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE, SPARK_FALL_SPEED)
+
+## Mess meter and cleanup system (planned for `mess-meter` phase)
+
+### Mess module
+
+`src/systems/Mess.ts` (planned) — Pure TypeScript logic for mess accumulation. Tracks a 0-1 level that increases from combat events (projectile hits, enemy deaths, defender destruction) and decreases via cleanup taps. Clamps at 1.0. Resets at round boundaries after Mum's evaluation. No Phaser dependency.
+
+### Round structure
+
+Waves grouped into rounds: Round 1 (waves 1-3), Round 2 (waves 4-6), Final (wave 7). WaveManager extended with `currentRound` and `isRoundBoundary` properties. Level config expanded from 3 to 7 waves with escalating difficulty.
+
+### Cleanup mini-game
+
+New game state between waves: combat pauses, debris pieces gain glowing borders and become tappable, countdown timer runs. Cleanup replaces the inter-wave delay (not stacked on top). Debris reverts to subtle background after cleanup ends. Mess bar carries over within a round.
+
+### Mum's ultimatum
+
+At round boundaries (after waves 3 and 6), Mum evaluates the mess bar:
+- Above 70%: speech bubble + random defender confiscated (poof animation)
+- At/below 70%: speech bubble + free random defender placed on empty cell
+- Edge cases handled: 0 defenders (skip confiscation), 0 empty cells (skip reward)
+- Mess bar resets after evaluation. Wave 7 has no Mum check.
