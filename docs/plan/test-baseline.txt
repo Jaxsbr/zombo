@@ -1,5 +1,13 @@
- Test Files  10 passed (10)
-      Tests  88 passed (88)
-   Start at  12:27:49
-   Duration  167ms (transform 207ms, setup 0ms, import 293ms, tests 22ms, environment 0ms)
+
+> zombo@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.2 /Users/jacobusbrink/dev/zombo
+
+
+ Test Files  11 passed (11)
+      Tests  98 passed (98)
+   Start at  16:58:54
+   Duration  171ms (transform 196ms, setup 0ms, import 304ms, tests 25ms, environment 0ms)
 

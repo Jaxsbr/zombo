@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "Integration points: projectile hit (L760), enemy death (L773), defender destruction (L784). Mess.ts: pure TS, addMess/getMess/getLevel/reset. Economy.ts is the template. 88 tests, 10 files. Queued Mess.ts implementation."
     tokens: ~10k
+  - task: 3
+    story: US-24
+    description: "Implement Mess.ts pure logic module + test/Mess.test.ts"
+    result: pass
+    notes: "Mess class: addMess, getMess, getLevel, reset, removeMess. Constants: MESS_SMALL=10, MESS_MEDIUM=30, MESS_LARGE=80, MESS_THRESHOLD=0.7. 10 new tests (98 total). Pure TS, no Phaser."
+    tokens: ~5k
