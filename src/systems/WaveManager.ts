@@ -62,6 +62,22 @@ export class WaveManager {
     return this._waveState;
   }
 
+  /** Round number: 1 for waves 1-3, 2 for waves 4-6, 0 for wave 7 (final). */
+  get currentRound(): number {
+    const waveNum = this.currentWaveNumber;
+    if (waveNum <= 3) return 1;
+    if (waveNum <= 6) return 2;
+    return 0; // final wave
+  }
+
+  /** True when the last completed wave was the final wave of a round (wave 3 or 6) and we're in the inter-wave gap. */
+  get isRoundBoundary(): boolean {
+    if (this._waveState !== 'waiting') return false;
+    // After wave advancement, currentWave has incremented — the completed wave is currentWaveNumber - 1
+    const completedWaveNum = this.currentWaveNumber - 1;
+    return completedWaveNum === 3 || completedWaveNum === 6;
+  }
+
   /** Progress through the current delay state (0→1). Returns 0 during spawning/complete. */
   get delayProgress(): number {
     if (this._waveState === 'setup' && this.setupDelay > 0) {

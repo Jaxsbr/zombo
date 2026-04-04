@@ -247,3 +247,121 @@ describe('WaveManager — wave state machine', () => {
     expect(wm.waveState).toBe('announcing');
   });
 });
+
+describe('WaveManager — round structure', () => {
+  // 7-wave level with explicit announce duration so state transitions are predictable
+  const sevenWaveLevel: LevelConfig = {
+    setupDelay: 0,
+    interWaveDelay: 5,
+    announceDuration: 1,
+    waves: [
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 0, delay: 0 }] }, // wave 1
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 1, delay: 0 }] }, // wave 2
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 2, delay: 0 }] }, // wave 3
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 0, delay: 0 }] }, // wave 4
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 1, delay: 0 }] }, // wave 5
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 2, delay: 0 }] }, // wave 6
+      { spawns: [{ type: ENEMY_TYPES.basic, lane: 0, delay: 0 }] }, // wave 7
+    ],
+  };
+
+  // Helper: advance through one wave (announce → spawn → waiting)
+  function advanceOneWave(wm: WaveManager): void {
+    wm.update(1);  // announcing → spawning (spawn all)
+    // After spawning, state is 'waiting' (or 'complete' for last wave)
+  }
+
+  // Helper: skip the inter-wave delay
+  function skipWait(wm: WaveManager): void {
+    wm.update(5);  // waiting → announcing next wave
+  }
+
+  it('currentRound returns 1 for waves 1-3', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Wave 1: announcing
+    expect(wm.currentRound).toBe(1);
+    advanceOneWave(wm); // wave 1 done → waiting
+    skipWait(wm); // → announcing wave 2
+    expect(wm.currentRound).toBe(1);
+    advanceOneWave(wm); // wave 2 done → waiting
+    skipWait(wm); // → announcing wave 3
+    expect(wm.currentRound).toBe(1);
+  });
+
+  it('currentRound returns 2 for waves 4-6', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Advance through waves 1-3
+    for (let i = 0; i < 3; i++) {
+      advanceOneWave(wm);
+      skipWait(wm);
+    }
+    // Now announcing wave 4
+    expect(wm.currentRound).toBe(2);
+    advanceOneWave(wm); skipWait(wm); // wave 4 done → announcing wave 5
+    expect(wm.currentRound).toBe(2);
+    advanceOneWave(wm); skipWait(wm); // wave 5 done → announcing wave 6
+    expect(wm.currentRound).toBe(2);
+  });
+
+  it('currentRound returns 0 for wave 7 (final)', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Advance through waves 1-6
+    for (let i = 0; i < 6; i++) {
+      advanceOneWave(wm);
+      skipWait(wm);
+    }
+    // Now announcing wave 7
+    expect(wm.currentRound).toBe(0);
+  });
+
+  it('isRoundBoundary is true after wave 3 completes', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Advance waves 1-2
+    advanceOneWave(wm); // wave 1 → waiting
+    expect(wm.isRoundBoundary).toBe(false); // after wave 1
+    skipWait(wm);
+    advanceOneWave(wm); // wave 2 → waiting
+    expect(wm.isRoundBoundary).toBe(false); // after wave 2
+    skipWait(wm);
+    advanceOneWave(wm); // wave 3 → waiting
+    expect(wm.waveState).toBe('waiting');
+    expect(wm.isRoundBoundary).toBe(true); // after wave 3!
+  });
+
+  it('isRoundBoundary is true after wave 6 completes', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Advance through waves 1-5
+    for (let i = 0; i < 5; i++) {
+      advanceOneWave(wm);
+      skipWait(wm);
+    }
+    advanceOneWave(wm); // wave 6 → waiting
+    expect(wm.waveState).toBe('waiting');
+    expect(wm.isRoundBoundary).toBe(true);
+  });
+
+  it('isRoundBoundary is false after wave 7 (final, no boundary)', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Advance through all 7 waves
+    for (let i = 0; i < 6; i++) {
+      advanceOneWave(wm);
+      skipWait(wm);
+    }
+    advanceOneWave(wm); // wave 7 → complete
+    expect(wm.waveState).toBe('complete');
+    expect(wm.isRoundBoundary).toBe(false);
+  });
+
+  it('isRoundBoundary is false during non-waiting states', () => {
+    const wm = new WaveManager(sevenWaveLevel);
+    // Announcing state
+    expect(wm.isRoundBoundary).toBe(false);
+    // After wave 3 → boundary true, then advance past it
+    advanceOneWave(wm); skipWait(wm);
+    advanceOneWave(wm); skipWait(wm);
+    advanceOneWave(wm); // wave 3 → waiting (boundary)
+    expect(wm.isRoundBoundary).toBe(true);
+    skipWait(wm); // → announcing wave 4
+    expect(wm.isRoundBoundary).toBe(false); // no longer waiting
+  });
+});
