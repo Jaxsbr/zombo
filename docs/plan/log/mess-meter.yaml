@@ -26,3 +26,9 @@ entries:
     result: pass
     notes: "US-24 needs: addMess calls at projectile hit/enemy death/defender destruction, HUD mess bar, debris shapes. Queued investigate task."
     tokens: ~1k
+  - task: 5
+    story: US-24
+    description: "Investigation — Mess wiring into GameScene, exact integration points"
+    result: pass
+    notes: "Projectile hit: L759 after applyDamage. Enemy death: L772 dead enemy loop. Defender destruction: L784 dead defender loop. HUD bar below wave text. Debris: semi-transparent shapes (alpha<=0.4), depth below entities, no setInteractive during combat. Queued implementation."
+    tokens: ~3k
