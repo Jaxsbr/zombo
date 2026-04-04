@@ -609,7 +609,7 @@ export class GameScene extends Phaser.Scene {
     const barY = 64;
     const barWidth = 115;
     const barHeight = 6;
-    const progress = 1 - (this.cleanupTimer / CLEANUP_DURATION);
+    const progress = this.cleanupTimer / CLEANUP_DURATION; // drains as time runs out
 
     // Track background
     this.countdownBar.fillStyle(0x1a1a1a, 0.6);
@@ -657,6 +657,10 @@ export class GameScene extends Phaser.Scene {
         gfx.fillTriangle(cx - 6, cy + 4, cx + 6, cy + 4, cx, cy - 5);
         break;
     }
+
+    // Store center for glow/hit alignment during cleanup
+    gfx.setData('cx', cx);
+    gfx.setData('cy', cy);
 
     // No pointer input during combat — debris is purely visual
     this.debris.push(gfx);
@@ -815,10 +819,12 @@ export class GameScene extends Phaser.Scene {
 
     // Activate debris — add glow stroke and bob tween, make interactive
     for (const d of this.debris) {
+      const cx = d.getData('cx') as number;
+      const cy = d.getData('cy') as number;
       d.setAlpha(0.8);
       d.lineStyle(2, 0xffffff, 0.9);
-      d.strokeCircle(0, 0, 10); // glow ring
-      d.setInteractive(new Phaser.Geom.Circle(0, 0, 20), Phaser.Geom.Circle.Contains);
+      d.strokeCircle(cx, cy, 10); // glow ring at debris center
+      d.setInteractive(new Phaser.Geom.Circle(cx, cy, 20), Phaser.Geom.Circle.Contains);
       // Bob animation
       this.tweens.add({
         targets: d,
@@ -937,7 +943,8 @@ export class GameScene extends Phaser.Scene {
           onComplete: () => {
             this.placement.remove({ row: d.gridRow, col: d.gridCol });
             d.destroy();
-            this.defenders.splice(this.defenders.indexOf(d), 1);
+            const idx = this.defenders.indexOf(d);
+            if (idx >= 0) this.defenders.splice(idx, 1);
           },
         });
       },
