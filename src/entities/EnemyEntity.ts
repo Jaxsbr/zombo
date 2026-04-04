@@ -60,9 +60,75 @@ function drawCleaningRobot(g: Phaser.GameObjects.Graphics): void {
   g.strokeCircle(10, 18, 4);
 }
 
+function drawArmoredBunnyHelmet(g: Phaser.GameObjects.Graphics, healthFraction: number): void {
+  if (healthFraction > 0.5) {
+    // Full helmet — green toy bucket/helmet
+    g.fillStyle(0x4caf50, 1);
+    g.fillRect(-12, -20, 24, 14);
+    g.fillStyle(0x388e3c, 1);
+    g.fillRect(-14, -8, 28, 4);
+    g.lineStyle(OUTLINE, 0x000000, 1);
+    g.strokeRect(-12, -20, 24, 14);
+    g.strokeRect(-14, -8, 28, 4);
+    // Helmet star
+    g.fillStyle(0xffeb3b, 1);
+    g.fillCircle(0, -14, 4);
+  } else if (healthFraction > 0.25) {
+    // Cracked helmet — fragments
+    g.fillStyle(0x4caf50, 0.7);
+    g.fillRect(-10, -18, 10, 12);
+    g.fillStyle(0x388e3c, 0.7);
+    g.fillRect(-12, -8, 14, 4);
+    g.lineStyle(1, 0x000000, 0.6);
+    g.strokeRect(-10, -18, 10, 12);
+    // Crack lines
+    g.lineStyle(1, 0x000000, 0.8);
+    g.lineBetween(-2, -18, 2, -10);
+    g.lineBetween(-8, -14, -4, -8);
+  }
+  // < 25% = bare — no helmet drawn
+}
+
+function drawArmoredBunny(g: Phaser.GameObjects.Graphics): void {
+  // Same body as Dust Bunny
+  drawDustBunny(g);
+  // Full helmet drawn by default — updated dynamically via updateHelmet
+  drawArmoredBunnyHelmet(g, 1);
+}
+
+function drawSockPuppet(g: Phaser.GameObjects.Graphics): void {
+  // Elongated sock body
+  g.fillStyle(0xff8a65, 1);
+  g.fillRect(-8, -18, 16, 36);
+  // Rounded top (mouth area)
+  g.fillStyle(0xff8a65, 1);
+  g.fillCircle(0, -18, 8);
+  // Mouth — open sock
+  g.fillStyle(0xd84315, 1);
+  g.fillRect(-6, -20, 12, 6);
+  // Outline
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-8, -18, 16, 36);
+  g.strokeCircle(0, -18, 8);
+  // Googly eyes
+  g.fillStyle(0xffffff, 1);
+  g.fillCircle(-4, -12, 5);
+  g.fillCircle(5, -12, 5);
+  g.fillStyle(0x000000, 1);
+  g.fillCircle(-3, -11, 2.5);
+  g.fillCircle(6, -11, 2.5);
+  // Sock stripes
+  g.lineStyle(2, 0xffcc80, 1);
+  g.lineBetween(-8, 0, 8, 0);
+  g.lineBetween(-8, 6, 8, 6);
+  g.lineBetween(-8, 12, 8, 12);
+}
+
 const DRAW_ENEMY: Record<string, (g: Phaser.GameObjects.Graphics) => void> = {
   basic: drawDustBunny,
   tough: drawCleaningRobot,
+  armored: drawArmoredBunny,
+  jumper: drawSockPuppet,
 };
 
 export class EnemyEntity extends Phaser.GameObjects.Container {
@@ -72,9 +138,12 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
   health: number;
   col: number;
   readonly damage: number; // EnemyCombatEntity interface
+  jumpsRemaining: number; // runtime jump state for jumper enemies
   private readonly maxHealth: number;
   private readonly healthBar: Phaser.GameObjects.Graphics;
   private readonly flashOverlay: Phaser.GameObjects.Graphics;
+  private shapeGraphics!: Phaser.GameObjects.Graphics;
+  private lastHelmetStage: number = 3; // track helmet visual stage
 
   constructor(
     scene: Phaser.Scene,
@@ -94,8 +163,10 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     this.health = type.health;
     this.maxHealth = type.health;
     this.damage = type.damage;
+    this.jumpsRemaining = type.jumpsRemaining ?? 0;
 
     const shape = scene.add.graphics();
+    this.shapeGraphics = shape;
     const drawFn = DRAW_ENEMY[key];
     if (drawFn) {
       drawFn(shape);
@@ -160,6 +231,31 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
       alpha: 0,
       duration: 150,
       onComplete: () => this.flashOverlay.setVisible(false),
+    });
+  }
+
+  /** Update armored bunny helmet visual based on health fraction */
+  updateHelmet(): void {
+    if (this.enemyKey !== 'armored') return;
+    const fraction = this.health / this.maxHealth;
+    const stage = fraction > 0.5 ? 3 : fraction > 0.25 ? 2 : 1;
+    if (stage === this.lastHelmetStage) return;
+    this.lastHelmetStage = stage;
+    // Redraw shape with correct helmet state
+    this.shapeGraphics.clear();
+    drawDustBunny(this.shapeGraphics);
+    drawArmoredBunnyHelmet(this.shapeGraphics, fraction);
+  }
+
+  /** Play jump arc animation */
+  playJumpArc(): void {
+    const baseY = HUD_HEIGHT + this.lane * CELL_SIZE + CELL_SIZE / 2;
+    this.scene.tweens.add({
+      targets: this,
+      y: baseY - 30,
+      duration: 200,
+      ease: 'Sine.easeOut',
+      yoyo: true,
     });
   }
 

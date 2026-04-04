@@ -23,6 +23,7 @@ import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
 import { bombDetonate, mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
+import { attemptJump } from '../systems/EnemyMovement';
 import {
   playSfxPlace,
   playSfxFire,
@@ -440,6 +441,7 @@ export class GameScene extends Phaser.Scene {
           const ent = this.enemies.find(e => e === enemy);
           if (ent) {
             ent.drawHealthBar();
+            ent.updateHelmet();
             ent.playHitFlash();
             playSfxHit();
           }
@@ -773,13 +775,26 @@ export class GameScene extends Phaser.Scene {
       // Check defender blocking — enemies attack any defender they reach
       // Mines don't block movement — enemies walk through them
       let blocked = false;
+      let blockingDef: DefenderEntity | null = null;
       for (const def of this.defenders) {
         if (!isDead(def) && def.defenderType.behavior !== 'mine') {
           if (wallBlocks(def, enemy, dt)) {
             blocked = true;
+            blockingDef = def;
             def.drawHealthBar();
             break;
           }
+        }
+      }
+
+      // Sock Puppet jump: if blocked and has jumps remaining, jump over
+      if (blocked && blockingDef && enemy.jumpsRemaining > 0) {
+        const result = attemptJump(enemy.col, blockingDef.gridCol, enemy.jumpsRemaining);
+        if (result.jumped) {
+          enemy.col = result.newCol;
+          enemy.jumpsRemaining = result.newJumps;
+          enemy.playJumpArc();
+          blocked = false;
         }
       }
 
@@ -815,6 +830,7 @@ export class GameScene extends Phaser.Scene {
           const ent = this.enemies.find(e => e === target);
           if (ent) {
             ent.drawHealthBar();
+            ent.updateHelmet();
             ent.playHitFlash();
           }
           playSfxHit();
@@ -888,6 +904,7 @@ export class GameScene extends Phaser.Scene {
         if (checkProjectileHit(projState, enemy)) {
           applyDamage(enemy, proj.damage);
           enemy.drawHealthBar();
+          enemy.updateHelmet();
           enemy.playHitFlash();
           playSfxHit();
           this.spawnImpactBurst(proj.x, proj.y);
@@ -901,7 +918,10 @@ export class GameScene extends Phaser.Scene {
     for (let i = this.enemies.length - 1; i >= 0; i--) {
       if (isDead(this.enemies[i])) {
         const e = this.enemies[i];
-        const deathColor = e.enemyKey === 'basic' ? 0xf48fb1 : 0xb388ff;
+        const deathColors: Record<string, number> = {
+          basic: 0xf48fb1, tough: 0xb388ff, armored: 0xf48fb1, jumper: 0xff8a65,
+        };
+        const deathColor = deathColors[e.enemyKey] ?? 0xffffff;
         this.spawnDeathParticles(e.x, e.y, deathColor);
         playSfxDeath(e.enemyKey);
         e.destroy();
