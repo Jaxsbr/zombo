@@ -44,3 +44,9 @@ entries:
     result: pass
     notes: "US-28 complete. Next story: US-29 — Armored Bunny (300HP, helmet degradation) + Sock Puppet (jump over first defender). Queued investigation."
     tokens: ~1k
+  - task: 8
+    story: US-29
+    description: "Investigation — EnemyType, EnemyMovement, Combat, EnemyEntity for armored/jumper"
+    result: pass
+    notes: "EnemyType needs jumpsRemaining. Armored: 300HP, 0.5 speed, draw = DustBunny+helmet (3-stage degrade). Sock Puppet: 150HP, 0.35 speed, jump over first defender. Jump intercept at wallBlocks check in update loop L756. Runtime jumpsRemaining on entity. Queued full implementation task."
+    tokens: ~5k

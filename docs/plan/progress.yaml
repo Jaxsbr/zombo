@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 8
-  next_task: "[US-29] Investigate: review EnemyType interface, EnemyMovement, Combat.wallBlocks, and EnemyEntity to plan armored bunny (3-stage helmet degradation) and sock puppet (jump-over-defender) implementation"
+  task_number: 9
+  next_task: "[US-29] Add armored+jumper enemy configs, extend EnemyType with jumpsRemaining, create jump logic function, add draw functions for armored bunny (helmet degradation) and sock puppet, wire jump into GameScene, create test/EnemyTypes.test.ts"
   last_result: pass
   consecutive_fails: 0
 
