@@ -822,7 +822,17 @@ export class GameScene extends Phaser.Scene {
     this.announcementText.setText('TIDY UP!');
     this.announcementText.setVisible(true);
 
-    // Activate debris — add glow stroke and bob tween, make interactive
+    // Spawn a batch of debris proportional to current mess level
+    // More mess = more debris to clean. Range: 3-15 pieces
+    const debrisCount = Math.max(3, Math.round(this.mess.getLevel() * 15));
+    for (let i = 0; i < debrisCount; i++) {
+      this.spawnDebris(
+        Math.floor(Math.random() * GRID_ROWS),
+        Math.floor(Math.random() * GRID_COLS),
+      );
+    }
+
+    // Activate all debris — glow, bob, interactive
     for (const d of this.debris) {
       const cx = d.getData('cx') as number;
       const cy = d.getData('cy') as number;
@@ -850,13 +860,12 @@ export class GameScene extends Phaser.Scene {
     // Hide announcement
     this.announcementText.setVisible(false);
 
-    // Deactivate remaining debris — remove glow and interactivity
+    // Destroy ALL remaining debris — uncleaned mess already counted in the bar
     for (const d of this.debris) {
       this.tweens.killTweensOf(d);
-      d.setAlpha(0.3);
-      d.disableInteractive();
-      d.removeAllListeners('pointerdown');
+      d.destroy();
     }
+    this.debris = [];
 
     // If at a round boundary, trigger Mum's evaluation before advancing
     if (this.waveManager.isRoundBoundary) {
@@ -1141,7 +1150,6 @@ export class GameScene extends Phaser.Scene {
           enemy.playHitFlash();
           playSfxHit();
           this.mess.addMess(MESS_SMALL);
-          this.spawnDebris(enemy.lane, Math.floor(enemy.col));
           this.spawnImpactBurst(proj.x, proj.y);
           proj.destroy();
           break;
@@ -1157,7 +1165,6 @@ export class GameScene extends Phaser.Scene {
         this.spawnDeathParticles(e.x, e.y, deathColor);
         playSfxDeath(e.enemyKey);
         this.mess.addMess(MESS_MEDIUM);
-        this.spawnDebris(e.lane, Math.floor(e.col));
         e.destroy();
         this.enemies.splice(i, 1);
       }
@@ -1169,7 +1176,6 @@ export class GameScene extends Phaser.Scene {
         const d = this.defenders[i];
         this.spawnDestructionEffect(d.x, d.y);
         this.mess.addMess(MESS_LARGE);
-        this.spawnDebris(d.gridRow, d.gridCol);
         this.placement.remove({ row: d.gridRow, col: d.gridCol });
         d.destroy();
         this.defenders.splice(i, 1);
