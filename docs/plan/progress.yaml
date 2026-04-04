@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 16
-  next_task: null
+  task_number: 17
+  next_task: "[phase] Update AGENTS.md with Mess system, round structure, cleanup mechanic, Mum's ultimatum + phase completion gate"
   last_result: pass
   consecutive_fails: 0
 

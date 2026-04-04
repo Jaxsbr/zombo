@@ -98,3 +98,9 @@ entries:
     result: pass
     notes: "triggerMumEvaluation in exitCleanup when isRoundBoundary. Speech bubble (oversized, pop-in animation, 3s). High mess > 0.7: confiscate random defender (poof: scale 1→1.5→0). Low mess: reward free defender (forceOccupy + bounce-in). Edge cases: 0 defenders/0 cells handled. Reset mess after. Placement.forceOccupy added. 106 tests pass. ✓ US-27 complete"
     tokens: ~10k
+  - task: 17
+    story: phase
+    description: "Investigation — phase criteria: scene cleanup, AGENTS.md, tests"
+    result: pass
+    notes: "Tests: 106 pass. Scene cleanup: Phaser lifecycle handles all objects on transition. AGENTS.md needs update. Queued AGENTS.md + phase completion."
+    tokens: ~1k
