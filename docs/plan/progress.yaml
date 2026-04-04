@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-28, US-29, US-30]
+  completed_stories: [US-28, US-29, US-30, US-31]
