@@ -80,3 +80,9 @@ entries:
     result: pass
     notes: "enterCleanup: pause combat, show TIDY UP!, activate debris (glow/bob/interactive), countdown bar. exitCleanup: deactivate debris, skipToAnnouncing. tapDebris: removeMess, playSfxClean, pop animation. Grid clicks disabled during cleanup. WaveManager.skipToAnnouncing added. playSfxClean added to SFX.ts. 106 tests pass. ✓ US-26 complete"
     tokens: ~15k
+  - task: 14
+    story: US-27
+    description: "Investigation — queued Mum's ultimatum analysis"
+    result: pass
+    notes: "US-27: Mum evaluation at round boundaries (after waves 3 and 6, post-cleanup). High mess > 0.7: speech bubble + random defender confiscation. Low mess: speech bubble + free defender. Reset mess after. Wave 7 skips."
+    tokens: ~1k
