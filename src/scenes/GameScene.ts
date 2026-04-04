@@ -70,6 +70,8 @@ export class GameScene extends Phaser.Scene {
   private messBarFill!: Phaser.GameObjects.Graphics;
   private isCleanupActive = false;
   private cleanupTimer = 0;
+  private placementCooldown = 0;
+  private firstCleanupDone = false;
   private isMumActive = false;
   private mumTimer = 0;
   private mumSpeechBubble: Phaser.GameObjects.Container | null = null;
@@ -104,6 +106,8 @@ export class GameScene extends Phaser.Scene {
     this.lastWaveState = 'setup';
     this.isCleanupActive = false;
     this.cleanupTimer = 0;
+    this.placementCooldown = 0;
+    this.firstCleanupDone = false;
     this.isMumActive = false;
     this.mumTimer = 0;
     this.mumSpeechBubble = null;
@@ -421,7 +425,8 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleGridClick(row: number, col: number): void {
-    if (this.isCleanupActive) return; // disable placement during cleanup
+    if (this.isCleanupActive || this.isMumActive) return;
+    if (this.placementCooldown > 0) return; // post-cleanup grace period
     if (!this.selectedDefenderKey) return;
 
     const type = DEFENDER_TYPES[this.selectedDefenderKey];
@@ -623,46 +628,87 @@ export class GameScene extends Phaser.Scene {
   }
 
   private spawnDebris(_gridRow: number, _gridCol: number): void {
-    // Spread debris across the full grid for a natural scattered look
-    // Bias toward the event row but allow any column
-    const row = Math.random() < 0.5 ? _gridRow : Math.floor(Math.random() * GRID_ROWS);
-    const col = Math.floor(Math.random() * GRID_COLS);
-    const cx = col * CELL_SIZE + Math.random() * (CELL_SIZE - 16) + 8;
-    const cy = HUD_HEIGHT + row * CELL_SIZE + Math.random() * (CELL_SIZE - 16) + 8;
+    const row = _gridRow;
+    const col = _gridCol;
+    const cx = col * CELL_SIZE + CELL_SIZE / 2 + (Math.random() - 0.5) * 24;
+    const cy = HUD_HEIGHT + row * CELL_SIZE + CELL_SIZE / 2 + (Math.random() - 0.5) * 24;
 
     const gfx = this.add.graphics();
     gfx.setDepth(1); // above grid tiles (0), below entities (5)
-    gfx.setAlpha(0.3);
 
-    // Random debris type — cute toy mess
-    const type = Math.floor(Math.random() * 4);
+    // Larger, recognizable mess shapes with warm "messy" colors
+    const type = Math.floor(Math.random() * 5);
+    const angle = (Math.random() - 0.5) * 0.5; // slight random rotation feel via offset
     switch (type) {
-      case 0: // water puddle
-        gfx.fillStyle(0x81d4fa, 1);
-        gfx.fillEllipse(cx, cy, 14, 8);
-        break;
-      case 1: // scattered parts
-        gfx.fillStyle(0xb0bec5, 1);
-        gfx.fillRect(cx - 5, cy - 3, 10, 6);
-        gfx.fillRect(cx - 2, cy - 6, 4, 12);
-        break;
-      case 2: // dust puff
-        gfx.fillStyle(0xbcaaa4, 1);
-        gfx.fillCircle(cx, cy, 6);
-        gfx.fillCircle(cx + 5, cy - 2, 4);
-        gfx.fillCircle(cx - 4, cy + 2, 3);
-        break;
-      case 3: // toy fragment
+      case 0: { // knocked-over toy block
+        gfx.fillStyle(0xe57373, 1); // warm red
+        gfx.fillRect(cx - 10, cy - 6, 20, 12);
+        gfx.lineStyle(2, 0xc62828, 1);
+        gfx.strokeRect(cx - 10, cy - 6, 20, 12);
+        // knocked detail — small circle "stud"
         gfx.fillStyle(0xef9a9a, 1);
-        gfx.fillTriangle(cx - 6, cy + 4, cx + 6, cy + 4, cx, cy - 5);
+        gfx.fillCircle(cx - 3 + angle * 4, cy, 3);
+        gfx.fillCircle(cx + 5 + angle * 4, cy, 3);
         break;
+      }
+      case 1: { // spilled paint blob
+        gfx.fillStyle(0xffb74d, 0.85); // warm orange
+        gfx.fillEllipse(cx, cy, 22, 14);
+        gfx.fillStyle(0xffa726, 0.6);
+        gfx.fillEllipse(cx + 6, cy + 4, 10, 7);
+        // paint drip
+        gfx.fillStyle(0xff9800, 0.7);
+        gfx.fillCircle(cx - 8, cy + 8, 4);
+        break;
+      }
+      case 2: { // crumpled paper ball
+        gfx.fillStyle(0xfff9c4, 1); // pale yellow
+        gfx.fillCircle(cx, cy, 10);
+        gfx.lineStyle(1.5, 0xf9a825, 0.6);
+        gfx.strokeCircle(cx, cy, 10);
+        // crumple lines
+        gfx.lineBetween(cx - 5, cy - 3, cx + 3, cy + 5);
+        gfx.lineBetween(cx + 2, cy - 6, cx - 4, cy + 2);
+        break;
+      }
+      case 3: { // muddy footprint
+        gfx.fillStyle(0x8d6e63, 0.7); // brown
+        gfx.fillEllipse(cx, cy, 12, 18);
+        // toe marks
+        gfx.fillCircle(cx - 5, cy - 12, 3);
+        gfx.fillCircle(cx, cy - 13, 3.5);
+        gfx.fillCircle(cx + 5, cy - 12, 3);
+        break;
+      }
+      case 4: { // broken crayon pieces
+        const crayonColor = [0xe53935, 0x43a047, 0x1e88e5, 0xfdd835][Math.floor(Math.random() * 4)];
+        gfx.fillStyle(crayonColor, 0.9);
+        gfx.fillRect(cx - 12 + angle * 8, cy - 3, 14, 6);
+        gfx.fillStyle(crayonColor, 0.7);
+        gfx.fillRect(cx + 4 + angle * 4, cy + 2, 10, 5);
+        // tip
+        gfx.fillTriangle(cx - 12 + angle * 8, cy - 3, cx - 12 + angle * 8, cy + 3, cx - 16 + angle * 8, cy);
+        break;
+      }
     }
 
     // Store center for glow/hit alignment during cleanup
     gfx.setData('cx', cx);
     gfx.setData('cy', cy);
 
-    // No pointer input during combat — debris is purely visual
+    // Start above the grid and fall into place
+    const targetY = gfx.y; // default 0 (Graphics draws at absolute coords)
+    gfx.y = -CELL_SIZE; // start above visible area
+    gfx.setAlpha(0);
+    this.tweens.add({
+      targets: gfx,
+      y: targetY,
+      alpha: 0.85,
+      duration: 300 + Math.random() * 200,
+      delay: Math.random() * 400, // stagger the drops
+      ease: 'Bounce.easeOut',
+    });
+
     this.debris.push(gfx);
   }
 
@@ -818,13 +864,14 @@ export class GameScene extends Phaser.Scene {
     this.selectedDefenderKey = null;
     this.updatePanelHighlight();
 
-    // Show "TIDY UP!" announcement
-    this.announcementText.setText('TIDY UP!');
+    // Show announcement — hint on first cleanup, short on subsequent
+    const hint = this.firstCleanupDone ? 'TIDY UP!' : 'TIDY UP!\nTap the mess!';
+    this.announcementText.setText(hint);
     this.announcementText.setVisible(true);
+    this.firstCleanupDone = true;
 
-    // Spawn a batch of debris proportional to current mess level
-    // More mess = more debris to clean. Range: 3-15 pieces
-    const debrisCount = Math.max(3, Math.round(this.mess.getLevel() * 15));
+    // Spawn a batch of debris proportional to current mess level (3-12 pieces)
+    const debrisCount = Math.max(3, Math.round(this.mess.getLevel() * 12));
     for (let i = 0; i < debrisCount; i++) {
       this.spawnDebris(
         Math.floor(Math.random() * GRID_ROWS),
@@ -832,30 +879,38 @@ export class GameScene extends Phaser.Scene {
       );
     }
 
-    // Activate all debris — glow, bob, interactive
-    for (const d of this.debris) {
-      const cx = d.getData('cx') as number;
-      const cy = d.getData('cy') as number;
-      d.setAlpha(0.8);
-      d.lineStyle(2, 0xffffff, 0.9);
-      d.strokeCircle(cx, cy, 10); // glow ring at debris center
-      d.setInteractive(new Phaser.Geom.Circle(cx, cy, 20), Phaser.Geom.Circle.Contains);
-      // Bob animation
-      this.tweens.add({
-        targets: d,
-        y: d.y - 4,
-        duration: 700,
-        ease: 'Sine.easeInOut',
-        yoyo: true,
-        repeat: -1,
-      });
-      d.on('pointerdown', () => this.tapDebris(d));
-    }
+    // Activate debris after fall-in animation completes (~600ms max)
+    this.time.delayedCall(650, () => {
+      if (!this.isCleanupActive) return; // cleanup may have ended early
+      for (const d of this.debris) {
+        const cx = d.getData('cx') as number;
+        const cy = d.getData('cy') as number;
+        // Glow ring — matches bigger shapes
+        d.lineStyle(2, 0xffeb3b, 0.9); // yellow glow
+        d.strokeCircle(cx, cy, 16);
+        d.setInteractive(new Phaser.Geom.Circle(cx, cy, 24), Phaser.Geom.Circle.Contains);
+        // Bob animation
+        this.tweens.add({
+          targets: d,
+          y: d.y - 4,
+          duration: 700,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        d.on('pointerdown', () => this.tapDebris(d));
+      }
+    });
   }
 
   private exitCleanup(): void {
     this.isCleanupActive = false;
     this.cleanupTimer = 0;
+
+    // Deselect defender + brief cooldown to prevent stray clicks placing toys
+    this.selectedDefenderKey = null;
+    this.updatePanelHighlight();
+    this.placementCooldown = 0.5; // 500ms grace period
 
     // Hide announcement
     this.announcementText.setVisible(false);
@@ -1065,6 +1120,9 @@ export class GameScene extends Phaser.Scene {
       this.updateCleanupCountdown();
       return;
     }
+
+    // Tick placement cooldown
+    if (this.placementCooldown > 0) this.placementCooldown -= dt;
 
     // Wave spawning
     const spawns = this.waveManager.update(dt);
