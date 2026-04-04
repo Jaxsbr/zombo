@@ -24,5 +24,5 @@ entries:
     story: US-28
     description: "Investigation — queue bomb/mine GameScene integration"
     result: pass
-    notes: "US-28 has config+logic+tests done. Remaining: wire into GameScene (bomb detonation on placement, mine arm timer + trigger in update loop, enemy movement bypass for mines). Queued investigation of GameScene integration points."
-    tokens: ~1k
+    notes: "US-28 has config+logic+tests done. Remaining: wire into GameScene (bomb detonation on placement, mine arm timer + trigger in update loop, enemy movement bypass for mines). handleGridClick L403, update loop L690, wallBlocks L697. Queued implement task."
+    tokens: ~2k
