@@ -56,3 +56,9 @@ entries:
     result: pass
     notes: "Armored: 300HP/0.5 speed, Dust Bunny + helmet overlay, 3-stage degrade (full/cracked/bare via updateHelmet). Jumper: 150HP/0.35 speed, attemptJump logic, arc tween, elongated sock shape. wallBlocks intercept for jump. Death colors for new types. 107 tests pass. ✓ US-29 complete"
     tokens: ~12k
+  - task: 10
+    story: US-30
+    description: "Investigation — queue US-30 multi-level investigation"
+    result: pass
+    notes: "US-28+US-29 complete. Next: US-30 multi-level structure. Need LEVEL_1-LEVEL_5 configs, LevelSelectScene, localStorage, scene flow change. Queued investigation."
+    tokens: ~1k

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 10
-  next_task: null
+  task_number: 11
+  next_task: "[US-30] Investigate: review levels.ts (LEVEL_1 config), scene registration in game.ts, TitleScene→GameScene flow, and GameOverScene restart to plan multi-level structure, LevelSelectScene, and localStorage persistence"
   last_result: pass
   consecutive_fails: 0
 
