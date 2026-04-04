@@ -24,12 +24,12 @@ config:
 state:
   # --- Lifecycle (owner: iterator) ---
   phase: mess-meter
-  phase_complete: false
+  phase_complete: true
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 17
-  next_task: "[phase] Update AGENTS.md with Mess system, round structure, cleanup mechanic, Mum's ultimatum + phase completion gate"
+  task_number: 18
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

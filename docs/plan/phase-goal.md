@@ -46,9 +46,9 @@ Add mess meter, round structure, cleanup mini-game, and Mum's ultimatum — tran
 - [x] `Mess.reset()` is called after Mum's evaluation completes — mess bar returns to 0 [US-27]
 - [x] Wave 7 transitions directly to the game-over flow with no cleanup or Mum check [US-27]
 - [x] Reward defender placement updates both the visual scene and `Placement`/`Grid` occupancy tracking [US-27]
-- [ ] All cleanup tweens, debris objects, speech bubbles, and countdown timers are cleaned up on scene transition — no orphaned objects persist after GameScene ends [phase]
-- [ ] AGENTS.md reflects new Mess system module, round structure, cleanup mechanic, and Mum's ultimatum [phase]
-- [ ] All existing tests pass after all changes (`npm test` exits 0) [phase]
+- [x] All cleanup tweens, debris objects, speech bubbles, and countdown timers are cleaned up on scene transition — no orphaned objects persist after GameScene ends [phase]
+- [x] AGENTS.md reflects new Mess system module, round structure, cleanup mechanic, and Mum's ultimatum [phase]
+- [x] All existing tests pass after all changes (`npm test` exits 0) [phase]
 
 ### Golden principles (phase-relevant)
 - **Game logic separated from Phaser rendering** — Mess.ts is pure TS logic (accumulation, thresholds, reset), testable without Phaser. Cleanup state management in GameScene, rendering separate from logic

@@ -104,3 +104,21 @@ entries:
     result: pass
     notes: "Tests: 106 pass. Scene cleanup: Phaser lifecycle handles all objects on transition. AGENTS.md needs update. Queued AGENTS.md + phase completion."
     tokens: ~1k
+  - task: 18
+    story: phase
+    description: "AGENTS.md update + phase completion gate"
+    result: pass
+    notes: "AGENTS.md updated: Mess module, WaveManager round structure, cleanup mini-game, Mum's ultimatum, debris system, SFX.clean. All 40 done-when criteria met. 106 tests pass. Phase complete."
+    tokens: ~5k
+  - task: phase-complete
+    story: all
+    description: "Phase completion — all done-when criteria met"
+    result: pass
+    notes: |
+      Evidence:
+      - US-24: src/systems/Mess.ts (addMess/getMess/getLevel/reset/removeMess), wired at projectile hit (SMALL=10), enemy death (MEDIUM=30), defender destruction (LARGE=80). HUD mess bar. Debris shapes (4 types, alpha 0.3, depth -5, no pointer). Clamp at 1.0. test/Mess.test.ts (10 tests).
+      - US-25: levels.ts 7 waves (2→8 enemies). WaveManager.currentRound (1/2/0), isRoundBoundary (waiting after waves 3/6). Progress dots with round gaps (14px vs 6px). test/WaveManager.test.ts round tests (8 new).
+      - US-26: Cleanup state in GameScene (enterCleanup/exitCleanup). TIDY UP! announcement. Countdown bar. Debris glow (stroke 2px) + bob tween (±4px, 700ms). Click destroys with scale-to-zero (200ms). removeMess per tap. playSfxClean. Grid clicks disabled. Combat paused (WaveManager not updated). Cleanup replaces inter-wave delay (skipToAnnouncing). 0 debris handled.
+      - US-27: triggerMumEvaluation at round boundaries (isRoundBoundary in exitCleanup). High mess > 0.7: "This room is a DISASTER!" + confiscate (poof: scale 1→1.5→0). Low mess: "Not bad!" + free defender (forceOccupy + bounce-in). 0 defenders / 0 cells edge cases. mess.reset() after. Wave 7 no cleanup/Mum.
+      - Phase: scene cleanup via Phaser lifecycle. AGENTS.md updated. 106 tests pass.
+    tokens: ~3k
