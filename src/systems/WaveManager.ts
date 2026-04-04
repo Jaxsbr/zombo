@@ -172,6 +172,14 @@ export class WaveManager {
     return spawned;
   }
 
+  /** Skip the inter-wave delay and jump directly to announcing the next wave. Used by cleanup to replace the delay. */
+  skipToAnnouncing(): void {
+    if (this._waveState === 'waiting') {
+      this.waveTimer = 0;
+      this._waveState = 'announcing';
+    }
+  }
+
   reset(): void {
     this.currentWave = 0;
     this.waveTimer = 0;

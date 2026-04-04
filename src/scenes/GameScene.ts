@@ -30,6 +30,7 @@ import {
   playSfxDeath,
   playSfxAnnounce,
   playSfxCollect,
+  playSfxClean,
   setSfxMuted,
   isSfxMuted,
 } from '../systems/SFX';
@@ -39,6 +40,7 @@ const SPARK_SPAWN_INTERVAL = 8000; // ms between spark spawns
 const SPARK_VALUE = 25; // sparks balance added per collection
 const SPARK_FALL_SPEED = 30; // pixels per second
 const GENERATOR_INCOME_INTERVAL = 5000; // ms
+const CLEANUP_DURATION = 5; // seconds
 const FADE_DURATION = 600;
 
 export class GameScene extends Phaser.Scene {
@@ -66,6 +68,8 @@ export class GameScene extends Phaser.Scene {
   private debris: Phaser.GameObjects.Graphics[] = [];
   private messBarBg!: Phaser.GameObjects.Graphics;
   private messBarFill!: Phaser.GameObjects.Graphics;
+  private isCleanupActive = false;
+  private cleanupTimer = 0;
   private transitioning = false;
 
   constructor() {
@@ -95,6 +99,8 @@ export class GameScene extends Phaser.Scene {
     this.debris = [];
     this.progressDots = [];
     this.lastWaveState = 'setup';
+    this.isCleanupActive = false;
+    this.cleanupTimer = 0;
 
     this.drawGrid();
     this.createAtmosphere();
@@ -409,6 +415,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private handleGridClick(row: number, col: number): void {
+    if (this.isCleanupActive) return; // disable placement during cleanup
     if (!this.selectedDefenderKey) return;
 
     const type = DEFENDER_TYPES[this.selectedDefenderKey];
@@ -583,6 +590,34 @@ export class GameScene extends Phaser.Scene {
 
     // Label
     this.messBarBg.fillStyle(0xffffff, 0.6);
+  }
+
+  private updateCleanupCountdown(): void {
+    this.countdownBar.clear();
+    if (!this.isCleanupActive) {
+      this.countdownLabel.setVisible(false);
+      return;
+    }
+
+    const barX = 10;
+    const barY = 64;
+    const barWidth = 115;
+    const barHeight = 6;
+    const progress = 1 - (this.cleanupTimer / CLEANUP_DURATION);
+
+    // Track background
+    this.countdownBar.fillStyle(0x1a1a1a, 0.6);
+    this.countdownBar.fillRoundedRect(barX, barY, barWidth, barHeight, 2);
+    this.countdownBar.lineStyle(1, 0x4fc3f7, 0.5);
+    this.countdownBar.strokeRoundedRect(barX, barY, barWidth, barHeight, 2);
+    // Fill (time remaining drains left to right)
+    if (progress > 0.01) {
+      this.countdownBar.fillStyle(0x4fc3f7, 0.8);
+      this.countdownBar.fillRoundedRect(barX, barY, barWidth * progress, barHeight, 2);
+    }
+
+    this.countdownLabel.setText('Tidy up!');
+    this.countdownLabel.setVisible(true);
   }
 
   private spawnDebris(gridRow: number, gridCol: number): void {
@@ -764,8 +799,91 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  private enterCleanup(): void {
+    this.isCleanupActive = true;
+    this.cleanupTimer = CLEANUP_DURATION;
+
+    // Show "TIDY UP!" announcement
+    this.announcementText.setText('TIDY UP!');
+    this.announcementText.setVisible(true);
+
+    // Activate debris — add glow stroke and bob tween, make interactive
+    for (const d of this.debris) {
+      d.setAlpha(0.8);
+      d.lineStyle(2, 0xffffff, 0.9);
+      d.strokeCircle(0, 0, 10); // glow ring
+      d.setInteractive(new Phaser.Geom.Circle(0, 0, 20), Phaser.Geom.Circle.Contains);
+      // Bob animation
+      this.tweens.add({
+        targets: d,
+        y: d.y - 4,
+        duration: 700,
+        ease: 'Sine.easeInOut',
+        yoyo: true,
+        repeat: -1,
+      });
+      d.on('pointerdown', () => this.tapDebris(d));
+    }
+  }
+
+  private exitCleanup(): void {
+    this.isCleanupActive = false;
+    this.cleanupTimer = 0;
+
+    // Hide announcement
+    this.announcementText.setVisible(false);
+
+    // Deactivate remaining debris — remove glow and interactivity
+    for (const d of this.debris) {
+      this.tweens.killTweensOf(d);
+      d.setAlpha(0.3);
+      d.disableInteractive();
+      d.removeAllListeners('pointerdown');
+    }
+
+    // Skip WaveManager past the inter-wave delay to announcing
+    this.waveManager.skipToAnnouncing();
+  }
+
+  private tapDebris(d: Phaser.GameObjects.Graphics): void {
+    if (!this.isCleanupActive) return;
+
+    this.mess.removeMess();
+    playSfxClean(); // pop/sweep sound
+
+    // Pop animation: scale to zero
+    const idx = this.debris.indexOf(d);
+    if (idx >= 0) this.debris.splice(idx, 1);
+    this.tweens.killTweensOf(d);
+    this.tweens.add({
+      targets: d,
+      scaleX: 0,
+      scaleY: 0,
+      alpha: 0,
+      duration: 200,
+      ease: 'Quad.easeIn',
+      onComplete: () => d.destroy(),
+    });
+  }
+
   update(_time: number, delta: number): void {
     const dt = delta / 1000;
+
+    // --- Cleanup mode: combat paused, only run cleanup timer ---
+    if (this.isCleanupActive) {
+      this.cleanupTimer -= dt;
+      if (this.cleanupTimer <= 0) {
+        this.exitCleanup();
+      }
+      // During cleanup: update HUD, mess bar, sparks (visual only), but no combat
+      this.updateSparks(dt);
+      this.updateHUDText();
+      this.updatePanelHighlight();
+      this.updateProgressDots();
+      this.updateMessBar();
+      this.updateCleanupCountdown();
+      return;
+    }
 
     // Wave spawning
     const spawns = this.waveManager.update(dt);
@@ -894,6 +1012,11 @@ export class GameScene extends Phaser.Scene {
       }
       return true;
     });
+
+    // Check for cleanup trigger: WaveManager in 'waiting', no enemies alive, not complete
+    if (this.waveManager.waveState === 'waiting' && this.enemies.length === 0 && !this.isCleanupActive) {
+      this.enterCleanup();
+    }
 
     // Game flow check
     const flowEnemies = this.enemies.map((e) => ({ x: e.col, health: e.health }));

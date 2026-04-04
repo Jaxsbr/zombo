@@ -86,6 +86,12 @@ export function playSfxCollect(): void {
   setTimeout(() => playTone(1200, 0.1, 'sine', 1600, 0.15), 50);
 }
 
+/** Debris cleanup tap — pop/sweep */
+export function playSfxClean(): void {
+  playTone(500, 0.08, 'sine', 1000, 0.2);
+  playNoise(0.06, 0.08);
+}
+
 /** Wave announcement — alert stinger */
 export function playSfxAnnounce(): void {
   playTone(440, 0.1, 'square', 660, 0.2);
