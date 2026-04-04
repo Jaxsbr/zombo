@@ -66,16 +66,18 @@ export class GameScene extends Phaser.Scene {
   private mineStates: Map<DefenderEntity, MineState> = new Map();
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
   private currentLevelIndex: number = 0;
+  private activeLoadout: string[] = [];
   private transitioning = false;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
-  create(data?: { levelConfig?: import('../systems/WaveManager').LevelConfig; levelIndex?: number }): void {
+  create(data?: { levelConfig?: import('../systems/WaveManager').LevelConfig; levelIndex?: number; loadout?: string[] }): void {
     this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
     this.transitioning = false;
     this.currentLevelIndex = data?.levelIndex ?? 0;
+    this.activeLoadout = data?.loadout ?? Object.keys(DEFENDER_TYPES);
 
     // Initialize systems
     const levelConfig = data?.levelConfig ?? LEVEL_1;
@@ -276,7 +278,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private createDefenderPanel(): void {
-    const keys = Object.keys(DEFENDER_TYPES);
+    const keys = this.activeLoadout;
     const panelStartX = 140;
     const cardWidth = 130;
     const cardHeight = 60;
