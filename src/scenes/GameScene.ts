@@ -65,21 +65,24 @@ export class GameScene extends Phaser.Scene {
   private sparks: Phaser.GameObjects.Container[] = [];
   private mineStates: Map<DefenderEntity, MineState> = new Map();
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
+  private currentLevelIndex: number = 0;
   private transitioning = false;
 
   constructor() {
     super({ key: 'GameScene' });
   }
 
-  create(): void {
+  create(data?: { levelConfig?: import('../systems/WaveManager').LevelConfig; levelIndex?: number }): void {
     this.cameras.main.fadeIn(FADE_DURATION, 0, 0, 0);
     this.transitioning = false;
+    this.currentLevelIndex = data?.levelIndex ?? 0;
 
     // Initialize systems
+    const levelConfig = data?.levelConfig ?? LEVEL_1;
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
     this.economy = new Economy(STARTING_BALANCE);
     this.placement = new Placement(this.grid, this.economy);
-    this.waveManager = new WaveManager(LEVEL_1);
+    this.waveManager = new WaveManager(levelConfig);
     this.gameFlow = new GameFlow();
 
     // Reset state
@@ -960,7 +963,7 @@ export class GameScene extends Phaser.Scene {
       const won = state === 'won';
       this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('GameOverScene', { won });
+        this.scene.start('GameOverScene', { won, levelIndex: this.currentLevelIndex });
       });
       return;
     }

@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { TitleScene } from '../scenes/TitleScene';
+import { LevelSelectScene } from '../scenes/LevelSelectScene';
 import { GameScene } from '../scenes/GameScene';
 import { GameOverScene } from '../scenes/GameOverScene';
 
@@ -16,5 +17,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
   width: GAME_WIDTH,
   height: GAME_HEIGHT,
   backgroundColor: '#5d4037',
-  scene: [TitleScene, GameScene, GameOverScene],
+  scene: [TitleScene, LevelSelectScene, GameScene, GameOverScene],
 };

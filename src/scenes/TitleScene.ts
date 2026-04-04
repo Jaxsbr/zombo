@@ -76,7 +76,7 @@ export class TitleScene extends Phaser.Scene {
     playZone.on('pointerdown', () => {
       this.cameras.main.fadeOut(FADE_DURATION, 0, 0, 0);
       this.cameras.main.once('camerafadeoutcomplete', () => {
-        this.scene.start('GameScene');
+        this.scene.start('LevelSelectScene');
       });
     });
   }
