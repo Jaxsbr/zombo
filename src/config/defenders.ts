@@ -11,6 +11,7 @@ export interface DefenderType {
   behavior: DefenderBehavior;
   singleUse: boolean;
   rechargeTime?: number; // ms cooldown between placements (single-use types)
+  bio: string; // kid-friendly description shown on unlock card
 }
 
 export const DEFENDER_TYPES: Record<string, DefenderType> = {
@@ -24,6 +25,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'generator',
     singleUse: false,
+    bio: 'Wind it up and sparks pop out! Click the sparks to collect them and buy more toys.',
   },
   shooter: {
     name: 'Water Pistol',
@@ -35,6 +37,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'shooter',
     singleUse: false,
+    bio: 'Squirt! Shoots water drops at enemies coming down the lane. Your main weapon!',
   },
   wall: {
     name: 'Block Tower',
@@ -46,6 +49,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'wall',
     singleUse: false,
+    bio: 'Tough as bricks! Enemies can\'t get past a Block Tower. Put it in front to protect your toys.',
   },
   trapper: {
     name: 'Honey Bear',
@@ -57,6 +61,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'trapper',
     singleUse: false,
+    bio: 'Throws sticky honey pots that slow enemies down. Great for buying time!',
   },
   mine: {
     name: 'Marble Mine',
@@ -69,6 +74,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     behavior: 'mine',
     singleUse: true,
     rechargeTime: 20000,
+    bio: 'A sneaky marble that goes BOOM! Wait for it to arm, then any enemy that steps on it is gone.',
   },
 };
 

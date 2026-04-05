@@ -42,6 +42,20 @@ describe('Defender types', () => {
     expect(shooter.generatesIncome).toBe(0);
   });
 
+  it('all types have a bio string', () => {
+    for (const [key, def] of Object.entries(DEFENDER_TYPES)) {
+      expect(def.bio, `${key} missing bio`).toBeTruthy();
+      expect(typeof def.bio).toBe('string');
+    }
+  });
+
+  it('Block Tower bio explains blocking behavior (kid-friendly)', () => {
+    const wall = DEFENDER_TYPES.wall;
+    expect(wall.bio.length).toBeGreaterThan(10);
+    // Bio should mention blocking or protecting
+    expect(wall.bio.toLowerCase()).toMatch(/block|protect|past/);
+  });
+
   it('wall has high health relative to other types', () => {
     const wall = DEFENDER_TYPES.wall;
     const others = Object.values(DEFENDER_TYPES).filter((d) => d.name !== 'Block Tower');
