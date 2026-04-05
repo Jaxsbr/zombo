@@ -38,3 +38,13 @@ entries:
     result: pass
     notes: "Updated AGENTS.md: SPARK_SPAWN_INTERVAL 4000→12000, SPARK_VALUE→50, GENERATOR_INCOME_INTERVAL=8000, loadout proportional sizing noted in defender unlocks section."
     tokens: ~2k
+  - task: 7
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All 13 done-when criteria met. Evidence:
+      - US-37: SPARK_SPAWN_INTERVAL=12000, SPARK_VALUE=50, GENERATOR_INCOME_INTERVAL=8000 unchanged, 123 tests pass
+      - US-38: Proportional sizing (0.05*GW pad, 0.02*GW gap, 0.45*GH cards). Preview scale≈0.86. Staggered entry, bounce, idle bob. 45% GH. 123 tests pass.
+      - Phase: AGENTS.md updated.
+    tokens: ~2k

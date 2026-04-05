@@ -25,7 +25,7 @@ Tune spark economy for less clicking (slower spawn, higher value) and overhaul t
 - [x] `npm test` passes — no existing tests broken by loadout visual changes [US-38]
 
 #### Structural
-- [ ] AGENTS.md reflects updated spark economy constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE) and loadout proportional sizing approach introduced in this phase [phase]
+- [x] AGENTS.md reflects updated spark economy constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE) and loadout proportional sizing approach introduced in this phase [phase]
 
 #### Safety criteria
 N/A — this phase introduces no endpoints, user input fields, or query interpolation. Changes are constant-value tuning and visual presentation only.
