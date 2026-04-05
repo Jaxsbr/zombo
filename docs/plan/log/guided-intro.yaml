@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "LevelConfig.activeLanes added. GameScene: drawGrid dims inactive rows (0.25 alpha), createGridClickZones iterates activeLanes only, createAtmosphere randomizes from activeLanes, enemy spawn skips non-active lanes. 4 new tests (127 total). ✓ US-40 complete"
     tokens: ~4k
+  - task: 3
+    story: US-44
+    description: "Rewrite L1-L5 configs, add startingBalance/tutorialMode/enemyBio to LevelConfig, change initial defenders and unlock map"
+    result: pass
+    notes: "LevelConfig: added startingBalance, tutorialMode, enemyBio fields. Levels rewritten: L1(1-lane tutorial,75 sparks), L2(3-lane), L3(5-lane), L4(practice walls), L5(armored enemies). INITIAL_DEFENDERS=['generator','shooter'], UNLOCK_MAP={3:'wall'}. GameScene reads startingBalance from config. Tests updated: 130 pass. ✓ US-44 complete"
+    tokens: ~5k
