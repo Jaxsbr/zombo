@@ -7,7 +7,7 @@
 
 
  Test Files  15 passed (15)
-      Tests  130 passed (130)
-   Start at  11:11:44
-   Duration  283ms (transform 349ms, setup 0ms, import 511ms, tests 38ms, environment 1ms)
+      Tests  132 passed (132)
+   Start at  11:14:55
+   Duration  243ms (transform 352ms, setup 0ms, import 518ms, tests 43ms, environment 1ms)
 

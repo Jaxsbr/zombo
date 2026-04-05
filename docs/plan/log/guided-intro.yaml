@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "LevelConfig: added startingBalance, tutorialMode, enemyBio fields. Levels rewritten: L1(1-lane tutorial,75 sparks), L2(3-lane), L3(5-lane), L4(practice walls), L5(armored enemies). INITIAL_DEFENDERS=['generator','shooter'], UNLOCK_MAP={3:'wall'}. GameScene reads startingBalance from config. Tests updated: 130 pass. ✓ US-44 complete"
     tokens: ~5k
+  - task: 4
+    story: US-42
+    description: "Add bio field to DefenderType, build unlock card overlay in GameOverScene"
+    result: pass
+    notes: "DefenderType.bio added with kid-friendly text for all 5 defenders. GameOverScene shows unlock card overlay after level-win when unlock triggers: dimmed bg (depth 199), card (depth 200) with DRAW_DEFENDER at 2x, name, cost, bio. Collect! button (depth 201). Card slides from above (400ms). localStorage bio_shown_defender_<key> tracking. 132 tests pass. ✓ US-42 complete"
+    tokens: ~6k
