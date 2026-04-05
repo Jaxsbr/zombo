@@ -39,6 +39,12 @@ entries:
     result: pass
     notes: "Clean review. 1 nit: redundant flex centering on body (display:flex;justify-content:center;align-items:center) since autoCenter:CENTER_BOTH handles it. Not breaking. review_stage→review_posted."
     tokens: ~4k
+  - task: 8
+    story: review
+    description: "handle-pr-review pr=10 — 1 nit skipped, summary posted"
+    result: pass
+    notes: "1 nit (flex centering on body) classified as skip — retained as belt-and-suspenders for vertical centering until visual browser confirmation. No code changes. 123 tests pass. review_complete→true."
+    tokens: ~3k
   - task: 4
     story: phase
     description: "Update AGENTS.md — Scale Manager strategy documented"
