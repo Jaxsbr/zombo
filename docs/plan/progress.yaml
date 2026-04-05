@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 1
-  next_task: "[US-40] Investigate: check WaveManager LevelConfig, GameScene drawGrid/createGridClickZones/createAtmosphere/spawnEnemy for lane assumptions, existing tests for Grid/WaveManager"
+  next_task: "[US-40] Add activeLanes to LevelConfig, update GameScene drawGrid/createGridClickZones/createAtmosphere to filter by active lanes, add unit tests for lane filtering"
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: []
+  completed_stories: [US-40]
