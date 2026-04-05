@@ -28,3 +28,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | game-juice | Shipped | US-19, US-20, US-21, US-22, US-23 | [phases/game-juice.md](phases/game-juice.md) |
 | army-builder | Shipped | US-28, US-29, US-30, US-31 | [phases/army-builder.md](phases/army-builder.md) |
 | playtest-tuning | Shipped | US-32, US-33, US-34, US-35, US-36 | [phases/playtest-tuning.md](phases/playtest-tuning.md) |
+| economy-polish | Shipped | US-37, US-38 | [phases/economy-polish.md](phases/economy-polish.md) |

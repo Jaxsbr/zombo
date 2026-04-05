@@ -36,8 +36,8 @@ src/
 │   ├── LevelProgress.ts # Level completion + localStorage persistence (pure TS)
 │   └── DefenderUnlocks.ts # Defender unlock map + localStorage persistence (pure TS)
 └── entities/
-    ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks), health bar
-    ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot), health bar
+    ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks, honey bear), health bar
+    ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot, puppet), per-type scale, health bar
     └── ProjectileEntity.ts # Projectile game object — yellow circle, movement
 ```
 
@@ -94,7 +94,7 @@ All scene transitions use Phaser camera fades. WaveManager drives wave pacing vi
 ### Entity animations
 
 All entity types have tween-based animations:
-- **Defenders:** idle loops (Water Pistol bobs, Jack-in-the-Box wiggles, Block Tower sways), combat reactions (shooter recoil on fire, generator pulse on income tick), placement bounce-in (scale 0.3 → 1.0 with overshoot)
+- **Defenders:** idle loops (Water Pistol bobs, Jack-in-the-Box wiggles, Block Tower sways, Honey Bear breathes), combat reactions (shooter recoil on fire, generator pulse on spark spawn), placement bounce-in (scale 0.3 → 1.0 with overshoot)
 - **Enemies:** movement animations (Dust Bunny bounce/squash-stretch, Cleaning Robot rock), hit flash (white overlay 150ms on damage)
 - **Effects:** death particles (per-type color burst — pink for Dust Bunny, purple for Cleaning Robot), defender destruction (fade + scale-down), projectile impact burst (expanding white circle), camera shake on final wave announcement
 
@@ -109,25 +109,30 @@ Bedroom environment elements rendered at depth -10 (behind all gameplay):
 ### Spark economy
 
 Passive income replaced by interactive spark collection (implemented inline in GameScene, not a separate entity file):
-- Blue diamond-shaped spark tokens spawn above grid every 8s, drift down at 30px/s
-- Player clicks to collect — value (25 sparks) added to Economy with SFX and particle burst
+- Blue multi-layer diamond-shaped spark tokens spawn above grid every 4s (SPARK_SPAWN_INTERVAL=4000), drift down at 30px/s
+- 48x48 click zone per spark — player clicks to collect — value (25 sparks) added to Economy with SFX and particle burst
 - Uncollected sparks removed at grid bottom
-- Generator (Jack-in-the-Box) automatic income unchanged
+- Generator (Jack-in-the-Box) spawns clickable sparks at its position every 5s (GENERATOR_INCOME_INTERVAL=5000); generator sparks auto-expire after 5s (GENERATOR_SPARK_EXPIRY). No passive income — all generator income requires clicking
 - Spawn rate/value defined as named constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE, SPARK_FALL_SPEED)
 
 ## Unit expansion and level progression (shipped in `army-builder` phase)
 
 ### Single-use defenders
 
-- **Teddy Bomb** (bomb) — 150 sparks, single-use. Instant area damage (3x3 Chebyshev) on placement via `bombDetonate` in `SingleUse.ts`, then self-destructs with burst animation. 50s recharge.
-- **Marble Mine** (mine) — 25 sparks, single-use. Dormant for 10s after placement (`MineState` arm timer in `SingleUse.ts`), then arms with pulse tween. Instant-kills first enemy on cell overlap when armed. Does not block movement. 30s recharge.
+- **Marble Mine** (mine) — 25 sparks, single-use. Dormant for 6s after placement (`MineState` arm timer in `SingleUse.ts`, MINE_ARM_DELAY=6000), then arms with pulse tween. Instant-kills first enemy on cell overlap when armed. Does not block movement. 20s recharge.
 
-DefenderType interface extended with `singleUse` and `behavior` fields (5 behaviors: shooter, generator, wall, bomb, mine). Recharge timers render as cooldown overlays on HUD cards.
+DefenderType interface extended with `singleUse` and `behavior` fields (5 behaviors: shooter, generator, wall, trapper, mine). Recharge timers render as cooldown overlays on HUD cards.
+
+### Honey Bear (trapper)
+
+Honey Bear — 75 sparks, persistent defender. Periodically tosses honey pots onto grid cells ahead (range 5 cells, interval 4s). Honey pots slow enemies to 0.5x speed for 8s (HONEY_POT_DURATION), then expire. Pure logic in `src/systems/HoneyTrap.ts` (createHoneyPot, updateHoneyPots, getSpeedModifier). Amber bear shape with idle breathing animation.
 
 ### Additional enemy types
 
-- **Armored Bunny** (armored) — 300 HP (3x basic), 0.5 cells/s. Dust Bunny shape with toy helmet overlay, 3-stage visual degradation (full → cracked at 50% → bare at 25%). `updateHelmet` in `EnemyEntity.ts`.
-- **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s. `attemptJump` logic in `EnemyMovement.ts` — jumps over first defender encountered (arc tween), then walks normally. `jumpsRemaining` field on EnemyType.
+- **Armored Bunny** (armored) — 300 HP (3x basic), 0.5 cells/s, scale 1.15. Dust Bunny shape with toy helmet overlay, 3-stage visual degradation (full → cracked at 50% → bare at 25%). `updateHelmet` in `EnemyEntity.ts`.
+- **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s, scale 0.85. Spring coil detail. `attemptJump` logic in `EnemyMovement.ts` — jumps over first defender encountered (arc tween), then walks normally. `jumpsRemaining` field on EnemyType.
+
+Enemy types have an optional `scale` field controlling rendered size. Visual hierarchy: Cleaning Robot (1.35) > Armored Bunny (1.15) > Dust Bunny (1.0) > Sock Puppet (0.85). Cleaning Robot has gear bolt details; Sock Puppet has spring coil. Health bars, flash overlays, and death particles scale proportionally.
 
 ### Multi-level structure
 
@@ -143,4 +148,4 @@ TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene
 
 ### Defender unlock progression
 
-L1 start: [shooter, generator, wall]. Completing L2: +bomb. Completing L3: +mine. Loadout selection (pick 4) activates after L3 completion when roster exceeds 4-slot limit.
+L1 start: [shooter, generator, wall]. Completing L2: +trapper (Honey Bear). Completing L3: +mine. Loadout selection (pick 4) activates after L3 completion when roster exceeds 4-slot limit.

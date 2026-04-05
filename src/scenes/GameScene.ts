@@ -37,8 +37,8 @@ import {
 } from '../systems/SFX';
 
 const STARTING_BALANCE = 500;
-const SPARK_SPAWN_INTERVAL = 6000; // ms between spark spawns
-const SPARK_VALUE = 25; // sparks balance added per collection
+const SPARK_SPAWN_INTERVAL = 12000; // ms between spark spawns
+const SPARK_VALUE = 50; // sparks balance added per collection
 const SPARK_FALL_SPEED = 30; // pixels per second
 const GENERATOR_INCOME_INTERVAL = 8000; // ms between generator spark spawns
 const GENERATOR_SPARK_EXPIRY = 5000; // ms before uncollected generator sparks despawn
