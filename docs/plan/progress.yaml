@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 6
-  next_task: "[US-33] Implement JitB rework: generatesIncome→0, tickGeneratorIncome spawns clickable spark at defender position, 5s expiry, update Defenders.test, add generator-no-passive test"
+  task_number: 7
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
