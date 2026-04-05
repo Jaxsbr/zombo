@@ -1,4 +1,10 @@
 # Phase log — viewport-scale
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: US-39
+    description: "Investigation — game.ts scale config and index.html CSS current state"
+    result: pass
+    notes: "game.ts: no scale property, GAME_WIDTH=576, GAME_HEIGHT=400 confirmed. index.html: min-height:100vh (not height), no overflow:hidden, body bg #3e2723 ✓, canvas border/radius ✓. Plan: add scale:{mode:FIT,autoCenter:CENTER_BOTH} to gameConfig, change min-height to height, add overflow:hidden. 123 tests pass. Queued implement."
+    tokens: ~2k
