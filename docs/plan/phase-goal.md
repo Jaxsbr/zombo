@@ -1,37 +1,22 @@
 ## Phase goal
 
-Tune spark economy for less clicking (slower spawn, higher value) and overhaul the loadout selection screen with large, animated defender previews using proportional sizing derived from game viewport dimensions.
+Enable Phaser's built-in Scale Manager so the game canvas fills the available browser viewport at any window size, while preserving the logical game resolution (576×400), bedroom aesthetic, and accurate input coordinate mapping. Changes are config and CSS only — no scene logic requires modification.
 
 ### Stories in scope
-- US-37 — Spark economy rebalance
-- US-38 — Loadout selection visual overhaul
+- US-39 — Viewport scaling
 
 ### Done-when (observable)
-
-#### US-37 — Spark economy rebalance
-- [x] `SPARK_SPAWN_INTERVAL` is 12000 (doubled from 6000) in `src/scenes/GameScene.ts` [US-37]
-- [x] `SPARK_VALUE` is 50 (doubled from 25) in `src/scenes/GameScene.ts` [US-37]
-- [x] `GENERATOR_INCOME_INTERVAL` is unchanged at 8000 in `src/scenes/GameScene.ts` [US-37]
-- [x] `npm test` passes with no test changes required (no tests reference spark constants directly) [US-37]
-
-#### US-38 — Loadout selection visual overhaul
-- [x] Card dimensions in `showLoadoutSelection()` are computed proportionally from `GAME_WIDTH` and `GAME_HEIGHT` — no hardcoded pixel values for card width, card height, padding, or gap [US-38]
-- [x] Defender preview scale is >= 0.75 (up from 0.55), computed proportionally to card size [US-38]
-- [x] Cards have a staggered entry animation when the loadout screen appears (each card appears with a delay offset, not all at once) [US-38]
-- [x] Selecting a card triggers a visible scale or bounce tween (not just a colour change) [US-38]
-- [x] Defender preview containers have a gentle idle animation (bob or sway tween loop) [US-38]
-- [x] Card layout uses the full available vertical space — cards occupy at least 40% of GAME_HEIGHT [US-38]
-- [x] Loadout cards read as a toy catalogue — each defender preview is large enough to see its distinctive shape details (verified by: preview bounding box is at least 50x50px at the current 576x400 viewport, scaling up proportionally with larger viewports) [US-38]
-- [x] `npm test` passes — no existing tests broken by loadout visual changes [US-38]
-
-#### Structural
-- [x] AGENTS.md reflects updated spark economy constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE) and loadout proportional sizing approach introduced in this phase [phase]
-
-#### Safety criteria
-N/A — this phase introduces no endpoints, user input fields, or query interpolation. Changes are constant-value tuning and visual presentation only.
+- [x] `src/config/game.ts` `gameConfig` includes a `scale` property with `mode: Phaser.Scale.FIT` [US-39]
+- [x] `src/config/game.ts` `gameConfig` `scale` property includes `autoCenter: Phaser.Scale.CENTER_BOTH` [US-39]
+- [x] `GAME_WIDTH` constant in `src/config/game.ts` is 576 (unchanged) [US-39]
+- [x] `GAME_HEIGHT` constant in `src/config/game.ts` is 400 (unchanged) [US-39]
+- [x] `index.html` body CSS includes `height: 100vh` (so Phaser can measure the full viewport height) [US-39]
+- [x] `index.html` body CSS includes `overflow: hidden` (prevents scrollbars when canvas fills viewport) [US-39]
+- [x] `index.html` body background color remains `#3e2723` — page background matches the bedroom aesthetic so letterbox regions do not show a jarring contrast colour [US-39]
+- [x] `index.html` canvas CSS retains `border: 3px solid #5d4037` and `border-radius: 8px` (visual treatment preserved after scaling) [US-39]
+- [x] `npm test` passes — no existing Vitest unit tests broken [US-39]
+- [x] AGENTS.md `Tech stack` or game config section documents the Scale Manager strategy (`Phaser.Scale.FIT`, `autoCenter: CENTER_BOTH`) introduced in this phase [phase]
 
 ### Golden principles (phase-relevant)
-- Game logic separated from Phaser rendering — spark economy is a constant-only change, no rendering logic affected
-- Config-driven entities — defender previews already use DRAW_DEFENDER registry; this phase changes presentation, not data
-- no-silent-pass — any new test cases must have unconditional assertions
-- agents-consistency — AGENTS.md must reflect shipped code state after this phase
+- Game logic separated from Phaser rendering — this change is config-only; no scene logic is affected
+- agents-consistency — AGENTS.md must reflect the Scale Manager configuration after this phase

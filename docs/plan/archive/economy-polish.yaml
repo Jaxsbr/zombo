@@ -1,0 +1,72 @@
+# Phase log — economy-polish (archived)
+# Each entry: { task, story, description, result, notes, tokens }
+
+status: completed
+
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done
+
+entries:
+  - task: 1
+    story: US-37
+    description: "Investigation — spark constants, loadout selection current state"
+    result: pass
+    notes: "SPARK_SPAWN_INTERVAL=6000 (need 12000), SPARK_VALUE=25 (need 50), GENERATOR_INCOME_INTERVAL=8000 (stays). US-37 is a 2-constant change. US-38 loadout in LevelSelectScene.ts:145. Queued US-37 implement."
+    tokens: ~3k
+  - task: 2
+    story: US-37
+    description: "Update SPARK_SPAWN_INTERVAL to 12000 and SPARK_VALUE to 50"
+    result: pass
+    notes: "2-constant change in GameScene.ts. 123 tests pass, no regressions. ✓ US-37 complete"
+    tokens: ~2k
+  - task: 3
+    story: US-38
+    description: "Investigation — loadout selection current code, proportional sizing plan"
+    result: pass
+    notes: "LevelSelectScene.ts:145 showLoadoutSelection. Current: cardWidth=100, cardHeight=120, gap=8, padding=30, previewScale=0.55 — all hardcoded px. GAME_WIDTH=576, GAME_HEIGHT=400. Plan: cardHeight=0.45*GH (180), padding=0.05*GW, gap=0.02*GW, cardWidth=(GW-2pad-(n-1)gap)/n, previewScale=0.85 proportional. Add staggered entry (alpha+y tween per card), selection bounce (scale 1→1.1→1), idle bob on preview. Tests unaffected (logic only)."
+    tokens: ~3k
+  - task: 4
+    story: US-38
+    description: "Rewrite showLoadoutSelection with proportional sizing, animations"
+    result: pass
+    notes: "Full overhaul: padding/gap/cardHeight/cardWidth all proportional to GAME_WIDTH/GAME_HEIGHT. previewScale=max(0.75, cw/110)≈0.86. Staggered entry (i*120ms, Back.easeOut), selection bounce (1.08x), idle bob (Sine.easeInOut). Cards 45% GAME_HEIGHT. 123 tests pass, no regressions. ✓ US-38 complete"
+    tokens: ~8k
+  - task: 5
+    story: phase
+    description: "Investigation — both stories complete, remaining: AGENTS.md structural criterion"
+    result: pass
+    notes: "US-37 and US-38 complete. Remaining unmet: AGENTS.md update for spark constants and loadout sizing. Queued AGENTS.md update."
+    tokens: ~1k
+  - task: 6
+    story: phase
+    description: "Update AGENTS.md — spark constants and loadout proportional sizing"
+    result: pass
+    notes: "Updated AGENTS.md: SPARK_SPAWN_INTERVAL 4000→12000, SPARK_VALUE→50, GENERATOR_INCOME_INTERVAL=8000, loadout proportional sizing noted in defender unlocks section."
+    tokens: ~2k
+  - task: 7
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All 13 done-when criteria met. Evidence:
+      - US-37: SPARK_SPAWN_INTERVAL=12000, SPARK_VALUE=50, GENERATOR_INCOME_INTERVAL=8000 unchanged, 123 tests pass
+      - US-38: Proportional sizing (0.05*GW pad, 0.02*GW gap, 0.45*GH cards). Preview scale≈0.86. Staggered entry, bounce, idle bob. 45% GH. 123 tests pass.
+      - Phase: AGENTS.md updated.
+    tokens: ~2k
+  - task: 8
+    story: review
+    description: "review-pr pr=9 — posted review with 0 critical, 0 concern, 1 nit"
+    result: pass
+    notes: "Clean review. 1 nit: unused setData('baseY') in LevelSelectScene.ts:194. No critical or concern findings."
+    tokens: ~5k
+  - task: 9
+    story: review
+    description: "handle-pr-review pr=9 — fixed 1 nit, resolved thread, posted summary"
+    result: pass
+    notes: "Removed dead code setData('baseY'). 123 tests pass. Thread resolved, summary posted. Review complete."
+    tokens: ~5k

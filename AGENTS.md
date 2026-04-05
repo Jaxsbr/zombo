@@ -10,6 +10,7 @@
 - **Game framework:** Phaser 3 (>=3.60)
 - **Bundler:** Vite
 - **Test runner:** Vitest
+- **Scale Manager:** `Phaser.Scale.FIT` with `autoCenter: Phaser.Scale.CENTER_BOTH` — canvas scales to fill the viewport while maintaining the 1.44:1 aspect ratio (576×400 logical resolution); Phaser remaps input coordinates automatically; no scene code changes required when the physical canvas size changes
 
 ## Directory layout
 

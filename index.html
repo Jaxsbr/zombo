@@ -19,7 +19,12 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #game-container {
+      width: calc(100vw - 48px);
+      height: calc(100vh - 48px);
     }
     canvas {
       border: 3px solid #5d4037;
@@ -29,6 +34,7 @@
   </style>
 </head>
 <body>
+  <div id="game-container"></div>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>

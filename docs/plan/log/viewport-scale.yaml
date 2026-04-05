@@ -1,0 +1,53 @@
+# Phase log — viewport-scale
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-39
+    description: "Investigation — game.ts scale config and index.html CSS current state"
+    result: pass
+    notes: "game.ts: no scale property, GAME_WIDTH=576, GAME_HEIGHT=400 confirmed. index.html: min-height:100vh (not height), no overflow:hidden, body bg #3e2723 ✓, canvas border/radius ✓. Plan: add scale:{mode:FIT,autoCenter:CENTER_BOTH} to gameConfig, change min-height to height, add overflow:hidden. 123 tests pass. Queued implement."
+    tokens: ~2k
+  - task: 2
+    story: US-39
+    description: "Add Phaser Scale Manager (FIT mode, CENTER_BOTH) and update index.html viewport CSS"
+    result: pass
+    notes: "game.ts: added scale:{mode:Phaser.Scale.FIT, autoCenter:Phaser.Scale.CENTER_BOTH}. index.html: min-height→height:100vh, added overflow:hidden. GAME_WIDTH=576, GAME_HEIGHT=400 unchanged. 123 tests pass, no regressions. ✓ US-39 complete"
+    tokens: ~2k
+  - task: 3
+    story: phase
+    description: "Investigation — US-39 complete, remaining: AGENTS.md structural criterion"
+    result: pass
+    notes: "US-39 complete. Remaining unmet: AGENTS.md Tech stack section has no Scale Manager entry. Queued AGENTS.md update."
+    tokens: ~1k
+  - task: 5
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All 10 done-when criteria met. Evidence:
+      - US-39: gameConfig.scale.mode=Phaser.Scale.FIT (game.ts:21), autoCenter=CENTER_BOTH (game.ts:22)
+      - US-39: GAME_WIDTH=576, GAME_HEIGHT=400 (derived constants, unchanged)
+      - US-39: index.html body height:100vh, overflow:hidden
+      - US-39: index.html body background:#3e2723, canvas border:3px solid #5d4037, border-radius:8px
+      - US-39: 123 tests pass
+      - Phase: AGENTS.md Tech stack section has Scale Manager entry
+    tokens: ~1k
+  - task: 6
+    story: review
+    description: "review-pr pr=10 — posted review with 0 critical, 0 concern, 1 nit"
+    result: pass
+    notes: "Clean review. 1 nit: redundant flex centering on body (display:flex;justify-content:center;align-items:center) since autoCenter:CENTER_BOTH handles it. Not breaking. review_stage→review_posted."
+    tokens: ~4k
+  - task: 8
+    story: review
+    description: "handle-pr-review pr=10 — 1 nit skipped, summary posted"
+    result: pass
+    notes: "1 nit (flex centering on body) classified as skip — retained as belt-and-suspenders for vertical centering until visual browser confirmation. No code changes. 123 tests pass. review_complete→true."
+    tokens: ~3k
+  - task: 4
+    story: phase
+    description: "Update AGENTS.md — Scale Manager strategy documented"
+    result: pass
+    notes: "Added Scale Manager entry to Tech stack section: Phaser.Scale.FIT, autoCenter:CENTER_BOTH, 1.44:1 aspect, input auto-remap. 123 tests pass, no regressions."
+    tokens: ~1k

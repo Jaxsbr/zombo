@@ -109,10 +109,10 @@ Bedroom environment elements rendered at depth -10 (behind all gameplay):
 ### Spark economy
 
 Passive income replaced by interactive spark collection (implemented inline in GameScene, not a separate entity file):
-- Blue multi-layer diamond-shaped spark tokens spawn above grid every 4s (SPARK_SPAWN_INTERVAL=4000), drift down at 30px/s
-- 48x48 click zone per spark — player clicks to collect — value (25 sparks) added to Economy with SFX and particle burst
+- Blue multi-layer diamond-shaped spark tokens spawn above grid every 12s (SPARK_SPAWN_INTERVAL=12000), drift down at 30px/s
+- 48x48 click zone per spark — player clicks to collect — value (50 sparks) added to Economy with SFX and particle burst
 - Uncollected sparks removed at grid bottom
-- Generator (Jack-in-the-Box) spawns clickable sparks at its position every 5s (GENERATOR_INCOME_INTERVAL=5000); generator sparks auto-expire after 5s (GENERATOR_SPARK_EXPIRY). No passive income — all generator income requires clicking
+- Generator (Jack-in-the-Box) spawns clickable sparks at its position every 8s (GENERATOR_INCOME_INTERVAL=8000); generator sparks auto-expire after 5s (GENERATOR_SPARK_EXPIRY). No passive income — all generator income requires clicking
 - Spawn rate/value defined as named constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE, SPARK_FALL_SPEED)
 
 ## Unit expansion and level progression (shipped in `army-builder` phase)
@@ -145,6 +145,8 @@ TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene
 ```
 
 `LevelSelectScene.ts` renders 5 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
+
+Loadout card layout uses proportional sizing relative to GAME_WIDTH/GAME_HEIGHT: padding=0.05×GW, gap=0.02×GW, cardHeight=0.45×GH. Cards animate in with staggered entry (Back.easeOut), selection bounce (1.08×), and an idle preview bob (Sine.easeInOut).
 
 ### Defender unlock progression
 

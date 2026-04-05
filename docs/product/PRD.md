@@ -29,3 +29,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | army-builder | Shipped | US-28, US-29, US-30, US-31 | [phases/army-builder.md](phases/army-builder.md) |
 | playtest-tuning | Shipped | US-32, US-33, US-34, US-35, US-36 | [phases/playtest-tuning.md](phases/playtest-tuning.md) |
 | economy-polish | Shipped | US-37, US-38 | [phases/economy-polish.md](phases/economy-polish.md) |
+| viewport-scale | Shipped | US-39 | [phases/viewport-scale.md](phases/viewport-scale.md) |
