@@ -37,10 +37,10 @@ import {
 } from '../systems/SFX';
 
 const STARTING_BALANCE = 500;
-const SPARK_SPAWN_INTERVAL = 4000; // ms between spark spawns
+const SPARK_SPAWN_INTERVAL = 6000; // ms between spark spawns
 const SPARK_VALUE = 25; // sparks balance added per collection
 const SPARK_FALL_SPEED = 30; // pixels per second
-const GENERATOR_INCOME_INTERVAL = 5000; // ms between generator spark spawns
+const GENERATOR_INCOME_INTERVAL = 8000; // ms between generator spark spawns
 const GENERATOR_SPARK_EXPIRY = 5000; // ms before uncollected generator sparks despawn
 const FADE_DURATION = 600;
 
@@ -68,6 +68,7 @@ export class GameScene extends Phaser.Scene {
   private mineStates: Map<DefenderEntity, MineState> = new Map();
   private honeyPots: HoneyPot[] = [];
   private honeyPotSprites: Map<HoneyPot, Phaser.GameObjects.Graphics> = new Map();
+  private generatorTimers: Map<DefenderEntity, number> = new Map(); // ms until next spark
   private trapperTimers: Map<DefenderEntity, number> = new Map(); // ms since last toss
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
   private currentLevelIndex: number = 0;
@@ -121,21 +122,12 @@ export class GameScene extends Phaser.Scene {
       loop: true,
     });
 
-    // Generator income
-    this.time.addEvent({
-      delay: GENERATOR_INCOME_INTERVAL,
-      callback: () => this.tickGeneratorIncome(),
-      loop: true,
-    });
   }
 
-  private tickGeneratorIncome(): void {
-    for (const def of this.defenders) {
-      if (def.defenderType.behavior === 'generator' && !isDead(def)) {
-        def.playProduce();
-        this.spawnGeneratorSpark(def.x, def.y);
-      }
-    }
+  private randomGeneratorDelay(): number {
+    // Randomize ±30% around GENERATOR_INCOME_INTERVAL
+    const jitter = GENERATOR_INCOME_INTERVAL * 0.3;
+    return GENERATOR_INCOME_INTERVAL + (Math.random() - 0.5) * 2 * jitter;
   }
 
   private spawnGeneratorSpark(defX: number, defY: number): void {
@@ -179,7 +171,19 @@ export class GameScene extends Phaser.Scene {
       this.collectSpark(spark);
     });
 
+    // Mark as generator spark so updateSparks skips downward movement
+    spark.setData('generatorSpark', true);
     this.sparks.push(spark);
+
+    // Oscillate in place (gentle bob)
+    this.tweens.add({
+      targets: spark,
+      y: y - 8,
+      duration: 600,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+    });
 
     // Auto-expire after GENERATOR_SPARK_EXPIRY
     this.time.delayedCall(GENERATOR_SPARK_EXPIRY, () => {
@@ -738,6 +742,8 @@ export class GameScene extends Phaser.Scene {
     const gridBottom = HUD_HEIGHT + GRID_ROWS * CELL_SIZE;
     for (let i = this.sparks.length - 1; i >= 0; i--) {
       const spark = this.sparks[i];
+      // Generator sparks oscillate in place (handled by tween) — skip downward movement
+      if (spark.getData('generatorSpark')) continue;
       spark.y += SPARK_FALL_SPEED * dt;
       // Remove uncollected sparks past grid bottom
       if (spark.y > gridBottom) {
@@ -859,6 +865,22 @@ export class GameScene extends Phaser.Scene {
         enemy.col -= enemy.enemyType.speed * speedMod * dt;
       }
       enemy.updatePosition();
+    }
+
+    // Generator spark spawning — per-defender randomized timers
+    for (const def of this.defenders) {
+      if (isDead(def) || def.defenderType.behavior !== 'generator') continue;
+      if (!this.generatorTimers.has(def)) {
+        this.generatorTimers.set(def, this.randomGeneratorDelay());
+      }
+      const remaining = (this.generatorTimers.get(def) ?? 0) - delta;
+      if (remaining <= 0) {
+        def.playProduce();
+        this.spawnGeneratorSpark(def.x, def.y);
+        this.generatorTimers.set(def, this.randomGeneratorDelay());
+      } else {
+        this.generatorTimers.set(def, remaining);
+      }
     }
 
     // Honey Bear trapper — toss honey pots
@@ -1025,6 +1047,7 @@ export class GameScene extends Phaser.Scene {
         this.placement.remove({ row: d.gridRow, col: d.gridCol });
         this.mineStates.delete(d); // cleanup if mine
         this.trapperTimers.delete(d); // cleanup if trapper
+        this.generatorTimers.delete(d); // cleanup if generator
         d.destroy();
         this.defenders.splice(i, 1);
       }
