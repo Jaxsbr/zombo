@@ -44,6 +44,12 @@ entries:
     result: pass
     notes: "7 files with bomb refs: defenders.ts (type+config), DefenderEntity.ts (drawTeddyBomb L106-145, drawFn L171), SingleUse.ts (bombDetonate L3-25), DefenderUnlocks.ts (L2→bomb L6), GameScene.ts (import L23, placement L501-524, burst L761-786), SingleUseDefenders.test (3 bomb tests L21-46), LoadoutSelection.test (5 refs L42,51,53,59,63). Split: (1) HoneyTrap logic+tests, (2) config+type+bomb removal+wiring, (3) entity rendering."
     tokens: ~8k
+  - task: 9
+    story: US-35
+    description: "Remove bomb, add trapper config, wire GameScene honey pots, draw Honey Bear, update unlocks/tests"
+    result: pass
+    notes: "7-file change: DefenderBehavior bomb→trapper, DEFENDER_TYPES bomb→trapper (Honey Bear cost 75 health 60), bombDetonate removed, GameScene bomb branch→trapper registration + honey pot toss/expire/speed-modifier loop, DefenderEntity drawHoneyBear (amber bear), idle breathing tween, DefenderUnlocks L2→trapper, bomb tests removed, loadout tests updated. TS compiles clean. 123 tests pass. ✓ US-35 complete"
+    tokens: ~12k
   - task: 8
     story: US-35
     description: "Create HoneyTrap.ts pure logic module + test/HoneyTrap.test.ts with 8 test cases"
