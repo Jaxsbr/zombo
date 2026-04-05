@@ -15,14 +15,14 @@ Tune spark economy for less clicking (slower spawn, higher value) and overhaul t
 - [x] `npm test` passes with no test changes required (no tests reference spark constants directly) [US-37]
 
 #### US-38 — Loadout selection visual overhaul
-- [ ] Card dimensions in `showLoadoutSelection()` are computed proportionally from `GAME_WIDTH` and `GAME_HEIGHT` — no hardcoded pixel values for card width, card height, padding, or gap [US-38]
-- [ ] Defender preview scale is >= 0.75 (up from 0.55), computed proportionally to card size [US-38]
-- [ ] Cards have a staggered entry animation when the loadout screen appears (each card appears with a delay offset, not all at once) [US-38]
-- [ ] Selecting a card triggers a visible scale or bounce tween (not just a colour change) [US-38]
-- [ ] Defender preview containers have a gentle idle animation (bob or sway tween loop) [US-38]
-- [ ] Card layout uses the full available vertical space — cards occupy at least 40% of GAME_HEIGHT [US-38]
-- [ ] Loadout cards read as a toy catalogue — each defender preview is large enough to see its distinctive shape details (verified by: preview bounding box is at least 50x50px at the current 576x400 viewport, scaling up proportionally with larger viewports) [US-38]
-- [ ] `npm test` passes — no existing tests broken by loadout visual changes [US-38]
+- [x] Card dimensions in `showLoadoutSelection()` are computed proportionally from `GAME_WIDTH` and `GAME_HEIGHT` — no hardcoded pixel values for card width, card height, padding, or gap [US-38]
+- [x] Defender preview scale is >= 0.75 (up from 0.55), computed proportionally to card size [US-38]
+- [x] Cards have a staggered entry animation when the loadout screen appears (each card appears with a delay offset, not all at once) [US-38]
+- [x] Selecting a card triggers a visible scale or bounce tween (not just a colour change) [US-38]
+- [x] Defender preview containers have a gentle idle animation (bob or sway tween loop) [US-38]
+- [x] Card layout uses the full available vertical space — cards occupy at least 40% of GAME_HEIGHT [US-38]
+- [x] Loadout cards read as a toy catalogue — each defender preview is large enough to see its distinctive shape details (verified by: preview bounding box is at least 50x50px at the current 576x400 viewport, scaling up proportionally with larger viewports) [US-38]
+- [x] `npm test` passes — no existing tests broken by loadout visual changes [US-38]
 
 #### Structural
 - [ ] AGENTS.md reflects updated spark economy constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE) and loadout proportional sizing approach introduced in this phase [phase]
