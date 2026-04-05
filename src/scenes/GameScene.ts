@@ -20,7 +20,8 @@ import {
   wallBlocks,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
-import { bombDetonate, mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
+import { mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
+import { HoneyPot, createHoneyPot, updateHoneyPots, getSpeedModifier, HONEY_TOSS_INTERVAL, HONEY_TOSS_RANGE, HONEY_POT_DURATION } from '../systems/HoneyTrap';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
 import { attemptJump } from '../systems/EnemyMovement';
@@ -65,6 +66,9 @@ export class GameScene extends Phaser.Scene {
   private cellZones: Phaser.GameObjects.Zone[] = [];
   private sparks: Phaser.GameObjects.Container[] = [];
   private mineStates: Map<DefenderEntity, MineState> = new Map();
+  private honeyPots: HoneyPot[] = [];
+  private honeyPotSprites: Map<HoneyPot, Phaser.GameObjects.Graphics> = new Map();
+  private trapperTimers: Map<DefenderEntity, number> = new Map(); // ms since last toss
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
   private currentLevelIndex: number = 0;
   private activeLoadout: string[] = [];
@@ -498,24 +502,9 @@ export class GameScene extends Phaser.Scene {
       const entity = new DefenderEntity(this, row, col, key, type);
       this.defenders.push(entity);
 
-      if (type.behavior === 'bomb') {
-        // Bomb detonates immediately on placement
-        const hit = bombDetonate(row, col, this.enemies, type.damage);
-        for (const enemy of hit) {
-          const ent = this.enemies.find(e => e === enemy);
-          if (ent) {
-            ent.drawHealthBar();
-            ent.updateHelmet();
-            ent.playHitFlash();
-            playSfxHit();
-          }
-        }
-        // Burst animation — expanding circle
-        this.spawnBombBurst(entity.x, entity.y);
-        // Self-destruct
-        this.placement.remove({ row, col });
-        entity.destroy();
-        this.defenders = this.defenders.filter(d => d !== entity);
+      if (type.behavior === 'trapper') {
+        // Honey Bear — register for periodic honey pot tossing
+        this.trapperTimers.set(entity, 0);
       } else if (type.behavior === 'mine') {
         // Mine starts dormant — grey/muted appearance
         entity.setAlpha(0.5);
@@ -758,31 +747,20 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private spawnBombBurst(x: number, y: number): void {
-    // Expanding red-orange burst
-    const burst = this.add.circle(x, y, 10, 0xf44336, 0.9);
-    burst.setDepth(50);
-    this.tweens.add({
-      targets: burst,
-      scaleX: 4,
-      scaleY: 4,
-      alpha: 0,
-      duration: 400,
-      ease: 'Quad.easeOut',
-      onComplete: () => burst.destroy(),
-    });
-    // Secondary flash ring
-    const ring = this.add.circle(x, y, 8, 0xffeb3b, 0.7);
-    ring.setDepth(51);
-    this.tweens.add({
-      targets: ring,
-      scaleX: 5,
-      scaleY: 5,
-      alpha: 0,
-      duration: 300,
-      ease: 'Quad.easeOut',
-      onComplete: () => ring.destroy(),
-    });
+  private spawnHoneyPotSprite(pot: HoneyPot): void {
+    const x = pot.col * CELL_SIZE + CELL_SIZE / 2;
+    const y = HUD_HEIGHT + pot.row * CELL_SIZE + CELL_SIZE / 2;
+    const gfx = this.add.graphics();
+    gfx.setDepth(5);
+    // Amber/golden puddle — reads as sticky slow zone
+    gfx.fillStyle(0xffb300, 0.6);
+    gfx.fillEllipse(x, y, CELL_SIZE * 0.7, CELL_SIZE * 0.4);
+    gfx.fillStyle(0xffd54f, 0.4);
+    gfx.fillEllipse(x, y, CELL_SIZE * 0.5, CELL_SIZE * 0.25);
+    // Shine highlight
+    gfx.fillStyle(0xfff8e1, 0.5);
+    gfx.fillCircle(x - 5, y - 3, 4);
+    this.honeyPotSprites.set(pot, gfx);
   }
 
   private spawnDeathParticles(x: number, y: number, color: number): void {
@@ -875,9 +853,43 @@ export class GameScene extends Phaser.Scene {
       }
 
       if (!blocked) {
-        enemy.col -= enemy.enemyType.speed * dt;
+        const enemyRow = enemy.lane;
+        const enemyCol = Math.round(enemy.col);
+        const speedMod = getSpeedModifier(this.honeyPots, enemyRow, enemyCol);
+        enemy.col -= enemy.enemyType.speed * speedMod * dt;
       }
       enemy.updatePosition();
+    }
+
+    // Honey Bear trapper — toss honey pots
+    for (const def of this.defenders) {
+      if (isDead(def) || def.defenderType.behavior !== 'trapper') continue;
+      const elapsed = (this.trapperTimers.get(def) ?? 0) + delta;
+      if (elapsed >= HONEY_TOSS_INTERVAL) {
+        this.trapperTimers.set(def, 0);
+        // Toss honey pot to a random cell ahead in the same lane
+        const targetCol = def.gridCol + 1 + Math.floor(Math.random() * Math.min(HONEY_TOSS_RANGE, GRID_COLS - def.gridCol - 1));
+        if (targetCol < GRID_COLS) {
+          const pot = createHoneyPot(def.gridRow, targetCol, HONEY_POT_DURATION);
+          this.honeyPots.push(pot);
+          this.spawnHoneyPotSprite(pot);
+        }
+      } else {
+        this.trapperTimers.set(def, elapsed);
+      }
+    }
+
+    // Update honey pots — expire old ones
+    const prevPots = new Set(this.honeyPots);
+    this.honeyPots = updateHoneyPots(this.honeyPots, delta);
+    for (const pot of prevPots) {
+      if (!this.honeyPots.includes(pot)) {
+        const sprite = this.honeyPotSprites.get(pot);
+        if (sprite) {
+          sprite.destroy();
+          this.honeyPotSprites.delete(pot);
+        }
+      }
     }
 
     // Mine arm timer + trigger check
@@ -1012,6 +1024,7 @@ export class GameScene extends Phaser.Scene {
         this.spawnDestructionEffect(d.x, d.y);
         this.placement.remove({ row: d.gridRow, col: d.gridCol });
         this.mineStates.delete(d); // cleanup if mine
+        this.trapperTimers.delete(d); // cleanup if trapper
         d.destroy();
         this.defenders.splice(i, 1);
       }
