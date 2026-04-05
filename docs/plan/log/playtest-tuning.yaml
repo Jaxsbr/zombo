@@ -38,3 +38,9 @@ entries:
     result: pass
     notes: "tickGeneratorIncome now checks behavior=generator, spawns spark at defender position with random offset, 5s auto-expiry. Updated Defenders.test, added passive-income-zero test. 118 tests pass, no regressions. ✓ US-33 complete"
     tokens: ~5k
+  - task: 7
+    story: US-35
+    description: "Investigation — all bomb references, plan Honey Bear implementation"
+    result: pass
+    notes: "7 files with bomb refs: defenders.ts (type+config), DefenderEntity.ts (drawTeddyBomb L106-145, drawFn L171), SingleUse.ts (bombDetonate L3-25), DefenderUnlocks.ts (L2→bomb L6), GameScene.ts (import L23, placement L501-524, burst L761-786), SingleUseDefenders.test (3 bomb tests L21-46), LoadoutSelection.test (5 refs L42,51,53,59,63). Split: (1) HoneyTrap logic+tests, (2) config+type+bomb removal+wiring, (3) entity rendering."
+    tokens: ~8k
