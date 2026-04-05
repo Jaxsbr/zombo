@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "LevelSelectScene.ts:145 showLoadoutSelection. Current: cardWidth=100, cardHeight=120, gap=8, padding=30, previewScale=0.55 — all hardcoded px. GAME_WIDTH=576, GAME_HEIGHT=400. Plan: cardHeight=0.45*GH (180), padding=0.05*GW, gap=0.02*GW, cardWidth=(GW-2pad-(n-1)gap)/n, previewScale=0.85 proportional. Add staggered entry (alpha+y tween per card), selection bounce (scale 1→1.1→1), idle bob on preview. Tests unaffected (logic only)."
     tokens: ~3k
+  - task: 4
+    story: US-38
+    description: "Rewrite showLoadoutSelection with proportional sizing, animations"
+    result: pass
+    notes: "Full overhaul: padding/gap/cardHeight/cardWidth all proportional to GAME_WIDTH/GAME_HEIGHT. previewScale=max(0.75, cw/110)≈0.86. Staggered entry (i*120ms, Back.easeOut), selection bounce (1.08x), idle bob (Sine.easeInOut). Cards 45% GAME_HEIGHT. 123 tests pass, no regressions. ✓ US-38 complete"
+    tokens: ~8k

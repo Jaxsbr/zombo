@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 4
-  next_task: "[US-38] Rewrite showLoadoutSelection with proportional sizing, staggered entry, selection bounce, idle bob animations"
+  task_number: 5
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
