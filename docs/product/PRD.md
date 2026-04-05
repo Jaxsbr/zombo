@@ -30,3 +30,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | playtest-tuning | Shipped | US-32, US-33, US-34, US-35, US-36 | [phases/playtest-tuning.md](phases/playtest-tuning.md) |
 | economy-polish | Shipped | US-37, US-38 | [phases/economy-polish.md](phases/economy-polish.md) |
 | viewport-scale | Shipped | US-39 | [phases/viewport-scale.md](phases/viewport-scale.md) |
+| guided-intro | Draft | US-40, US-41, US-42, US-43, US-44 | [phases/guided-intro.md](phases/guided-intro.md) |
