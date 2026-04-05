@@ -56,6 +56,12 @@ entries:
     result: pass
     notes: "EnemyType needs optional scale field. EnemyEntity shapeGraphics can be scaled independently — setScale on shape child after drawing. Flash overlay r=20 needs scaling. Health bar position offset adjusts with scale. Scales: basic=1.0, tough=1.35, armored=1.1, jumper=0.85. Visual details: Robot needs gear bolts, Puppet needs spring coil. Queued full implementation."
     tokens: ~6k
+  - task: 11
+    story: US-36
+    description: "Implement enemy visual differentiation — scale field, per-type scales, visual details"
+    result: pass
+    notes: "EnemyType.scale: basic=1.0, tough=1.35, armored=1.15, jumper=0.85. shapeGraphics.setScale() per type. Flash overlay radius scaled. Health bar barY scaled. Cleaning Robot: gear bolts + panel line. Sock Puppet: spring coil. 123 tests pass, no regressions. ✓ US-36 complete"
+    tokens: ~5k
   - task: 8
     story: US-35
     description: "Create HoneyTrap.ts pure logic module + test/HoneyTrap.test.ts with 8 test cases"

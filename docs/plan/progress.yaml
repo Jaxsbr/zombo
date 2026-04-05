@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 11
-  next_task: "[US-36] Implement enemy visual differentiation: scale field, per-type scales, scaled rendering, visual details for Robot/Puppet"
+  task_number: 12
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
