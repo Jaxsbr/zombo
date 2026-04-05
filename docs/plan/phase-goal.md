@@ -9,10 +9,10 @@ Tune spark economy for less clicking (slower spawn, higher value) and overhaul t
 ### Done-when (observable)
 
 #### US-37 — Spark economy rebalance
-- [ ] `SPARK_SPAWN_INTERVAL` is 12000 (doubled from 6000) in `src/scenes/GameScene.ts` [US-37]
-- [ ] `SPARK_VALUE` is 50 (doubled from 25) in `src/scenes/GameScene.ts` [US-37]
-- [ ] `GENERATOR_INCOME_INTERVAL` is unchanged at 8000 in `src/scenes/GameScene.ts` [US-37]
-- [ ] `npm test` passes with no test changes required (no tests reference spark constants directly) [US-37]
+- [x] `SPARK_SPAWN_INTERVAL` is 12000 (doubled from 6000) in `src/scenes/GameScene.ts` [US-37]
+- [x] `SPARK_VALUE` is 50 (doubled from 25) in `src/scenes/GameScene.ts` [US-37]
+- [x] `GENERATOR_INCOME_INTERVAL` is unchanged at 8000 in `src/scenes/GameScene.ts` [US-37]
+- [x] `npm test` passes with no test changes required (no tests reference spark constants directly) [US-37]
 
 #### US-38 — Loadout selection visual overhaul
 - [ ] Card dimensions in `showLoadoutSelection()` are computed proportionally from `GAME_WIDTH` and `GAME_HEIGHT` — no hardcoded pixel values for card width, card height, padding, or gap [US-38]
