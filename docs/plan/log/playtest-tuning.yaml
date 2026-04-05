@@ -8,3 +8,9 @@ entries:
     result: pass
     notes: "Water Pistol damage 25→15, Block Tower cost 50→25 health 400→90, Mine recharge 30000→20000, MINE_ARM_DELAY 10000→6000. Tests use hardcoded fixtures (Combat) or import constants (SingleUseDefenders) — all should pass after config changes. Wall health 90 > others' 40, passes Defenders.test relative check."
     tokens: ~5k
+  - task: 2
+    story: US-34
+    description: "Apply balance changes — Water Pistol damage 25→15, Block Tower cost 50→25 health 400→90, Mine rechargeTime 30000→20000, MINE_ARM_DELAY 10000→6000"
+    result: pass
+    notes: "Config-only changes to defenders.ts. All 117 tests pass. ✓ US-34 complete"
+    tokens: ~3k
