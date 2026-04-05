@@ -26,12 +26,12 @@ Tune the game for playtest feedback: boost spark economy (faster drops, larger t
 - [ ] Test coverage: generator income is 0 — placing a generator and advancing time without clicking does NOT increase economy balance [US-33]
 
 #### US-34 — Defender balance pass
-- [ ] Water Pistol `damage` reduced to <= 15 (from 25) in `src/config/defenders.ts` [US-34]
-- [ ] Block Tower `cost` reduced to <= 25 (from 50) in `src/config/defenders.ts` [US-34]
-- [ ] Block Tower `health` reduced to a value where basic enemy (damage=20) destroys it in 4-5 seconds — i.e., health between 80 and 100 inclusive [US-34]
-- [ ] Marble Mine `rechargeTime` reduced to <= 20000ms (from 30000ms) in `src/config/defenders.ts` [US-34]
-- [ ] `MINE_ARM_DELAY` reduced to <= 6000ms (from 10000ms) [US-34]
-- [ ] All existing tests in `test/` pass with the new balance values — `npm test` exits 0 [US-34]
+- [x] Water Pistol `damage` reduced to <= 15 (from 25) in `src/config/defenders.ts` [US-34]
+- [x] Block Tower `cost` reduced to <= 25 (from 50) in `src/config/defenders.ts` [US-34]
+- [x] Block Tower `health` reduced to a value where basic enemy (damage=20) destroys it in 4-5 seconds — i.e., health between 80 and 100 inclusive [US-34]
+- [x] Marble Mine `rechargeTime` reduced to <= 20000ms (from 30000ms) in `src/config/defenders.ts` [US-34]
+- [x] `MINE_ARM_DELAY` reduced to <= 6000ms (from 10000ms) [US-34]
+- [x] All existing tests in `test/` pass with the new balance values — `npm test` exits 0 [US-34]
 
 #### US-35 — Replace Teddy Bomb with Honey Bear
 - [ ] `DefenderBehavior` type union includes `'trapper'` and does NOT include `'bomb'` [US-35]
