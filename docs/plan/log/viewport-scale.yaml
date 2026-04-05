@@ -14,3 +14,9 @@ entries:
     result: pass
     notes: "game.ts: added scale:{mode:Phaser.Scale.FIT, autoCenter:Phaser.Scale.CENTER_BOTH}. index.html: min-height→height:100vh, added overflow:hidden. GAME_WIDTH=576, GAME_HEIGHT=400 unchanged. 123 tests pass, no regressions. ✓ US-39 complete"
     tokens: ~2k
+  - task: 3
+    story: phase
+    description: "Investigation — US-39 complete, remaining: AGENTS.md structural criterion"
+    result: pass
+    notes: "US-39 complete. Remaining unmet: AGENTS.md Tech stack section has no Scale Manager entry. Queued AGENTS.md update."
+    tokens: ~1k
