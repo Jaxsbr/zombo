@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 5
-  next_task: null
+  task_number: 6
+  next_task: "[phase] Update AGENTS.md — spark constants (SPARK_SPAWN_INTERVAL 6000→12000, SPARK_VALUE 25→50) and loadout proportional sizing"
   last_result: pass
   consecutive_fails: 0
 

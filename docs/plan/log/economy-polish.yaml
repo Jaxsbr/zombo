@@ -26,3 +26,9 @@ entries:
     result: pass
     notes: "Full overhaul: padding/gap/cardHeight/cardWidth all proportional to GAME_WIDTH/GAME_HEIGHT. previewScale=max(0.75, cw/110)≈0.86. Staggered entry (i*120ms, Back.easeOut), selection bounce (1.08x), idle bob (Sine.easeInOut). Cards 45% GAME_HEIGHT. 123 tests pass, no regressions. ✓ US-38 complete"
     tokens: ~8k
+  - task: 5
+    story: phase
+    description: "Investigation — both stories complete, remaining: AGENTS.md structural criterion"
+    result: pass
+    notes: "US-37 and US-38 complete. Remaining unmet: AGENTS.md update for spark constants and loadout sizing. Queued AGENTS.md update."
+    tokens: ~1k
