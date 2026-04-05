@@ -149,7 +149,7 @@ export class LevelSelectScene extends Phaser.Scene {
 
     // Dim the level entries
     const overlay = this.add.rectangle(
-      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 1,
+      GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x3e2723, 1,
     );
     overlay.setDepth(10);
 
