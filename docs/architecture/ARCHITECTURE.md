@@ -2,7 +2,7 @@
 
 ## Tech stack
 
-- **Runtime:** Browser (HTML5)
+- **Runtime:** Browser (HTML5, localStorage for persistence)
 - **Language:** TypeScript (strict mode)
 - **Game framework:** Phaser 3 (>=3.60)
 - **Bundler:** Vite
@@ -15,21 +15,26 @@ src/
 ├── main.ts              # Phaser.Game entry point, scene registration
 ├── config/
 │   ├── game.ts          # Phaser game config (dimensions, physics, scenes)
-│   ├── defenders.ts     # Defender type registry (name, cost, health, damage, range)
-│   ├── enemies.ts       # Enemy type registry (name, health, speed)
-│   └── levels.ts        # Level config registry (waves, enemy composition, difficulty)
+│   ├── defenders.ts     # Defender type registry (5 types: shooter, generator, wall, trapper, mine)
+│   ├── enemies.ts       # Enemy type registry (4 types: basic, tough, armored, jumper)
+│   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_5, escalating difficulty)
 ├── scenes/
 │   ├── TitleScene.ts    # Title screen — "Toy Box Siege" branding, Play button
+│   ├── LevelSelectScene.ts # Level select — 5 toy-box entries, loadout selection
 │   ├── GameScene.ts     # Main gameplay scene — grid, HUD, placement, combat loop
-│   └── GameOverScene.ts # Win/lose display ("Fort Defended!"/"The Mess Wins!"), restart
+│   └── GameOverScene.ts # Win/lose display, continue to level select
 ├── systems/
 │   ├── Grid.ts          # Grid state — cell coordinates, occupancy tracking
 │   ├── Economy.ts       # Resource balance — income, spend, passive generation
 │   ├── Placement.ts     # Defender placement logic — cell validation, cost deduction
 │   ├── WaveManager.ts   # Wave progression — spawn timing, wave config, completion
-│   ├── EnemyMovement.ts # Enemy movement logic — leftward advance, speed handling
+│   ├── EnemyMovement.ts # Enemy movement logic — leftward advance, speed handling, jump logic
 │   ├── Combat.ts        # Projectile firing, damage application, health tracking
-│   └── GameFlow.ts      # Win/lose detection, game state machine
+│   ├── GameFlow.ts      # Win/lose detection, game state machine
+│   ├── SingleUse.ts     # Mine arm/trigger logic (pure TS)
+│   ├── HoneyTrap.ts     # Honey pot state: create, update/expire, speed modifier (pure TS)
+│   ├── LevelProgress.ts # Level completion + localStorage persistence (pure TS)
+│   └── DefenderUnlocks.ts # Defender unlock map + localStorage persistence (pure TS)
 └── entities/
     ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks), health bar
     ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot), health bar
@@ -43,15 +48,19 @@ src/
 ```
 Player click → Placement → Grid (occupancy) + Economy (spend)
                               ↓
-Passive timer → Economy (addIncome) → HUD update
+                        [trapper? → register for honey pot tossing]
+                        [mine? → MineState dormant → arm after delay → trigger on overlap]
+                        [honey pots → 0.5x enemy speed on pot cells → expire after 8s]
+                              ↓
+Spark click → Economy (addIncome) → HUD update
                               ↓
 WaveManager → Enemy spawn → Enemy movement (per tick)
-                              ↓
+                              ↓ [jumper? → attemptJump over defender]
 Combat → Defender fires Projectile → Projectile hits Enemy → Enemy.health -= damage
                               ↓
 GameFlow → checks win (no enemies + waves done) / lose (enemy at col 0)
                               ↓
-GameOverScene → restart → reset all systems
+GameOverScene → LevelProgress (complete + unlock next) → LevelSelectScene
 ```
 
 ## Key design decisions
@@ -60,25 +69,21 @@ GameOverScene → restart → reset all systems
 - **Config-driven entities:** Defender and enemy types are defined in `config/` registries, not hardcoded in entity classes. Adding a new type is a config addition, not a code change.
 - **Toy Box Siege theme:** Defenders are toys (Water Pistol, Jack-in-the-Box, Block Tower), enemies are household nuisances (Dust Bunny, Cleaning Robot). Theme names in config registries, distinct Phaser Graphics shapes per entity type, bedroom carpet grid, "Sparks" resource label.
 
-## AGENTS.md sections affected by playable phase
-
-- Directory layout (new `src/entities/` directory, `src/config/levels.ts`)
-- Game logic architecture (entity layer bridges systems and rendering)
-- Testing conventions (level config unit test added)
-
-## Scene flow (shipped in `game-feel` phase)
+## Scene flow (shipped in `game-feel` phase, extended in `army-builder` phase)
 
 ```
-Game launch → TitleScene (Play button) → fade → GameScene
+Game launch → TitleScene (Play button) → fade → LevelSelectScene
+                                                    ↓
+LevelSelectScene → [LoadoutScreen if >4 unlocked] → fade → GameScene
                                                     ↓
 WaveManager state: setup (25s) → announcing (2.5s) → spawning → waiting (18s) → announcing → ...
                                                     ↓
 GameScene reads waveState → renders progress dots + announcements
                                                     ↓
-GameFlow win/lose → fade → GameOverScene → fade → GameScene (restart)
+GameFlow win/lose → fade → GameOverScene → fade → LevelSelectScene
 ```
 
-All scene transitions use Phaser camera fades. WaveManager drives wave pacing via a 5-state machine (setup → announcing → spawning → waiting → complete).
+All scene transitions use Phaser camera fades. WaveManager drives wave pacing via a 5-state machine (setup → announcing → spawning → waiting → complete). Level progress and defender unlocks persisted to localStorage.
 
 ## Game juice layer (shipped in `game-juice` phase)
 
@@ -110,32 +115,32 @@ Passive income replaced by interactive spark collection (implemented inline in G
 - Generator (Jack-in-the-Box) automatic income unchanged
 - Spawn rate/value defined as named constants (SPARK_SPAWN_INTERVAL, SPARK_VALUE, SPARK_FALL_SPEED)
 
-## Unit expansion and level progression (planned for `army-builder` phase)
+## Unit expansion and level progression (shipped in `army-builder` phase)
 
-### New defender types
+### Single-use defenders
 
-- **Teddy Bomb** (bomb) — 150 sparks, single-use. Instant area damage (3x3 Chebyshev) on placement, then self-destructs. Very Slow recharge. PvZ equivalent: Cherry Bomb.
-- **Marble Mine** (mine) — 25 sparks, single-use. Dormant for ~10s after placement, then arms. Instant-kills first enemy to enter its cell when armed. Does not block movement. Slow recharge. PvZ equivalent: Potato Mine.
+- **Teddy Bomb** (bomb) — 150 sparks, single-use. Instant area damage (3x3 Chebyshev) on placement via `bombDetonate` in `SingleUse.ts`, then self-destructs with burst animation. 50s recharge.
+- **Marble Mine** (mine) — 25 sparks, single-use. Dormant for 10s after placement (`MineState` arm timer in `SingleUse.ts`), then arms with pulse tween. Instant-kills first enemy on cell overlap when armed. Does not block movement. 30s recharge.
 
-DefenderType interface extended with `singleUse` and `behavior` fields to support bomb/mine archetypes alongside existing shooter/wall/generator.
+DefenderType interface extended with `singleUse` and `behavior` fields (5 behaviors: shooter, generator, wall, bomb, mine). Recharge timers render as cooldown overlays on HUD cards.
 
-### New enemy types
+### Additional enemy types
 
-- **Armored Bunny** (armored) — 300 HP, 0.5 cells/s (same speed as Dust Bunny, 3x health). Toy helmet overlay with 3-stage visual degradation (full → cracked → bare). PvZ equivalent: Buckethead.
-- **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s. Jumps over first defender encountered (jumpsRemaining=1), then walks normally. Arc tween for jump visual. PvZ equivalent: Pole Vaulter.
+- **Armored Bunny** (armored) — 300 HP (3x basic), 0.5 cells/s. Dust Bunny shape with toy helmet overlay, 3-stage visual degradation (full → cracked at 50% → bare at 25%). `updateHelmet` in `EnemyEntity.ts`.
+- **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s. `attemptJump` logic in `EnemyMovement.ts` — jumps over first defender encountered (arc tween), then walks normally. `jumpsRemaining` field on EnemyType.
 
 ### Multi-level structure
 
-5 levels with escalating difficulty (3-5 waves each). Enemy composition ramps: L1 basic only → L5 all types. Level progress and defender unlocks persisted to localStorage.
+5 levels (LEVEL_1 through LEVEL_5) with escalating wave count (3-5) and enemy composition (L1 basic only → L5 all types). `LevelProgress.ts` manages localStorage persistence (`zombo_progress`). `DefenderUnlocks.ts` manages unlock state (`zombo_unlocks`).
 
-### Scene flow change
+### Scene flow
 
 ```
 TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene → GameOverScene → LevelSelectScene
 ```
 
-LevelSelectScene replaces direct TitleScene→GameScene transition. Loadout selection appears only when player has more unlocked defenders than the 4-slot limit.
+`LevelSelectScene.ts` renders 5 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
 
 ### Defender unlock progression
 
-L1 start: Water Pistol, Jack-in-the-Box, Block Tower. L2 completion: +Teddy Bomb. L3 completion: +Marble Mine. Loadout selection (pick 4) activates after L3 completion.
+L1 start: [shooter, generator, wall]. Completing L2: +bomb. Completing L3: +mine. Loadout selection (pick 4) activates after L3 completion when roster exceeds 4-slot limit.

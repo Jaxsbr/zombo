@@ -1,28 +1,4 @@
-import { CombatEntity, applyDamage, isDead } from './Combat';
-
-/**
- * Bomb — area damage within Chebyshev distance 1 (3x3 grid area).
- * Returns the list of enemies that were hit.
- */
-export function bombDetonate(
-  bombRow: number,
-  bombCol: number,
-  enemies: CombatEntity[],
-  damage: number,
-): CombatEntity[] {
-  const hit: CombatEntity[] = [];
-  for (const enemy of enemies) {
-    if (isDead(enemy)) continue;
-    const rowDist = Math.abs(enemy.lane - bombRow);
-    const colDist = Math.abs(enemy.col - bombCol);
-    // Chebyshev distance <= 1 means within 3x3 area
-    if (rowDist <= 1 && colDist <= 1) {
-      applyDamage(enemy, damage);
-      hit.push(enemy);
-    }
-  }
-  return hit;
-}
+import { CombatEntity, isDead } from './Combat';
 
 /**
  * Mine — check if any enemy is on the mine's cell.

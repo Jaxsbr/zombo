@@ -21,10 +21,18 @@ describe('Defender types', () => {
     expect(DEFENDER_TYPES.wall).toBeDefined();
   });
 
-  it('generator produces income but does not attack', () => {
+  it('generator does not produce passive income and does not attack', () => {
     const gen = DEFENDER_TYPES.generator;
-    expect(gen.generatesIncome).toBeGreaterThan(0);
+    expect(gen.generatesIncome).toBe(0);
     expect(gen.damage).toBe(0);
+  });
+
+  it('generator income is 0 — passive timer does not increase balance', () => {
+    const gen = DEFENDER_TYPES.generator;
+    // Simulates what tickGeneratorIncome would do with generatesIncome
+    const balance = 100;
+    const newBalance = balance + gen.generatesIncome;
+    expect(newBalance).toBe(100); // no change — income is 0
   });
 
   it('shooter attacks but does not generate income', () => {

@@ -20,7 +20,8 @@ import {
   wallBlocks,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
-import { bombDetonate, mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
+import { mineTriggerCheck, MineState, createMineState, updateMineState } from '../systems/SingleUse';
+import { HoneyPot, createHoneyPot, updateHoneyPots, getSpeedModifier, HONEY_TOSS_INTERVAL, HONEY_TOSS_RANGE, HONEY_POT_DURATION } from '../systems/HoneyTrap';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
 import { attemptJump } from '../systems/EnemyMovement';
@@ -36,10 +37,11 @@ import {
 } from '../systems/SFX';
 
 const STARTING_BALANCE = 500;
-const SPARK_SPAWN_INTERVAL = 8000; // ms between spark spawns
+const SPARK_SPAWN_INTERVAL = 6000; // ms between spark spawns
 const SPARK_VALUE = 25; // sparks balance added per collection
 const SPARK_FALL_SPEED = 30; // pixels per second
-const GENERATOR_INCOME_INTERVAL = 5000; // ms
+const GENERATOR_INCOME_INTERVAL = 8000; // ms between generator spark spawns
+const GENERATOR_SPARK_EXPIRY = 5000; // ms before uncollected generator sparks despawn
 const FADE_DURATION = 600;
 
 export class GameScene extends Phaser.Scene {
@@ -64,6 +66,10 @@ export class GameScene extends Phaser.Scene {
   private cellZones: Phaser.GameObjects.Zone[] = [];
   private sparks: Phaser.GameObjects.Container[] = [];
   private mineStates: Map<DefenderEntity, MineState> = new Map();
+  private honeyPots: HoneyPot[] = [];
+  private honeyPotSprites: Map<HoneyPot, Phaser.GameObjects.Graphics> = new Map();
+  private generatorTimers: Map<DefenderEntity, number> = new Map(); // ms until next spark
+  private trapperTimers: Map<DefenderEntity, number> = new Map(); // ms since last toss
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
   private currentLevelIndex: number = 0;
   private activeLoadout: string[] = [];
@@ -116,21 +122,76 @@ export class GameScene extends Phaser.Scene {
       loop: true,
     });
 
-    // Generator income
-    this.time.addEvent({
-      delay: GENERATOR_INCOME_INTERVAL,
-      callback: () => this.tickGeneratorIncome(),
-      loop: true,
-    });
   }
 
-  private tickGeneratorIncome(): void {
-    for (const def of this.defenders) {
-      if (def.defenderType.generatesIncome > 0 && !isDead(def)) {
-        this.economy.addIncome(def.defenderType.generatesIncome);
-        def.playProduce();
+  private randomGeneratorDelay(): number {
+    // Randomize ±30% around GENERATOR_INCOME_INTERVAL
+    const jitter = GENERATOR_INCOME_INTERVAL * 0.3;
+    return GENERATOR_INCOME_INTERVAL + (Math.random() - 0.5) * 2 * jitter;
+  }
+
+  private spawnGeneratorSpark(defX: number, defY: number): void {
+    // Slight random offset so sparks don't stack exactly
+    const x = defX + (Math.random() - 0.5) * 20;
+    const y = defY - 15;
+
+    const spark = this.add.container(x, y);
+    spark.setDepth(10);
+
+    // Same multi-layer diamond shape as floating sparks
+    const gfx = this.add.graphics();
+    gfx.fillStyle(0x81d4fa, 0.3);
+    gfx.fillCircle(0, 0, 22);
+    gfx.fillStyle(0x4fc3f7, 0.4);
+    gfx.fillCircle(0, 0, 16);
+    gfx.fillStyle(0x4fc3f7, 0.9);
+    gfx.beginPath();
+    gfx.moveTo(0, -16);
+    gfx.lineTo(12, 0);
+    gfx.lineTo(0, 16);
+    gfx.lineTo(-12, 0);
+    gfx.closePath();
+    gfx.fillPath();
+    gfx.fillStyle(0xb3e5fc, 0.6);
+    gfx.beginPath();
+    gfx.moveTo(0, -12);
+    gfx.lineTo(4, 0);
+    gfx.lineTo(0, 12);
+    gfx.lineTo(-4, 0);
+    gfx.closePath();
+    gfx.fillPath();
+    gfx.fillStyle(0xffffff, 0.9);
+    gfx.fillCircle(0, 0, 5);
+    spark.add(gfx);
+
+    const zone = this.add.zone(0, 0, 48, 48).setInteractive({ useHandCursor: true });
+    spark.add(zone);
+
+    zone.on('pointerdown', () => {
+      this.collectSpark(spark);
+    });
+
+    // Mark as generator spark so updateSparks skips downward movement
+    spark.setData('generatorSpark', true);
+    this.sparks.push(spark);
+
+    // Oscillate in place (gentle bob)
+    this.tweens.add({
+      targets: spark,
+      y: y - 8,
+      duration: 600,
+      ease: 'Sine.easeInOut',
+      yoyo: true,
+      repeat: -1,
+    });
+
+    // Auto-expire after GENERATOR_SPARK_EXPIRY
+    this.time.delayedCall(GENERATOR_SPARK_EXPIRY, () => {
+      if (spark.active) {
+        spark.destroy();
+        this.sparks = this.sparks.filter(s => s !== spark);
       }
-    }
+    });
   }
 
   private drawGrid(): void {
@@ -445,24 +506,9 @@ export class GameScene extends Phaser.Scene {
       const entity = new DefenderEntity(this, row, col, key, type);
       this.defenders.push(entity);
 
-      if (type.behavior === 'bomb') {
-        // Bomb detonates immediately on placement
-        const hit = bombDetonate(row, col, this.enemies, type.damage);
-        for (const enemy of hit) {
-          const ent = this.enemies.find(e => e === enemy);
-          if (ent) {
-            ent.drawHealthBar();
-            ent.updateHelmet();
-            ent.playHitFlash();
-            playSfxHit();
-          }
-        }
-        // Burst animation — expanding circle
-        this.spawnBombBurst(entity.x, entity.y);
-        // Self-destruct
-        this.placement.remove({ row, col });
-        entity.destroy();
-        this.defenders = this.defenders.filter(d => d !== entity);
+      if (type.behavior === 'trapper') {
+        // Honey Bear — register for periodic honey pot tossing
+        this.trapperTimers.set(entity, 0);
       } else if (type.behavior === 'mine') {
         // Mine starts dormant — grey/muted appearance
         entity.setAlpha(0.5);
@@ -622,27 +668,39 @@ export class GameScene extends Phaser.Scene {
     const spark = this.add.container(x, y);
     spark.setDepth(10);
 
-    // Draw spark shape — diamond/star glow (distinct from yellow circle projectiles)
+    // Draw spark shape — multi-layer diamond/star glow (distinct from ambient dust motes and projectile impacts)
     const gfx = this.add.graphics();
     // Outer glow
-    gfx.fillStyle(0x81d4fa, 0.4);
-    gfx.fillCircle(0, 0, 12);
+    gfx.fillStyle(0x81d4fa, 0.3);
+    gfx.fillCircle(0, 0, 22);
+    // Mid glow ring
+    gfx.fillStyle(0x4fc3f7, 0.4);
+    gfx.fillCircle(0, 0, 16);
     // Inner diamond
     gfx.fillStyle(0x4fc3f7, 0.9);
     gfx.beginPath();
-    gfx.moveTo(0, -8);
-    gfx.lineTo(6, 0);
-    gfx.lineTo(0, 8);
-    gfx.lineTo(-6, 0);
+    gfx.moveTo(0, -16);
+    gfx.lineTo(12, 0);
+    gfx.lineTo(0, 16);
+    gfx.lineTo(-12, 0);
+    gfx.closePath();
+    gfx.fillPath();
+    // Star cross overlay
+    gfx.fillStyle(0xb3e5fc, 0.6);
+    gfx.beginPath();
+    gfx.moveTo(0, -12);
+    gfx.lineTo(4, 0);
+    gfx.lineTo(0, 12);
+    gfx.lineTo(-4, 0);
     gfx.closePath();
     gfx.fillPath();
     // Center bright spot
-    gfx.fillStyle(0xffffff, 0.8);
-    gfx.fillCircle(0, 0, 3);
+    gfx.fillStyle(0xffffff, 0.9);
+    gfx.fillCircle(0, 0, 5);
     spark.add(gfx);
 
-    // Clickable zone
-    const zone = this.add.zone(0, 0, 24, 24).setInteractive({ useHandCursor: true });
+    // Clickable zone — large target for easy collection
+    const zone = this.add.zone(0, 0, 48, 48).setInteractive({ useHandCursor: true });
     spark.add(zone);
 
     zone.on('pointerdown', () => {
@@ -684,6 +742,8 @@ export class GameScene extends Phaser.Scene {
     const gridBottom = HUD_HEIGHT + GRID_ROWS * CELL_SIZE;
     for (let i = this.sparks.length - 1; i >= 0; i--) {
       const spark = this.sparks[i];
+      // Generator sparks oscillate in place (handled by tween) — skip downward movement
+      if (spark.getData('generatorSpark')) continue;
       spark.y += SPARK_FALL_SPEED * dt;
       // Remove uncollected sparks past grid bottom
       if (spark.y > gridBottom) {
@@ -693,31 +753,20 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private spawnBombBurst(x: number, y: number): void {
-    // Expanding red-orange burst
-    const burst = this.add.circle(x, y, 10, 0xf44336, 0.9);
-    burst.setDepth(50);
-    this.tweens.add({
-      targets: burst,
-      scaleX: 4,
-      scaleY: 4,
-      alpha: 0,
-      duration: 400,
-      ease: 'Quad.easeOut',
-      onComplete: () => burst.destroy(),
-    });
-    // Secondary flash ring
-    const ring = this.add.circle(x, y, 8, 0xffeb3b, 0.7);
-    ring.setDepth(51);
-    this.tweens.add({
-      targets: ring,
-      scaleX: 5,
-      scaleY: 5,
-      alpha: 0,
-      duration: 300,
-      ease: 'Quad.easeOut',
-      onComplete: () => ring.destroy(),
-    });
+  private spawnHoneyPotSprite(pot: HoneyPot): void {
+    const x = pot.col * CELL_SIZE + CELL_SIZE / 2;
+    const y = HUD_HEIGHT + pot.row * CELL_SIZE + CELL_SIZE / 2;
+    const gfx = this.add.graphics();
+    gfx.setDepth(5);
+    // Amber/golden puddle — reads as sticky slow zone
+    gfx.fillStyle(0xffb300, 0.6);
+    gfx.fillEllipse(x, y, CELL_SIZE * 0.7, CELL_SIZE * 0.4);
+    gfx.fillStyle(0xffd54f, 0.4);
+    gfx.fillEllipse(x, y, CELL_SIZE * 0.5, CELL_SIZE * 0.25);
+    // Shine highlight
+    gfx.fillStyle(0xfff8e1, 0.5);
+    gfx.fillCircle(x - 5, y - 3, 4);
+    this.honeyPotSprites.set(pot, gfx);
   }
 
   private spawnDeathParticles(x: number, y: number, color: number): void {
@@ -810,9 +859,59 @@ export class GameScene extends Phaser.Scene {
       }
 
       if (!blocked) {
-        enemy.col -= enemy.enemyType.speed * dt;
+        const enemyRow = enemy.lane;
+        const enemyCol = Math.round(enemy.col);
+        const speedMod = getSpeedModifier(this.honeyPots, enemyRow, enemyCol);
+        enemy.col -= enemy.enemyType.speed * speedMod * dt;
       }
       enemy.updatePosition();
+    }
+
+    // Generator spark spawning — per-defender randomized timers
+    for (const def of this.defenders) {
+      if (isDead(def) || def.defenderType.behavior !== 'generator') continue;
+      if (!this.generatorTimers.has(def)) {
+        this.generatorTimers.set(def, this.randomGeneratorDelay());
+      }
+      const remaining = (this.generatorTimers.get(def) ?? 0) - delta;
+      if (remaining <= 0) {
+        def.playProduce();
+        this.spawnGeneratorSpark(def.x, def.y);
+        this.generatorTimers.set(def, this.randomGeneratorDelay());
+      } else {
+        this.generatorTimers.set(def, remaining);
+      }
+    }
+
+    // Honey Bear trapper — toss honey pots
+    for (const def of this.defenders) {
+      if (isDead(def) || def.defenderType.behavior !== 'trapper') continue;
+      const elapsed = (this.trapperTimers.get(def) ?? 0) + delta;
+      if (elapsed >= HONEY_TOSS_INTERVAL) {
+        this.trapperTimers.set(def, 0);
+        // Toss honey pot to a random cell ahead in the same lane
+        const targetCol = def.gridCol + 1 + Math.floor(Math.random() * Math.min(HONEY_TOSS_RANGE, GRID_COLS - def.gridCol - 1));
+        if (targetCol < GRID_COLS) {
+          const pot = createHoneyPot(def.gridRow, targetCol, HONEY_POT_DURATION);
+          this.honeyPots.push(pot);
+          this.spawnHoneyPotSprite(pot);
+        }
+      } else {
+        this.trapperTimers.set(def, elapsed);
+      }
+    }
+
+    // Update honey pots — expire old ones
+    const prevPots = new Set(this.honeyPots);
+    this.honeyPots = updateHoneyPots(this.honeyPots, delta);
+    for (const pot of prevPots) {
+      if (!this.honeyPots.includes(pot)) {
+        const sprite = this.honeyPotSprites.get(pot);
+        if (sprite) {
+          sprite.destroy();
+          this.honeyPotSprites.delete(pot);
+        }
+      }
     }
 
     // Mine arm timer + trigger check
@@ -947,6 +1046,8 @@ export class GameScene extends Phaser.Scene {
         this.spawnDestructionEffect(d.x, d.y);
         this.placement.remove({ row: d.gridRow, col: d.gridCol });
         this.mineStates.delete(d); // cleanup if mine
+        this.trapperTimers.delete(d); // cleanup if trapper
+        this.generatorTimers.delete(d); // cleanup if generator
         d.destroy();
         this.defenders.splice(i, 1);
       }

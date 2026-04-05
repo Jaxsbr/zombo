@@ -27,3 +27,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | game-feel | Shipped | US-15, US-16, US-17, US-18 | [phases/game-feel.md](phases/game-feel.md) |
 | game-juice | Shipped | US-19, US-20, US-21, US-22, US-23 | [phases/game-juice.md](phases/game-juice.md) |
 | army-builder | Shipped | US-28, US-29, US-30, US-31 | [phases/army-builder.md](phases/army-builder.md) |
+| playtest-tuning | Shipped | US-32, US-33, US-34, US-35, US-36 | [phases/playtest-tuning.md](phases/playtest-tuning.md) |

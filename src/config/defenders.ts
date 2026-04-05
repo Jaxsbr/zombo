@@ -1,4 +1,4 @@
-export type DefenderBehavior = 'shooter' | 'wall' | 'generator' | 'bomb' | 'mine';
+export type DefenderBehavior = 'shooter' | 'wall' | 'generator' | 'trapper' | 'mine';
 
 export interface DefenderType {
   name: string;
@@ -21,7 +21,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     damage: 0,
     range: 0,
     fireRate: 0,
-    generatesIncome: 25,
+    generatesIncome: 0,
     behavior: 'generator',
     singleUse: false,
   },
@@ -29,7 +29,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     name: 'Water Pistol',
     cost: 100,
     health: 40,
-    damage: 25,
+    damage: 15,
     range: 9, // full lane
     fireRate: 1,
     generatesIncome: 0,
@@ -38,8 +38,8 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
   },
   wall: {
     name: 'Block Tower',
-    cost: 50,
-    health: 400,
+    cost: 25,
+    health: 90,
     damage: 0,
     range: 0,
     fireRate: 0,
@@ -47,17 +47,16 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     behavior: 'wall',
     singleUse: false,
   },
-  bomb: {
-    name: 'Teddy Bomb',
-    cost: 150,
-    health: 1,
-    damage: 9999, // lethal — exceeds any enemy health
-    range: 1, // Chebyshev distance 1 (3x3 area)
+  trapper: {
+    name: 'Honey Bear',
+    cost: 75,
+    health: 60,
+    damage: 0,
+    range: 5, // cells ahead for honey pot tossing
     fireRate: 0,
     generatesIncome: 0,
-    behavior: 'bomb',
-    singleUse: true,
-    rechargeTime: 50000,
+    behavior: 'trapper',
+    singleUse: false,
   },
   mine: {
     name: 'Marble Mine',
@@ -69,8 +68,8 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'mine',
     singleUse: true,
-    rechargeTime: 30000,
+    rechargeTime: 20000,
   },
 };
 
-export const MINE_ARM_DELAY = 10000; // ms before mine becomes armed
+export const MINE_ARM_DELAY = 6000; // ms before mine becomes armed

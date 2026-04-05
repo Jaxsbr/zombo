@@ -1,0 +1,89 @@
+# Phase log — playtest-tuning
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-34
+    description: "Investigation — current balance values, test references, GameScene config usage"
+    result: pass
+    notes: "Water Pistol damage 25→15, Block Tower cost 50→25 health 400→90, Mine recharge 30000→20000, MINE_ARM_DELAY 10000→6000. Tests use hardcoded fixtures (Combat) or import constants (SingleUseDefenders) — all should pass after config changes. Wall health 90 > others' 40, passes Defenders.test relative check."
+    tokens: ~5k
+  - task: 2
+    story: US-34
+    description: "Apply balance changes — Water Pistol damage 25→15, Block Tower cost 50→25 health 400→90, Mine rechargeTime 30000→20000, MINE_ARM_DELAY 10000→6000"
+    result: pass
+    notes: "Config-only changes to defenders.ts. All 117 tests pass. ✓ US-34 complete"
+    tokens: ~3k
+  - task: 3
+    story: US-32
+    description: "Investigation — spark spawn interval, click zone, visual shape in GameScene.spawnSpark"
+    result: pass
+    notes: "SPARK_SPAWN_INTERVAL=8000 L39→4000. Zone 24x24 L645→48x48. Diamond shape: outer glow r=12→22, diamond ±8/±6→±16/±12, center r=3→5. Already has 3-layer shape (glow+diamond+spot). Queued implement."
+    tokens: ~3k
+  - task: 4
+    story: US-32
+    description: "Implement spark economy boost — SPARK_SPAWN_INTERVAL 8000→4000, click zone 24→48, scale diamond shape"
+    result: pass
+    notes: "Multi-layer shape (glow+ring+diamond+star cross+center). 117 tests pass, no regressions. ✓ US-32 complete"
+    tokens: ~3k
+  - task: 5
+    story: US-33
+    description: "Investigation — generator income flow, spark spawn, playProduce, test impacts for JitB rework"
+    result: pass
+    notes: "tickGeneratorIncome L127 loops defenders with generatesIncome>0, adds income, calls playProduce. Need: set generatesIncome=0, spawn clickable spark at defender position instead, expire after 5s. Test fix: Defenders.test L26 generatesIncome>0→toBe(0). New test needed: generator+time≠balance increase. GENERATOR_INCOME_INTERVAL=5000 stays as spawn interval."
+    tokens: ~4k
+  - task: 6
+    story: US-33
+    description: "Implement JitB rework — generatesIncome→0, spawn clickable sparks at defender position, 5s expiry"
+    result: pass
+    notes: "tickGeneratorIncome now checks behavior=generator, spawns spark at defender position with random offset, 5s auto-expiry. Updated Defenders.test, added passive-income-zero test. 118 tests pass, no regressions. ✓ US-33 complete"
+    tokens: ~5k
+  - task: 7
+    story: US-35
+    description: "Investigation — all bomb references, plan Honey Bear implementation"
+    result: pass
+    notes: "7 files with bomb refs: defenders.ts (type+config), DefenderEntity.ts (drawTeddyBomb L106-145, drawFn L171), SingleUse.ts (bombDetonate L3-25), DefenderUnlocks.ts (L2→bomb L6), GameScene.ts (import L23, placement L501-524, burst L761-786), SingleUseDefenders.test (3 bomb tests L21-46), LoadoutSelection.test (5 refs L42,51,53,59,63). Split: (1) HoneyTrap logic+tests, (2) config+type+bomb removal+wiring, (3) entity rendering."
+    tokens: ~8k
+  - task: 9
+    story: US-35
+    description: "Remove bomb, add trapper config, wire GameScene honey pots, draw Honey Bear, update unlocks/tests"
+    result: pass
+    notes: "7-file change: DefenderBehavior bomb→trapper, DEFENDER_TYPES bomb→trapper (Honey Bear cost 75 health 60), bombDetonate removed, GameScene bomb branch→trapper registration + honey pot toss/expire/speed-modifier loop, DefenderEntity drawHoneyBear (amber bear), idle breathing tween, DefenderUnlocks L2→trapper, bomb tests removed, loadout tests updated. TS compiles clean. 123 tests pass. ✓ US-35 complete"
+    tokens: ~12k
+  - task: 10
+    story: US-36
+    description: "Investigation — EnemyType interface, EnemyEntity rendering, animations, scaling approach"
+    result: pass
+    notes: "EnemyType needs optional scale field. EnemyEntity shapeGraphics can be scaled independently — setScale on shape child after drawing. Flash overlay r=20 needs scaling. Health bar position offset adjusts with scale. Scales: basic=1.0, tough=1.35, armored=1.1, jumper=0.85. Visual details: Robot needs gear bolts, Puppet needs spring coil. Queued full implementation."
+    tokens: ~6k
+  - task: 11
+    story: US-36
+    description: "Implement enemy visual differentiation — scale field, per-type scales, visual details"
+    result: pass
+    notes: "EnemyType.scale: basic=1.0, tough=1.35, armored=1.15, jumper=0.85. shapeGraphics.setScale() per type. Flash overlay radius scaled. Health bar barY scaled. Cleaning Robot: gear bolts + panel line. Sock Puppet: spring coil. 123 tests pass, no regressions. ✓ US-36 complete"
+    tokens: ~5k
+  - task: 8
+    story: US-35
+    description: "Create HoneyTrap.ts pure logic module + test/HoneyTrap.test.ts with 8 test cases"
+    result: pass
+    notes: "Pure TS module: createHoneyPot, updateHoneyPots, getSpeedModifier. Constants: HONEY_POT_DURATION=8000, HONEY_POT_SLOW=0.5, HONEY_TOSS_INTERVAL=4000, HONEY_TOSS_RANGE=5. 8 tests covering creation, expiry, slow modifier, multiple pots, partial updates. 126 tests pass."
+    tokens: ~4k
+  - task: 12
+    story: phase
+    description: "Queue AGENTS.md update for structural criterion"
+    result: pass
+    notes: "All 5 stories complete (US-32, US-33, US-34, US-35, US-36). Remaining: AGENTS.md structural criterion."
+    tokens: ~1k
+  - task: 13
+    story: phase
+    description: "Update AGENTS.md for structural criterion + phase completion gate"
+    result: pass
+    notes: |
+      AGENTS.md updated: Honey Bear (trapper), removed Teddy Bomb, HoneyTrap module, enemy scale, balance values, generator spark drops. No bomb refs remain in src/. All done-when criteria met. Evidence:
+      - US-32: SPARK_SPAWN_INTERVAL=4000, zone 48x48, multi-layer diamond
+      - US-33: generatesIncome=0, generator spawns clickable sparks, 5s expiry
+      - US-34: shooter damage=15, wall cost=25 health=90, mine recharge=20000, MINE_ARM_DELAY=6000
+      - US-35: DefenderBehavior has trapper not bomb, Honey Bear cost=75 health=60, HoneyTrap.ts (8 tests), honey pots 0.5x slow for 8s, bear shape + idle
+      - US-36: EnemyType.scale, basic=1.0 tough=1.35 armored=1.15 jumper=0.85, gear bolts + spring coil
+      - Phase: AGENTS.md updated. 123 tests pass.
+    tokens: ~5k

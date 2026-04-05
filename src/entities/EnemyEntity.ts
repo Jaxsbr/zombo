@@ -58,6 +58,15 @@ function drawCleaningRobot(g: Phaser.GameObjects.Graphics): void {
   g.lineStyle(OUTLINE, 0x000000, 1);
   g.strokeCircle(-10, 18, 4);
   g.strokeCircle(10, 18, 4);
+  // Mechanical detail — gear bolts on body (suggests toughness)
+  g.fillStyle(0x9e9e9e, 1);
+  g.fillCircle(-9, 2, 2);
+  g.fillCircle(9, 2, 2);
+  g.fillCircle(-9, 10, 2);
+  g.fillCircle(9, 10, 2);
+  // Panel line across body
+  g.lineStyle(1, 0x5e35b1, 0.6);
+  g.lineBetween(-13, 6, 13, 6);
 }
 
 function drawArmoredBunnyHelmet(g: Phaser.GameObjects.Graphics, healthFraction: number): void {
@@ -122,6 +131,13 @@ function drawSockPuppet(g: Phaser.GameObjects.Graphics): void {
   g.lineBetween(-8, 0, 8, 0);
   g.lineBetween(-8, 6, 8, 6);
   g.lineBetween(-8, 12, 8, 12);
+  // Spring coil at base — suggests jump capability
+  g.lineStyle(2, 0x78909c, 1);
+  for (let i = 0; i < 3; i++) {
+    const sy = 16 + i * 3;
+    g.lineBetween(-5, sy, 5, sy + 1.5);
+    g.lineBetween(5, sy + 1.5, -5, sy + 3);
+  }
 }
 
 const DRAW_ENEMY: Record<string, (g: Phaser.GameObjects.Graphics) => void> = {
@@ -165,6 +181,8 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     this.damage = type.damage;
     this.jumpsRemaining = type.jumpsRemaining ?? 0;
 
+    const scale = type.scale ?? 1.0;
+
     const shape = scene.add.graphics();
     this.shapeGraphics = shape;
     const drawFn = DRAW_ENEMY[key];
@@ -174,16 +192,17 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
       shape.fillStyle(0xffffff, 1);
       shape.fillCircle(0, 0, 22);
     }
+    shape.setScale(scale);
     this.add(shape);
 
     this.healthBar = scene.add.graphics();
     this.add(this.healthBar);
     // Hidden at full health — drawHealthBar only renders when damaged
 
-    // White flash overlay for hit reactions
+    // White flash overlay for hit reactions — scaled to match entity
     this.flashOverlay = scene.add.graphics();
     this.flashOverlay.fillStyle(0xffffff, 0.8);
-    this.flashOverlay.fillCircle(0, 0, 20);
+    this.flashOverlay.fillCircle(0, 0, 20 * scale);
     this.flashOverlay.setVisible(false);
     this.add(this.flashOverlay);
 
@@ -266,10 +285,11 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     const stage = fraction > 0.5 ? 3 : fraction > 0.25 ? 2 : 1;
     if (stage === this.lastHelmetStage) return;
     this.lastHelmetStage = stage;
-    // Redraw shape with correct helmet state
+    // Redraw shape with correct helmet state (scale preserved)
     this.shapeGraphics.clear();
     drawDustBunny(this.shapeGraphics);
     drawArmoredBunnyHelmet(this.shapeGraphics, fraction);
+    this.shapeGraphics.setScale(this.enemyType.scale ?? 1.0);
   }
 
   /** Play jump arc animation */
@@ -295,8 +315,9 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     // Only show health bar when damaged
     if (fraction >= 1) return;
 
+    const scale = this.enemyType.scale ?? 1.0;
     const barWidth = CELL_SIZE - 12;
-    const barY = CELL_SIZE / 2 - HEALTH_BAR_BOTTOM_OFFSET - HEALTH_BAR_HEIGHT;
+    const barY = (CELL_SIZE / 2 - HEALTH_BAR_BOTTOM_OFFSET - HEALTH_BAR_HEIGHT) * scale;
 
     // Background (dark)
     this.healthBar.fillStyle(0x1a1a1a, 0.8);

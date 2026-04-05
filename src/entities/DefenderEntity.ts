@@ -103,45 +103,40 @@ function drawBlockTower(g: Phaser.GameObjects.Graphics): void {
   g.strokeRect(-8, -16, 16, 12);
 }
 
-function drawTeddyBomb(g: Phaser.GameObjects.Graphics): void {
-  // Round red teddy body
-  g.fillStyle(0xf44336, 1);
+function drawHoneyBear(g: Phaser.GameObjects.Graphics): void {
+  // Amber/golden bear body
+  g.fillStyle(0xffb300, 1);
   g.fillCircle(0, 2, 14);
   g.lineStyle(OUTLINE, 0x000000, 1);
   g.strokeCircle(0, 2, 14);
-  // Ears
-  g.fillStyle(0xef5350, 1);
+  // Ears — round bear ears
+  g.fillStyle(0xffa000, 1);
   g.fillCircle(-10, -10, 6);
   g.fillCircle(10, -10, 6);
   g.lineStyle(1, 0x000000, 1);
   g.strokeCircle(-10, -10, 6);
   g.strokeCircle(10, -10, 6);
-  // Belly star
-  g.fillStyle(0xffeb3b, 1);
-  g.beginPath();
-  g.moveTo(0, -5);
-  g.lineTo(3, 1);
-  g.lineTo(8, 1);
-  g.lineTo(4, 5);
-  g.lineTo(5, 10);
-  g.lineTo(0, 7);
-  g.lineTo(-5, 10);
-  g.lineTo(-4, 5);
-  g.lineTo(-8, 1);
-  g.lineTo(-3, 1);
-  g.closePath();
-  g.fillPath();
-  // Eyes — X marks (explosive!)
-  g.lineStyle(2, 0x000000, 1);
-  g.lineBetween(-6, -2, -2, 2);
-  g.lineBetween(-2, -2, -6, 2);
-  g.lineBetween(2, -2, 6, 2);
-  g.lineBetween(6, -2, 2, 2);
-  // Fuse on top
-  g.lineStyle(2, 0x795548, 1);
-  g.lineBetween(0, -14, 2, -20);
-  g.fillStyle(0xff9800, 1);
-  g.fillCircle(2, -22, 3);
+  // Inner ears
+  g.fillStyle(0xffe082, 1);
+  g.fillCircle(-10, -10, 3);
+  g.fillCircle(10, -10, 3);
+  // Belly — lighter golden patch
+  g.fillStyle(0xffe082, 1);
+  g.fillEllipse(0, 5, 14, 10);
+  // Snout
+  g.fillStyle(0xffd54f, 1);
+  g.fillEllipse(0, 2, 8, 6);
+  // Nose — dark amber
+  g.fillStyle(0x795548, 1);
+  g.fillCircle(0, 0, 3);
+  // Eyes — friendly dots
+  g.fillStyle(0x000000, 1);
+  g.fillCircle(-5, -4, 2);
+  g.fillCircle(5, -4, 2);
+  // Honey drip on paw
+  g.fillStyle(0xffb300, 0.7);
+  g.fillCircle(10, 10, 4);
+  g.fillCircle(10, 14, 3);
 }
 
 function drawMarbleMine(g: Phaser.GameObjects.Graphics): void {
@@ -168,7 +163,7 @@ export const DRAW_DEFENDER: Record<string, (g: Phaser.GameObjects.Graphics) => v
   shooter: drawWaterPistol,
   generator: drawJackInTheBox,
   wall: drawBlockTower,
-  bomb: drawTeddyBomb,
+  trapper: drawHoneyBear,
   mine: drawMarbleMine,
 };
 
@@ -269,6 +264,18 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
           targets: this,
           angle: 1.5,
           duration: 2000,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'trapper':
+        // Honey Bear — gentle breathing/pulse
+        scene.tweens.add({
+          targets: this,
+          scaleX: 1.06,
+          scaleY: 1.06,
+          duration: 1200,
           ease: 'Sine.easeInOut',
           yoyo: true,
           repeat: -1,

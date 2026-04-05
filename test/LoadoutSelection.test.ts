@@ -39,7 +39,7 @@ describe('DefenderUnlocks', () => {
     let unlocked = loadUnlocks(storage);
     // Complete L2 (index 1) → unlocks bomb
     unlocked = updateUnlocksAfterLevel(unlocked, 1);
-    expect(unlocked).toContain('bomb');
+    expect(unlocked).toContain('trapper');
     // Complete L3 (index 2) → unlocks mine
     unlocked = updateUnlocksAfterLevel(unlocked, 2);
     expect(unlocked).toContain('mine');
@@ -48,18 +48,18 @@ describe('DefenderUnlocks', () => {
   });
 
   it('Go requires >= 1 selected — needsLoadoutSelection triggers when > 4', () => {
-    const fiveDefenders = ['shooter', 'generator', 'wall', 'bomb', 'mine'];
+    const fiveDefenders = ['shooter', 'generator', 'wall', 'trapper', 'mine'];
     expect(needsLoadoutSelection(fiveDefenders)).toBe(true);
-    const fourDefenders = ['shooter', 'generator', 'wall', 'bomb'];
+    const fourDefenders = ['shooter', 'generator', 'wall', 'trapper'];
     expect(needsLoadoutSelection(fourDefenders)).toBe(false);
   });
 
   it('loadout array persisted and restored from localStorage', () => {
     let unlocked = loadUnlocks(storage);
-    unlocked = updateUnlocksAfterLevel(unlocked, 1); // +bomb
+    unlocked = updateUnlocksAfterLevel(unlocked, 1); // +trapper
     saveUnlocks(unlocked, storage);
 
     const restored = loadUnlocks(storage);
-    expect(restored).toEqual(['shooter', 'generator', 'wall', 'bomb']);
+    expect(restored).toEqual(['shooter', 'generator', 'wall', 'trapper']);
   });
 });

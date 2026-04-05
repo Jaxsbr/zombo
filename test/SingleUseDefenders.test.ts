@@ -1,8 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { DEFENDER_TYPES, MINE_ARM_DELAY } from '../src/config/defenders';
-import { CombatEntity, EnemyCombatEntity, isDead } from '../src/systems/Combat';
+import { EnemyCombatEntity, isDead } from '../src/systems/Combat';
 import {
-  bombDetonate,
   mineTriggerCheck,
   createMineState,
   updateMineState,
@@ -17,34 +16,6 @@ function makeEnemy(overrides: Partial<EnemyCombatEntity> = {}): EnemyCombatEntit
     ...overrides,
   };
 }
-
-describe('Teddy Bomb — area damage', () => {
-  it('deals lethal damage to enemies within Chebyshev distance 1', () => {
-    const enemies = [
-      makeEnemy({ lane: 2, col: 4, health: 300 }), // same cell
-      makeEnemy({ lane: 1, col: 3, health: 300 }), // diagonal
-      makeEnemy({ lane: 3, col: 5, health: 100 }), // diagonal
-    ];
-    const hit = bombDetonate(2, 4, enemies, DEFENDER_TYPES.bomb.damage);
-    expect(hit).toHaveLength(3);
-    expect(enemies.every(e => isDead(e))).toBe(true);
-  });
-
-  it('does not damage enemies outside the 3x3 area', () => {
-    const inRange = makeEnemy({ lane: 2, col: 4, health: 100 });
-    const outOfRange = makeEnemy({ lane: 0, col: 4, health: 100 }); // 2 rows away
-    const farAway = makeEnemy({ lane: 2, col: 7, health: 100 }); // 3 cols away
-    const hit = bombDetonate(2, 4, [inRange, outOfRange, farAway], DEFENDER_TYPES.bomb.damage);
-    expect(hit).toHaveLength(1);
-    expect(isDead(inRange)).toBe(true);
-    expect(outOfRange.health).toBe(100);
-    expect(farAway.health).toBe(100);
-  });
-
-  it('bomb self-destructs — config is singleUse=true', () => {
-    expect(DEFENDER_TYPES.bomb.singleUse).toBe(true);
-  });
-});
 
 describe('Marble Mine — dormant and armed behavior', () => {
   it('mine starts dormant (not armed)', () => {

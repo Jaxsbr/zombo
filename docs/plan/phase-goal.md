@@ -1,60 +1,71 @@
 ## Phase goal
 
-Expand the unit roster with two new single-use defenders (Teddy Bomb, Marble Mine) and two new enemy types (Armored Bunny, Sock Puppet), then introduce a 5-level progression structure with a level select scene, localStorage persistence, and a pre-level loadout selection screen.
-
-### Dependencies
-- game-juice
+Tune the game for playtest feedback: boost spark economy (faster drops, larger targets), rework Jack-in-the-Box to drop collectible sparks instead of passive income, rebalance defenders (nerf Water Pistol, cheapen Block Tower, speed up Marble Mine), replace Teddy Bomb with Honey Bear (persistent slow-zone utility defender), and add enemy visual differentiation via scale and per-type ability indicators.
 
 ### Stories in scope
-- US-28 — Two new single-use defenders: Teddy Bomb and Marble Mine
-- US-29 — Two new enemy types: Armored Bunny and Sock Puppet
-- US-30 — Multi-level structure with level select
-- US-31 — Defender unlock progression and pre-level loadout
+- US-32 — Spark economy boost
+- US-33 — Jack-in-the-Box rework: collectible spark drops
+- US-34 — Defender balance pass
+- US-35 — Replace Teddy Bomb with Honey Bear
+- US-36 — Enemy visual differentiation
 
 ### Done-when (observable)
-- [x] `src/config/defenders.ts` exports `bomb` and `mine` entries; DefenderType interface extended with at least a `singleUse: boolean` field and a `behavior` field to distinguish bomb/mine/shooter/wall logic [US-28]
-- [x] Teddy Bomb config: cost=150, singleUse=true; on placement, all enemies within Chebyshev distance 1 of the bomb cell (up to 3x3 area) receive damage >= max enemy health (lethal), then the bomb defender is removed from the grid [US-28]
-- [x] Teddy Bomb: enemies outside the 3x3 area centered on the bomb cell take zero damage [US-28]
-- [x] Marble Mine config: cost=25, singleUse=true; spawns with armed=false, transitions to armed=true after MINE_ARM_DELAY (~10000ms) [US-28]
-- [x] Marble Mine: when armed and an enemy's grid cell matches the mine's cell, deals damage >= max enemy health (lethal) to that enemy, then the mine is removed from the grid [US-28]
-- [x] Marble Mine: while dormant (armed=false), enemy entering the mine's cell does NOT trigger the mine — enemy walks past [US-28]
-- [x] Marble Mine does not block enemy movement — enemies advance through the mine's cell regardless of armed state; only the damage trigger fires when armed [US-28]
-- [x] DefenderEntity.ts draws distinct procedural Graphics shapes for bomb (round red teddy with star/fuse detail) and mine (cluster of coloured marbles); Teddy Bomb reads as an explosive toy — visually distinct from the three existing persistent defenders [US-28]
-- [x] Teddy Bomb placement triggers an expanding burst animation (scale + alpha tween) before removal [US-28]
-- [x] Marble Mine visual state change: dormant = grey/muted appearance, armed = bright/glowing with subtle pulse tween [US-28]
-- [x] Recharge timers: bomb rechargeTime >= 45000ms, mine rechargeTime >= 25000ms; defender HUD card shows cooldown overlay between placements [US-28]
-- [x] `test/SingleUseDefenders.test.ts` exists with >= 8 test cases covering: bomb area damage in range, bomb zero damage out of range, bomb self-destruct after detonation, mine dormant no-trigger, mine arm timing, mine armed trigger kills enemy, mine self-destruct after trigger, mine does not block movement [US-28]
-- [x] `src/config/enemies.ts` exports `armored` and `jumper` entries with correct stats: armored health=300 speed=0.5, jumper health=150 speed=0.35 [US-29]
-- [x] Armored Bunny health equals exactly 3 * ENEMY_TYPES.basic.health; speed equals ENEMY_TYPES.basic.speed [US-29]
-- [x] Sock Puppet jump logic: when movement advances into a cell occupied by a defender and jumpsRemaining > 0, the enemy skips that cell (advances to the cell one past the defender), decrements jumpsRemaining to 0, and continues walking [US-29]
-- [x] Sock Puppet with jumpsRemaining=0 does NOT jump — interacts with defenders normally (blocks, takes/deals damage) [US-29]
-- [x] Sock Puppet walks the entire lane normally if no defender is encountered [US-29]
-- [x] EnemyEntity.ts draws distinct procedural Graphics shapes: armored = Dust Bunny silhouette with toy helmet on top, jumper = elongated sock shape with googly-eye circles; Armored Bunny reads as a tougher Dust Bunny — the helmet is the dominant visual differentiator [US-29]
-- [x] Armored Bunny helmet visual degrades: full helmet at > 50% health, cracked/partial helmet at 25-50% health, no helmet (bare Dust Bunny shape) at < 25% health [US-29]
-- [x] Sock Puppet jump renders as a visible arc tween (y-offset parabola over ~400ms) when triggered [US-29]
-- [x] `test/EnemyTypes.test.ts` exists with >= 6 test cases covering: armored health = 3x basic, armored speed = basic speed, jumper skips defender cell, jumper no-skip after jump used, jumper no-skip when no defender in path, jumper normal interaction after jump spent [US-29]
-- [x] `src/config/levels.ts` exports LEVEL_1 through LEVEL_5 with escalating configs: L1=3 waves basic only, L2=3 waves basic+armored, L3=4 waves basic+armored, L4=4 waves basic+armored+jumper, L5=5 waves all enemy types with multi-lane pressure [US-30]
-- [x] `src/scenes/LevelSelectScene.ts` exists and is registered in the Phaser game config (src/config/game.ts scene array) [US-30]
-- [x] LevelSelectScene renders 5 level entries with three distinct visual states: locked (muted, non-interactive), unlocked (active, clickable), completed (checkmark/star indicator, clickable for replay) [US-30]
-- [x] Level 1 starts unlocked; levels 2-5 start locked; completing level N sets it to completed and sets level N+1 to unlocked [US-30]
-- [x] Level progress persisted to localStorage key `zombo_progress` as JSON — verified by: save progress, reload page, progress restored [US-30]
-- [x] Scene flow: TitleScene Play button → LevelSelectScene; LevelSelectScene level click → GameScene with selected level config; GameOverScene → LevelSelectScene (not back to GameScene) [US-30]
-- [x] LevelSelectScene level entries read as themed bedroom elements (toy boxes, numbered blocks, or shelf items) — not plain rectangles or generic UI buttons [US-30]
-- [x] Locked level entries do not respond to click/tap pointer events [US-30]
-- [x] `test/LevelProgress.test.ts` exists with >= 5 test cases covering: initial unlock state (L1 unlocked rest locked), completing L1 unlocks L2, completing L5 = all completed, localStorage round-trip persistence, replaying completed level does not change unlock state [US-30]
-- [x] Defender unlock map defined in config: L1 start = [shooter, generator, wall], completing L2 = +bomb, completing L3 = +mine [US-31]
-- [x] Unlock state persisted to localStorage key `zombo_unlocks` as JSON array of defender type keys — survives page reload [US-31]
-- [x] When unlocked defender count > 4, a loadout selection UI appears between level select and game start (can be a scene or overlay) [US-31]
-- [x] When unlocked defender count <= 4, loadout is auto-filled with all unlocked defenders and selection step is skipped entirely [US-31]
-- [x] Loadout UI shows each unlocked defender as a card with name and spark cost — selected cards have a distinct visual highlight [US-31]
-- [x] Maximum 4 defenders selectable in loadout — attempting to select a 5th is rejected (selection does not change) [US-31]
-- [x] "Go!" button is enabled only when >= 1 defender is selected; clicking it transitions to GameScene [US-31]
-- [x] GameScene HUD defender panel renders only the defenders from the active loadout, not the full defender registry [US-31]
-- [x] `test/LoadoutSelection.test.ts` exists with >= 5 test cases covering: auto-fill when <= 4 unlocked, selection cap at 4, toggle deselect, Go requires >= 1 selected, loadout array passed to GameScene [US-31]
-- [x] AGENTS.md reflects new defender types (bomb, mine), enemy types (armored, jumper), level configs (LEVEL_1-LEVEL_5), new scene (LevelSelectScene), progression system (localStorage persistence), and loadout mechanic introduced in this phase [phase]
+
+#### US-32 — Spark economy boost
+- [x] `SPARK_SPAWN_INTERVAL` reduced to <= 4500ms (from 8000ms) [US-32]
+- [x] Spark click zone (interactive Zone) increased to >= 44x44 pixels (from 24x24) [US-32]
+- [x] Spark visual diamond shape scaled proportionally to match the larger click zone [US-32]
+- [x] Enlarged sparks read as glowing collectible tokens — visually distinct from ambient dust motes and projectile impacts (verified by: spark uses multi-layer diamond/star shape at the new scale, not a plain circle) [US-32]
+
+#### US-33 — Jack-in-the-Box collectible spark drops
+- [x] `generatesIncome` for the `generator` entry in DEFENDER_TYPES is 0 [US-33]
+- [x] When a Jack-in-the-Box defender is alive, it spawns a clickable spark token at its grid position every GENERATOR_INCOME_INTERVAL ms [US-33]
+- [x] Generator-spawned sparks are collectible via pointer click — add SPARK_VALUE to economy balance, play collect SFX, show collection animation [US-33]
+- [x] Generator-spawned sparks that are not collected are removed after ~5000ms (no persistent screen clutter from generators) [US-33]
+- [x] Jack-in-the-Box plays a visible produce animation (existing `playProduce()` or equivalent) when spawning a spark [US-33]
+- [x] Test coverage: generator income is 0 — placing a generator and advancing time without clicking does NOT increase economy balance [US-33]
+
+#### US-34 — Defender balance pass
+- [x] Water Pistol `damage` reduced to <= 15 (from 25) in `src/config/defenders.ts` [US-34]
+- [x] Block Tower `cost` reduced to <= 25 (from 50) in `src/config/defenders.ts` [US-34]
+- [x] Block Tower `health` reduced to a value where basic enemy (damage=20) destroys it in 4-5 seconds — i.e., health between 80 and 100 inclusive [US-34]
+- [x] Marble Mine `rechargeTime` reduced to <= 20000ms (from 30000ms) in `src/config/defenders.ts` [US-34]
+- [x] `MINE_ARM_DELAY` reduced to <= 6000ms (from 10000ms) [US-34]
+- [x] All existing tests in `test/` pass with the new balance values — `npm test` exits 0 [US-34]
+
+#### US-35 — Replace Teddy Bomb with Honey Bear
+- [x] `DefenderBehavior` type union includes `'trapper'` and does NOT include `'bomb'` [US-35]
+- [x] `DEFENDER_TYPES` has no `bomb` entry; has a `trapper` entry with name 'Honey Bear', `singleUse: false`, cost between 50-100, health >= 30 [US-35]
+- [x] `bombDetonate` function removed from `src/systems/SingleUse.ts`; mine logic (`mineTriggerCheck`, `MineState`, `createMineState`, `updateMineState`) remains [US-35]
+- [x] GameScene bomb placement branch (`behavior === 'bomb'`) removed; replaced with trapper logic that registers the Honey Bear for periodic honey pot tossing [US-35]
+- [x] Honey Bear periodically creates honey pot objects on grid cells within its lane and range (range >= 3 cells ahead); toss interval between 3000-5000ms [US-35]
+- [x] Honey pots apply a 0.5x speed multiplier to any enemy whose grid cell matches a honey pot cell [US-35]
+- [x] Honey pots expire and are removed after a duration between 6000-10000ms [US-35]
+- [x] `src/systems/HoneyTrap.ts` exists as a pure TS module (no Phaser dependency) exporting honey pot state management: create pot, update/expire pots, check speed modifier for a cell [US-35]
+- [x] DefenderEntity.ts draws a distinct procedural Graphics shape for the `trapper` key — Honey Bear reads as a bear-shaped toy with amber/golden coloring, visually distinct from all other defenders [US-35]
+- [x] Honey pot renders as a visible amber/golden puddle on the grid cell — reads as a sticky slow-zone, not a collectible or decoration [US-35]
+- [x] Honey Bear has an idle animation loop (class baseline — all existing persistent defenders have idle animations) [US-35]
+- [x] Honey Bear has placement bounce-in animation (class baseline — all defenders have this) [US-35]
+- [x] Honey Bear destruction triggers death particles and fade+scale-down (class baseline — all defenders have this) [US-35]
+- [x] Defender unlock map: completing L2 unlocks `trapper` (not `bomb`) [US-35]
+- [x] `test/HoneyTrap.test.ts` exists with >= 6 test cases covering: pot creation with position and duration, pot expiry after duration, speed modifier returns 0.5 for cell with active pot, speed modifier returns 1.0 for cell without pot, multiple pots on different cells, expired pot no longer applies slow [US-35]
+- [x] Bomb-related test cases removed from `test/SingleUseDefenders.test.ts`; mine test cases remain and pass [US-35]
+
+#### US-36 — Enemy visual differentiation
+- [x] `EnemyType` interface in `src/config/enemies.ts` includes an optional `scale?: number` field [US-36]
+- [x] Enemy scale values set: basic (Dust Bunny) = 1.0, tough (Cleaning Robot) >= 1.3, armored (Armored Bunny) between 1.05 and 1.2, jumper (Sock Puppet) <= 0.95 [US-36]
+- [x] `EnemyEntity.ts` applies `scale` from the enemy type config to the rendered Graphics shape (multiplies drawing dimensions) [US-36]
+- [x] Cleaning Robot has at least one added visual detail suggesting mechanical toughness (gear, antenna, or panel lines) [US-36]
+- [x] Sock Puppet has at least one added visual detail suggesting jump capability (spring, coil, or legs) [US-36]
+- [x] Enemy size differences read as a clear visual hierarchy — Cleaning Robot is noticeably larger than Dust Bunny, Dust Bunny is noticeably larger than Sock Puppet (verified by: each type's drawn bounding box differs by at least 15% from its neighbors in the hierarchy) [US-36]
+- [x] Existing movement animations (bounce for Dust Bunny, rock for Cleaning Robot) render correctly at the new scale values — no clipping, no off-center positioning [US-36]
+- [x] Hit flash, death particles, and health bar positioning adjust to the scaled entity size [US-36]
+
+#### Structural
+- [x] AGENTS.md reflects: Honey Bear defender (trapper behavior), removed Teddy Bomb, HoneyTrap system module, enemy scale field, updated balance values introduced in this phase [phase]
 
 ### Golden principles (phase-relevant)
-- Game logic separated from Phaser rendering — single-use trigger logic (arm timer, area damage calc, jump decision) lives in pure TS systems/config, testable without Phaser
-- Config-driven entities — new defender and enemy types are config registry additions with interface extensions, not hardcoded scene logic
+- Game logic separated from Phaser rendering — HoneyTrap system is pure TS, speed modifier calculation testable without Phaser; balance values are config-only changes
+- Config-driven entities — Honey Bear is a config registry addition with a new behavior key, not hardcoded scene logic; enemy scale is a config field consumed by rendering
 - no-silent-pass — all new test files must have unconditional assertions in every test case
 - agents-consistency — AGENTS.md must reflect the shipped code state after this phase
