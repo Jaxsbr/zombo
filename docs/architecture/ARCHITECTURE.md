@@ -15,7 +15,7 @@ src/
 ├── main.ts              # Phaser.Game entry point, scene registration
 ├── config/
 │   ├── game.ts          # Phaser game config (dimensions, physics, scenes)
-│   ├── defenders.ts     # Defender type registry (5 types: shooter, generator, wall, bomb, mine)
+│   ├── defenders.ts     # Defender type registry (5 types: shooter, generator, wall, trapper, mine)
 │   ├── enemies.ts       # Enemy type registry (4 types: basic, tough, armored, jumper)
 │   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_5, escalating difficulty)
 ├── scenes/
@@ -31,7 +31,8 @@ src/
 │   ├── EnemyMovement.ts # Enemy movement logic — leftward advance, speed handling, jump logic
 │   ├── Combat.ts        # Projectile firing, damage application, health tracking
 │   ├── GameFlow.ts      # Win/lose detection, game state machine
-│   ├── SingleUse.ts     # Bomb detonation + mine arm/trigger logic (pure TS)
+│   ├── SingleUse.ts     # Mine arm/trigger logic (pure TS)
+│   ├── HoneyTrap.ts     # Honey pot state: create, update/expire, speed modifier (pure TS)
 │   ├── LevelProgress.ts # Level completion + localStorage persistence (pure TS)
 │   └── DefenderUnlocks.ts # Defender unlock map + localStorage persistence (pure TS)
 └── entities/
@@ -47,8 +48,9 @@ src/
 ```
 Player click → Placement → Grid (occupancy) + Economy (spend)
                               ↓
-                        [bomb? → bombDetonate → area damage + self-destruct]
+                        [trapper? → register for honey pot tossing]
                         [mine? → MineState dormant → arm after delay → trigger on overlap]
+                        [honey pots → 0.5x enemy speed on pot cells → expire after 8s]
                               ↓
 Spark click → Economy (addIncome) → HUD update
                               ↓
