@@ -26,3 +26,9 @@ entries:
     result: pass
     notes: "Multi-layer shape (glow+ring+diamond+star cross+center). 117 tests pass, no regressions. ✓ US-32 complete"
     tokens: ~3k
+  - task: 5
+    story: US-33
+    description: "Investigation — generator income flow, spark spawn, playProduce, test impacts for JitB rework"
+    result: pass
+    notes: "tickGeneratorIncome L127 loops defenders with generatesIncome>0, adds income, calls playProduce. Need: set generatesIncome=0, spawn clickable spark at defender position instead, expire after 5s. Test fix: Defenders.test L26 generatesIncome>0→toBe(0). New test needed: generator+time≠balance increase. GENERATOR_INCOME_INTERVAL=5000 stays as spawn interval."
+    tokens: ~4k
