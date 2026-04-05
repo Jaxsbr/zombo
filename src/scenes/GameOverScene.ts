@@ -115,6 +115,7 @@ export class GameOverScene extends Phaser.Scene {
       GAME_WIDTH / 2, GAME_HEIGHT / 2, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7,
     );
     dimBg.setDepth(199);
+    dimBg.setInteractive();
 
     // Card dimensions
     const cardWidth = 250;

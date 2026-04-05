@@ -153,7 +153,7 @@ export class GameScene extends Phaser.Scene {
     const step = this.tutorial.step;
 
     if (step === 'PLACE_GENERATOR') {
-      // Only generator panel card is interactive; disable all grid zones and other cards
+      // Only generator panel card is interactive; disable other panel cards
       for (const [key, card] of this.panelCards) {
         const zone = card.list.find((c): c is Phaser.GameObjects.Zone => c instanceof Phaser.GameObjects.Zone);
         if (zone) {
@@ -171,8 +171,10 @@ export class GameScene extends Phaser.Scene {
       for (const zone of this.cellZones) {
         zone.disableInteractive();
       }
-      // Spawn a spark immediately (not on timer)
-      this.spawnSpark();
+      // Spawn a spark immediately (not on timer) — guard against duplicate calls
+      if (this.sparks.length === 0) {
+        this.spawnSpark();
+      }
     } else if (step === 'PLACE_PISTOL') {
       // Enable pistol card and grid zones
       for (const [key, card] of this.panelCards) {
