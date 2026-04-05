@@ -16,6 +16,9 @@ export interface LevelConfig {
   interWaveDelay?: number;   // seconds between waves (default 18)
   announceDuration?: number; // seconds to show announcement (default 2.5)
   activeLanes?: number[];    // which grid rows are playable (default: all rows)
+  startingBalance?: number;  // initial spark balance (default: 500)
+  tutorialMode?: boolean;    // enable dream bubble tutorial on this level
+  enemyBio?: { enemyKey: string }; // show pre-round enemy bio before level starts
 }
 
 export type WaveState = 'setup' | 'announcing' | 'spawning' | 'waiting' | 'complete';

@@ -36,7 +36,7 @@ import {
   isSfxMuted,
 } from '../systems/SFX';
 
-const STARTING_BALANCE = 500;
+const DEFAULT_STARTING_BALANCE = 500;
 const SPARK_SPAWN_INTERVAL = 12000; // ms between spark spawns
 const SPARK_VALUE = 50; // sparks balance added per collection
 const SPARK_FALL_SPEED = 30; // pixels per second
@@ -90,7 +90,7 @@ export class GameScene extends Phaser.Scene {
     const levelConfig = data?.levelConfig ?? LEVEL_1;
     this.activeLanes = levelConfig.activeLanes ?? Array.from({ length: GRID_ROWS }, (_, i) => i);
     this.grid = new Grid(GRID_ROWS, GRID_COLS);
-    this.economy = new Economy(STARTING_BALANCE);
+    this.economy = new Economy(levelConfig.startingBalance ?? DEFAULT_STARTING_BALANCE);
     this.placement = new Placement(this.grid, this.economy);
     this.waveManager = new WaveManager(levelConfig);
     this.gameFlow = new GameFlow();

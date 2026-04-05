@@ -25,9 +25,9 @@ describe('DefenderUnlocks', () => {
     storage = new MockStorage();
   });
 
-  it('auto-fill when <= 4 unlocked — no selection needed', () => {
+  it('initial defenders are generator and shooter', () => {
     const unlocked = loadUnlocks(storage);
-    expect(unlocked).toEqual(['shooter', 'generator', 'wall']);
+    expect(unlocked).toEqual(['generator', 'shooter']);
     expect(needsLoadoutSelection(unlocked)).toBe(false);
   });
 
@@ -35,31 +35,42 @@ describe('DefenderUnlocks', () => {
     expect(MAX_LOADOUT).toBe(4);
   });
 
-  it('toggle deselect — updateUnlocksAfterLevel adds new defender on level completion', () => {
+  it('completing L3 (index 2) unlocks Block Tower', () => {
     let unlocked = loadUnlocks(storage);
-    // Complete L2 (index 1) → unlocks bomb
-    unlocked = updateUnlocksAfterLevel(unlocked, 1);
-    expect(unlocked).toContain('trapper');
-    // Complete L3 (index 2) → unlocks mine
+    // Complete L3 (index 2) → unlocks wall (Block Tower)
     unlocked = updateUnlocksAfterLevel(unlocked, 2);
-    expect(unlocked).toContain('mine');
-    // Now have 5 defenders → needs loadout selection
-    expect(needsLoadoutSelection(unlocked)).toBe(true);
+    expect(unlocked).toContain('wall');
+    expect(unlocked).toHaveLength(3);
+    // 3 defenders < 4 → no loadout selection needed
+    expect(needsLoadoutSelection(unlocked)).toBe(false);
   });
 
-  it('Go requires >= 1 selected — needsLoadoutSelection triggers when > 4', () => {
-    const fiveDefenders = ['shooter', 'generator', 'wall', 'trapper', 'mine'];
-    expect(needsLoadoutSelection(fiveDefenders)).toBe(true);
-    const fourDefenders = ['shooter', 'generator', 'wall', 'trapper'];
-    expect(needsLoadoutSelection(fourDefenders)).toBe(false);
+  it('completing L1 or L2 does not unlock anything', () => {
+    let unlocked = loadUnlocks(storage);
+    unlocked = updateUnlocksAfterLevel(unlocked, 0);
+    expect(unlocked).toHaveLength(2);
+    unlocked = updateUnlocksAfterLevel(unlocked, 1);
+    expect(unlocked).toHaveLength(2);
+  });
+
+  it('trapper and mine are not in initial defenders or unlock map', () => {
+    let unlocked = loadUnlocks(storage);
+    expect(unlocked).not.toContain('trapper');
+    expect(unlocked).not.toContain('mine');
+    // Complete all levels — only wall should be added
+    for (let i = 0; i < 5; i++) {
+      unlocked = updateUnlocksAfterLevel(unlocked, i);
+    }
+    expect(unlocked).not.toContain('trapper');
+    expect(unlocked).not.toContain('mine');
   });
 
   it('loadout array persisted and restored from localStorage', () => {
     let unlocked = loadUnlocks(storage);
-    unlocked = updateUnlocksAfterLevel(unlocked, 1); // +trapper
+    unlocked = updateUnlocksAfterLevel(unlocked, 2); // +wall
     saveUnlocks(unlocked, storage);
 
     const restored = loadUnlocks(storage);
-    expect(restored).toEqual(['shooter', 'generator', 'wall', 'trapper']);
+    expect(restored).toEqual(['generator', 'shooter', 'wall']);
   });
 });
