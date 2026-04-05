@@ -48,3 +48,9 @@ entries:
       - US-38: Proportional sizing (0.05*GW pad, 0.02*GW gap, 0.45*GH cards). Preview scale≈0.86. Staggered entry, bounce, idle bob. 45% GH. 123 tests pass.
       - Phase: AGENTS.md updated.
     tokens: ~2k
+  - task: 8
+    story: review
+    description: "review-pr pr=9 — posted review with 0 critical, 0 concern, 1 nit"
+    result: pass
+    notes: "Clean review. 1 nit: unused setData('baseY') in LevelSelectScene.ts:194. No critical or concern findings."
+    tokens: ~5k
