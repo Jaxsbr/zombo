@@ -32,3 +32,9 @@ entries:
     result: pass
     notes: "US-37 and US-38 complete. Remaining unmet: AGENTS.md update for spark constants and loadout sizing. Queued AGENTS.md update."
     tokens: ~1k
+  - task: 6
+    story: phase
+    description: "Update AGENTS.md — spark constants and loadout proportional sizing"
+    result: pass
+    notes: "Updated AGENTS.md: SPARK_SPAWN_INTERVAL 4000→12000, SPARK_VALUE→50, GENERATOR_INCOME_INTERVAL=8000, loadout proportional sizing noted in defender unlocks section."
+    tokens: ~2k
