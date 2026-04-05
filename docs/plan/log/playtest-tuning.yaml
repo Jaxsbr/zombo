@@ -74,3 +74,16 @@ entries:
     result: pass
     notes: "All 5 stories complete (US-32, US-33, US-34, US-35, US-36). Remaining: AGENTS.md structural criterion."
     tokens: ~1k
+  - task: 13
+    story: phase
+    description: "Update AGENTS.md for structural criterion + phase completion gate"
+    result: pass
+    notes: |
+      AGENTS.md updated: Honey Bear (trapper), removed Teddy Bomb, HoneyTrap module, enemy scale, balance values, generator spark drops. No bomb refs remain in src/. All done-when criteria met. Evidence:
+      - US-32: SPARK_SPAWN_INTERVAL=4000, zone 48x48, multi-layer diamond
+      - US-33: generatesIncome=0, generator spawns clickable sparks, 5s expiry
+      - US-34: shooter damage=15, wall cost=25 health=90, mine recharge=20000, MINE_ARM_DELAY=6000
+      - US-35: DefenderBehavior has trapper not bomb, Honey Bear cost=75 health=60, HoneyTrap.ts (8 tests), honey pots 0.5x slow for 8s, bear shape + idle
+      - US-36: EnemyType.scale, basic=1.0 tough=1.35 armored=1.15 jumper=0.85, gear bolts + spring coil
+      - Phase: AGENTS.md updated. 123 tests pass.
+    tokens: ~5k

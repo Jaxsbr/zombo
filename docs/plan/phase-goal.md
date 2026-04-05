@@ -62,7 +62,7 @@ Tune the game for playtest feedback: boost spark economy (faster drops, larger t
 - [x] Hit flash, death particles, and health bar positioning adjust to the scaled entity size [US-36]
 
 #### Structural
-- [ ] AGENTS.md reflects: Honey Bear defender (trapper behavior), removed Teddy Bomb, HoneyTrap system module, enemy scale field, updated balance values introduced in this phase [phase]
+- [x] AGENTS.md reflects: Honey Bear defender (trapper behavior), removed Teddy Bomb, HoneyTrap system module, enemy scale field, updated balance values introduced in this phase [phase]
 
 ### Golden principles (phase-relevant)
 - Game logic separated from Phaser rendering — HoneyTrap system is pure TS, speed modifier calculation testable without Phaser; balance values are config-only changes
