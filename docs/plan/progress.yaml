@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 1
-  next_task: null
+  task_number: 2
+  next_task: "[US-50] Update enemy speeds in enemies.ts and fix speed assertions in EnemyTypes.test.ts, add full hierarchy test"
   last_result: pass
   consecutive_fails: 0
 

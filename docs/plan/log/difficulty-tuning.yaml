@@ -1,4 +1,19 @@
 # Phase log — difficulty-tuning
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: US-50
+    description: "Branch B investigation — read enemies.ts, levels.ts, all speed/interval values, current test assertions"
+    result: pass
+    notes: |
+      156 tests pass (16 files). Current speeds: basic=0.4, tough=0.25, armored=0.45, jumper=0.455.
+      Violations: armored (0.45) > basic (0.4) breaks tank archetype; all speeds too fast.
+      Target speeds: basic=0.25, armored=0.20, tough=0.15, jumper=0.30 — hierarchy: jumper>basic>armored>tough.
+      EnemyTypes.test.ts: armored speed asserts 0.45, jumper stats assert 0.455 — both need updating.
+      Enemies.test.ts: basic > tough already passes; no armored speed assertion present.
+      Levels.test.ts: timing comparison uses 18 (traverse at 0.5 cells/s, already stale).
+      Current level issues: L2 wave 2 min gap=1.5s, L3 waves 1-3 min gaps 1.5/1.0/1.0s, L5-L9 wave 4 min gap=1.5s,
+      L9 wave 5 min gap=1.2s. L5/L6 setupDelay=20 (needs 25). L8 setupDelay=18 (needs 25). L9 setupDelay=16 (needs 18).
+      Queued US-50 implement task.
+    tokens: ~4k
