@@ -53,3 +53,10 @@ export function completeLevel(data: ProgressData, levelIndex: number): ProgressD
 export function getLevelState(data: ProgressData, levelIndex: number): LevelState {
   return data.levels[levelIndex] ?? 'locked';
 }
+
+/** Return the index of the first unlocked (not yet completed) level.
+ *  If all levels are completed (none are 'unlocked'), returns the last level index. */
+export function nextUnbeatenLevel(data: ProgressData): number {
+  const idx = data.levels.indexOf('unlocked');
+  return idx >= 0 ? idx : TOTAL_LEVELS - 1;
+}
