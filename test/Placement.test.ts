@@ -18,7 +18,7 @@ describe('Placement', () => {
   it('places on an empty cell and deducts cost', () => {
     const result = placement.place({ row: 0, col: 0 }, DEFENDER_TYPES.shooter);
     expect(result).toEqual({ ok: true });
-    expect(economy.getBalance()).toBe(415); // 500 - 85
+    expect(economy.getBalance()).toBe(425); // 500 - 75
     expect(placement.isOccupied({ row: 0, col: 0 })).toBe(true);
   });
 
