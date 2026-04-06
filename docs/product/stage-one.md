@@ -1,6 +1,6 @@
 # Stage One — Level Progression
 
-Gradual introduction of toys and enemies across the first 5 levels. Each level teaches one thing.
+Gradual introduction of toys and enemies across 9 levels. Each level teaches one thing.
 
 | Level | Lanes | Available toys | New enemy | End reward | Special |
 |---|---|---|---|---|---|
@@ -9,6 +9,10 @@ Gradual introduction of toys and enemies across the first 5 levels. Each level t
 | L3 | 5 | Generator, Pistol | Dust Bunny | Block Tower unlock + bio | Full grid with only 2 toys = real pressure |
 | L4 | 5 | Generator, Pistol, Block Tower | Dust Bunny | — | Practice walls |
 | L5 | 5 | Generator, Pistol, Block Tower | Armored Bunny | — | Pre-round enemy bio screen |
+| L6 | 5 | Generator, Pistol, Block Tower | Cleaning Robot | Honey Bear unlock | Pre-round enemy bio screen; warmup wave 1 basic only |
+| L7 | 5 | Generator, Pistol, Block Tower, Honey Bear | Cleaning Robot | — | Honey Bear practice; every wave has Cleaning Robots |
+| L8 | 5 | Generator, Pistol, Block Tower, Honey Bear | Sock Puppet | Marble Mine unlock | Pre-round enemy bio screen; wave 1 no jumpers |
+| L9 | 5 | Generator, Pistol, Block Tower, Honey Bear, Marble Mine (pick 4) | All 4 types | — | First loadout selection moment; full enemy roster |
 
 ## Design notes
 
@@ -17,7 +21,7 @@ Gradual introduction of toys and enemies across the first 5 levels. Each level t
 - Block Tower unlock after L3 rewards surviving 5 lanes with only 2 toys.
 - L4 is a practice level — same enemies, new toy to experiment with.
 - L5 introduces the first tough enemy (Armored Bunny) with a pre-round bio screen.
-
-## Future stages
-
-Marble Mine, Honey Bear (trapper), additional enemy types, and further levels are planned for follow-up phases. See concept briefs in `docs/briefs/` for details.
+- L6 introduces the Cleaning Robot (slow, very tough) with a warmup wave before mixing in tough enemies.
+- L7 mirrors L4 pattern: just-unlocked toy (Honey Bear) is the intended tool; no new enemy to split attention.
+- L8 introduces the Sock Puppet (jumps over first defender) with a pre-round warning; warmup wave before jumpers appear.
+- L9 is the stage one finale: all 4 enemy types, first loadout selection (5 unlocked defenders, pick 4).
