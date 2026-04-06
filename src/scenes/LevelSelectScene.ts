@@ -71,6 +71,16 @@ export class LevelSelectScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 3,
     }).setOrigin(0.5);
+
+    // Back button (top-left, hit area ≥ 48×48)
+    const backBg = this.add.graphics();
+    backBg.fillStyle(0x3e2723, 1);
+    backBg.fillRoundedRect(8, 8, 60, 36, 6);
+    backBg.lineStyle(2, 0xffc107, 1);
+    backBg.strokeRoundedRect(8, 8, 60, 36, 6);
+    this.add.text(38, 26, '\u2190 Back', { fontSize: '13px', color: '#ffc107', fontFamily: 'monospace' }).setOrigin(0.5);
+    const backZone = this.add.zone(8, 8, 60, 48).setOrigin(0).setInteractive({ useHandCursor: true });
+    backZone.on('pointerdown', () => this.scene.start('MainMenuScene'));
   }
 
   private drawLevelEntries(selectedLevel?: number): void {
