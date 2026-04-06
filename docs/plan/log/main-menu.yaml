@@ -27,3 +27,20 @@ entries:
       LevelProgress.test.ts: 3 new tests: no completions→0, levels 0-3 completed→4, all 9 completed→8.
       165 tests pass (162+3 new). US-53 logic criteria met (3/8 criteria done); MainMenuScene still needed.
     tokens: ~1k
+  - task: 3
+    story: US-52
+    description: "Create MainMenuScene.ts, ToysScene.ts, EnemiesScene.ts; update game.ts/main.ts to register new scenes and remove TitleScene"
+    result: pass
+    notes: |
+      MainMenuScene.ts: bedroom atmosphere (floor boards, rug, furniture, toys) matches TitleScene.
+      Title 42px amber at y=70, subtitle 16px at y=105. Play/Continue button 160×48px at y=165,
+      Toys at y=225, Enemies at y=273, Sound toggle at y=335. All hit areas ≥ 48×48.
+      Sound toggle: isSfxMuted() on create, setSfxMuted(!isSfxMuted()) on click, label updates in place.
+      Play→scene.start('LevelSelectScene'); Continue→scene.start('LevelSelectScene', {selectedLevel: N}).
+      ToysScene.ts: 5 defender cards, generator/shooter always-unlocked, wall/trapper/mine from loadUnlocks().
+      Silhouette: fillStyle alpha 0.25 + graphics.setAlpha(0.25). Back button zone 60×48px.
+      EnemiesScene.ts: 4 enemy cards, basic always-discovered, others from bio_shown_enemy_<key>.
+      game.ts: [MainMenuScene, LevelSelectScene, GameScene, GameOverScene, ToysScene, EnemiesScene].
+      main.ts: zomboReset updated to start MainMenuScene.
+      165 tests pass (no regressions). ✓ US-52 complete. ✓ US-54 complete.
+    tokens: ~4k

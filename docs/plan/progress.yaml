@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 3
-  next_task: "[US-52] Create src/scenes/MainMenuScene.ts with bedroom atmosphere and 4 nav items; update game.ts + main.ts to register MainMenuScene/ToysScene/EnemiesScene and remove TitleScene"
+  task_number: 4
+  next_task: "[US-55] Add bio field to ENEMY_TYPES.basic (Dust Bunny) in src/config/enemies.ts"
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: []
+  completed_stories: [US-52, US-54]
