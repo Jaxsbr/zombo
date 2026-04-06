@@ -28,9 +28,9 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 1
-  next_task: "[US-56] Investigate: read GameScene honey bear tossing logic and Water Pistol projectile rendering to plan Honey Bear projectile implementation"
-  last_result: null
+  task_number: 2
+  next_task: "[US-56] Add HONEY_BEAR constants, applyAOEDamage function to Combat.ts, update trapper config in defenders.ts, add AOE damage tests"
+  last_result: pass
   consecutive_fails: 0
 
   # --- Review (owner: iterator) ---

@@ -17,3 +17,16 @@ entries:
       Phase type: server/schema/cross-cutting — investigate-first mandate applies.
       Queued: investigate GameScene honey bear tossing and Water Pistol projectile rendering.
     tokens: ~5k
+  - task: 2
+    story: US-56
+    description: "Investigate GameScene — Honey Bear tossing and Water Pistol projectile patterns"
+    result: pass
+    notes: |
+      Water Pistol: tryFire→ProjectileEntity→moveProjectile/checkProjectileHit→applyDamage (single target).
+      Current Honey Bear: trapperTimers + honeyProjectiles arrays (visual circles), random target col, no Combat.ts.
+      Mine kill: applyDamage(target, 9999) = instant kill. Boss needs MINE_BOSS_DAMAGE cap.
+      ProjectileEntity: fixed yellow (0xfbbf24). Need amber variant for honey.
+      Plan: add HONEY_BEAR constants + applyAOEDamage to Combat.ts, update trapper config, add tests,
+      then rework GameScene to remove trapperTimers and integrate trapper into shooter loop.
+      Queued: add Combat.ts AOE logic + defenders.ts trapper config + tests.
+    tokens: ~4k
