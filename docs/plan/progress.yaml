@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 6
-  next_task: "[phase] Update AGENTS.md: scene list (MainMenuScene/ToysScene/EnemiesScene added, TitleScene removed), initial scene, nextUnbeatenLevel export"
+  task_number: 7
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

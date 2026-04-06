@@ -63,3 +63,16 @@ entries:
       drawSelectionHighlight(): white double-ring (3px white + 1px amber outer ring) around selected entry.
       165 tests pass (no regressions). ✓ US-53 complete.
     tokens: ~1k
+  - task: 6
+    story: phase
+    description: "Update AGENTS.md and ARCHITECTURE.md for main-menu phase scene changes"
+    result: pass
+    notes: |
+      AGENTS.md: scenes directory entry updated (MainMenuScene/ToysScene/EnemiesScene added, TitleScene removed).
+      LevelProgress.ts entry: exports nextUnbeatenLevel added.
+      Purpose: 'title screen' → 'main menu (MainMenuScene)'.
+      Atmosphere: TitleScene → MainMenuScene reference.
+      ARCHITECTURE.md: module topology updated, scene flow diagram updated (TitleScene→MainMenuScene).
+      ToysScene + EnemiesScene added to module list. All structural criteria met.
+      165 tests pass.
+    tokens: ~1k
