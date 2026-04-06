@@ -14,6 +14,12 @@ entries:
       Enemies.test.ts: basic>tough holds (0.25>0.15); armored covered by new hierarchy test.
       157 tests pass (156+1 new). ✓ US-50 complete
     tokens: ~2k
+  - task: 3
+    story: US-51
+    description: "Branch B — US-50 complete, queue US-51 wave pacing implementation"
+    result: pass
+    notes: "All US-50 criteria met. US-51 unmet: L2 wave 2 min gap=1.5s, L3 min gaps below 2.0s, L5-L9 wave 4 min gap=1.5s, L9 wave 5 min gap=1.2s. Setup delays: L5/L6 need 25s (currently 20), L8 needs 25s (currently 18), L9 needs 18s (currently 16). Queued US-51 implement task."
+    tokens: ~1k
   - task: 1
     story: US-50
     description: "Branch B investigation — read enemies.ts, levels.ts, all speed/interval values, current test assertions"
