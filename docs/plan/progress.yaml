@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 9
-  next_task: null
+  task_number: 10
+  next_task: "[US-58] Add LEVEL_10 config to levels.ts, update TOTAL_LEVELS to 10, update LevelProgress tests for 10 levels"
   last_result: pass
   consecutive_fails: 0
 
