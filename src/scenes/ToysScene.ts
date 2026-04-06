@@ -31,7 +31,7 @@ export class ToysScene extends Phaser.Scene {
     const unlocked = loadUnlocks();
     const keys = Object.keys(DEFENDER_TYPES);
     const cardW = 90;
-    const cardH = 140;
+    const cardH = 170;
     const gap = 10;
     const totalW = keys.length * cardW + (keys.length - 1) * gap;
     const startX = (GAME_WIDTH - totalW) / 2;
@@ -72,20 +72,20 @@ export class ToysScene extends Phaser.Scene {
       DRAW_DEFENDER(defGraphics, key, x + w / 2, y + 44, 1.6);
 
       this.add.text(x + w / 2, y + 88, defender.name, {
-        fontSize: '9px',
+        fontSize: '18px',
         color: '#3e2723',
         fontFamily: 'monospace',
         wordWrap: { width: w - 6 },
         align: 'center',
-      }).setOrigin(0.5);
+      }).setOrigin(0.5, 0);
 
-      this.add.text(x + w / 2, y + 106, `${defender.cost} ✦`, {
+      this.add.text(x + w / 2, y + 132, `${defender.cost} \u2736`, {
         fontSize: '10px',
         color: '#5d4037',
         fontFamily: 'monospace',
       }).setOrigin(0.5);
 
-      this.add.text(x + w / 2, y + 120, defender.bio, {
+      this.add.text(x + w / 2, y + 146, defender.bio, {
         fontSize: '7px',
         color: '#5d4037',
         fontFamily: 'monospace',

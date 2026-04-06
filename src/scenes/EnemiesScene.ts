@@ -30,7 +30,7 @@ export class EnemiesScene extends Phaser.Scene {
 
     const keys = Object.keys(ENEMY_TYPES);
     const cardW = 110;
-    const cardH = 160;
+    const cardH = 190;
     const gap = 12;
     const totalW = keys.length * cardW + (keys.length - 1) * gap;
     const startX = (GAME_WIDTH - totalW) / 2;
@@ -72,15 +72,15 @@ export class EnemiesScene extends Phaser.Scene {
       DRAW_ENEMY(enemyGraphics, key, x + w / 2, y + 50, 1.6);
 
       this.add.text(x + w / 2, y + 100, enemy.name, {
-        fontSize: '10px',
+        fontSize: '18px',
         color: '#3e2723',
         fontFamily: 'monospace',
         wordWrap: { width: w - 8 },
         align: 'center',
-      }).setOrigin(0.5);
+      }).setOrigin(0.5, 0);
 
       const bio = enemy.bio ?? '';
-      this.add.text(x + w / 2, y + 116, bio, {
+      this.add.text(x + w / 2, y + 148, bio, {
         fontSize: '7px',
         color: '#5d4037',
         fontFamily: 'monospace',
