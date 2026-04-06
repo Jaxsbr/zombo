@@ -17,11 +17,11 @@ src/
 ├── config/
 │   ├── game.ts          # Phaser game config (dimensions, physics, scenes)
 │   ├── defenders.ts     # Defender type registry (5 types: shooter, generator, wall, trapper, mine)
-│   ├── enemies.ts       # Enemy type registry (4 types: basic, tough, armored, jumper)
-│   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_9, escalating difficulty)
+│   ├── enemies.ts       # Enemy type registry (5 types: basic, tough, armored, jumper, boss)
+│   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_10, escalating difficulty)
 ├── scenes/
 │   ├── MainMenuScene.ts # Main menu — title, Play/Continue, Toys, Enemies nav, sound toggle
-│   ├── LevelSelectScene.ts # Level select — 9 toy-box entries, loadout selection
+│   ├── LevelSelectScene.ts # Level select — 10 toy-box entries, loadout selection
 │   ├── GameScene.ts     # Main gameplay scene — grid, HUD, placement, combat loop
 │   ├── GameOverScene.ts # Win/lose display, continue to level select
 │   ├── ToysScene.ts     # Toys browser — full card (unlocked) or silhouette (locked)
@@ -41,8 +41,8 @@ src/
 │   └── Tutorial.ts      # L1 tutorial state machine — 3-step dream bubble flow (pure TS, no Phaser)
 └── entities/
     ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks, honey bear), health bar
-    ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot, puppet), per-type scale, health bar
-    └── ProjectileEntity.ts # Projectile game object — yellow circle, movement
+    ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot, puppet, boss), per-type scale, health bar
+    └── ProjectileEntity.ts # Projectile game object — yellow circle (shooter) / amber (honey bear), movement
 ```
 
 (shipped in `core-loop` phase; `entities/`, `config/levels.ts`, and `systems/EnemyMovement.ts` shipped in `playable` phase; `systems/Tutorial.ts` shipped in `guided-intro` phase)
@@ -52,7 +52,7 @@ src/
 ```
 Player click → Placement → Grid (occupancy) + Economy (spend)
                               ↓
-                        [trapper? → register for honey pot tossing]
+                        [trapper? → fires amber projectile → AOE damage ±1 row + honey pool on hit]
                         [mine? → MineState dormant → arm after delay → trigger on overlap]
                         [honey pots → 0.5x enemy speed on pot cells → expire after 8s]
                               ↓
@@ -129,18 +129,19 @@ DefenderType interface extended with `singleUse` and `behavior` fields (5 behavi
 
 ### Honey Bear (trapper)
 
-Honey Bear — 75 sparks, persistent defender. Periodically tosses honey pots onto grid cells ahead (range 5 cells, interval 4s). Honey pots slow enemies to 0.5x speed for 8s (HONEY_POT_DURATION), then expire. Pure logic in `src/systems/HoneyTrap.ts` (createHoneyPot, updateHoneyPots, getSpeedModifier). Amber bear shape with idle breathing animation.
+Honey Bear — 75 sparks, persistent defender. Fires slow amber projectile (HONEY_BEAR_PROJECTILE_SPEED=2) at nearest lane enemy. On hit, applies AOE damage (HONEY_BEAR_AOE_DAMAGE=5) to target row ±1 row and creates honey pools per affected row. Honey pots slow enemies to 0.5x speed for 8s (HONEY_POT_DURATION), then expire. Pure logic in `src/systems/HoneyTrap.ts` (createHoneyPot, updateHoneyPots, getSpeedModifier) and `src/systems/Combat.ts` (applyAOEDamage, getAOETargetRows). Amber bear shape with idle breathing animation.
 
 ### Additional enemy types
 
 - **Armored Bunny** (armored) — 300 HP (3x basic), 0.5 cells/s, scale 1.15. Dust Bunny shape with toy helmet overlay, 3-stage visual degradation (full → cracked at 50% → bare at 25%). `updateHelmet` in `EnemyEntity.ts`.
 - **Sock Puppet** (jumper) — 150 HP, 0.35 cells/s, scale 0.85. Spring coil detail. `attemptJump` logic in `EnemyMovement.ts` — jumps over first defender encountered (arc tween), then walks normally. `jumpsRemaining` field on EnemyType.
+- **Mega Mop** (boss) — 2000 HP, 0.08 cells/s, scale 1.6, bossType=true. Unique mop-headed brute shape with slow stomp movement animation. Mines deal MINE_BOSS_DAMAGE (400) instead of instant kill. First encountered in Level 10 wave 5.
 
-Enemy types have an optional `scale` field controlling rendered size. Visual hierarchy: Cleaning Robot (1.35) > Armored Bunny (1.15) > Dust Bunny (1.0) > Sock Puppet (0.85). Cleaning Robot has gear bolt details; Sock Puppet has spring coil. Health bars, flash overlays, and death particles scale proportionally.
+Enemy types have an optional `scale` field controlling rendered size. Visual hierarchy: Mega Mop (1.6) > Cleaning Robot (1.35) > Armored Bunny (1.15) > Dust Bunny (1.0) > Sock Puppet (0.85). Cleaning Robot has gear bolt details; Sock Puppet has spring coil; Mega Mop has unique mop-headed brute shape with stomp animation. Health bars, flash overlays, and death particles scale proportionally.
 
 ### Multi-level structure (extended in `guided-intro` and `stage-one-completion` phases)
 
-9 guided levels (LEVEL_1 through LEVEL_9). LevelConfig includes `startingBalance`, `activeLanes`, `tutorialMode`, and `enemyBio` fields. L1: 1 lane (center), tutorial mode, 75 starting balance. L2: 3 lanes, 2 waves. L3: 5 lanes, 3 waves. L4: 5 lanes, 3 waves, Block Tower available. L5: 5 lanes, 4 waves, Armored Bunny from wave 2, pre-round enemy bio. L6: 5 lanes, 4 waves, Cleaning Robot from wave 2, pre-round enemy bio, Honey Bear unlock on completion. L7: 5 lanes, 4 waves, Cleaning Robots in every wave (Honey Bear practice). L8: 5 lanes, 4 waves, Sock Puppet from wave 2, pre-round enemy bio, Marble Mine unlock on completion. L9: 5 lanes, 5 waves, all 4 enemy types, first loadout selection moment. `LevelProgress.ts` manages localStorage persistence (`zombo_progress`). `DefenderUnlocks.ts` manages unlock state (`zombo_unlocks`).
+10 guided levels (LEVEL_1 through LEVEL_10). LevelConfig includes `startingBalance`, `activeLanes`, `tutorialMode`, and `enemyBio` fields. L1: 1 lane (center), tutorial mode, 75 starting balance. L2: 3 lanes, 2 waves. L3: 5 lanes, 3 waves. L4: 5 lanes, 3 waves, Block Tower available. L5: 5 lanes, 4 waves, Armored Bunny from wave 2, pre-round enemy bio. L6: 5 lanes, 4 waves, Cleaning Robot from wave 2, pre-round enemy bio, Honey Bear unlock on completion. L7: 5 lanes, 4 waves, Cleaning Robots in every wave (Honey Bear practice). L8: 5 lanes, 4 waves, Sock Puppet from wave 2, pre-round enemy bio, Marble Mine unlock on completion. L9: 5 lanes, 5 waves, all 4 enemy types, first loadout selection moment. L10: 5 lanes, 5 waves, formation rush (waves 1-4 at 0.5-0.8s intervals), wave 5 = single Mega Mop boss (pre-round enemy bio, 20s setup delay) — climactic boss fight completing the first playthrough arc. `LevelProgress.ts` manages localStorage persistence (`zombo_progress`). `DefenderUnlocks.ts` manages unlock state (`zombo_unlocks`).
 
 Bio fields: `DefenderType.bio` (required string) for unlock cards. `EnemyType.bio` (optional string) for pre-round bio overlays. Bio overlays use depth 199–201 (dim bg, card, button).
 
@@ -152,7 +153,7 @@ MainMenuScene → ToysScene → MainMenuScene (Back)
 MainMenuScene → EnemiesScene → MainMenuScene (Back)
 ```
 
-`LevelSelectScene.ts` renders 9 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
+`LevelSelectScene.ts` renders 10 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
 
 Loadout card layout uses proportional sizing relative to GAME_WIDTH/GAME_HEIGHT: padding=0.05×GW, gap=0.02×GW, cardHeight=0.45×GH. Cards animate in with staggered entry (Back.easeOut), selection bounce (1.08×), and an idle preview bob (Sine.easeInOut).
 
