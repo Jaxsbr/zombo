@@ -54,3 +54,16 @@ entries:
       honey pool rendering at depth 2 with amber fill.
       Queued: GameScene rework implementation.
     tokens: ~1k
+  - task: 5
+    story: US-56
+    description: "Rework GameScene: remove periodic tossing, integrate trapper into shooter loop, amber projectile, AOE on hit, honey pools, fire animation, HoneyTrap test"
+    result: pass
+    notes: |
+      GameScene: removed trapperTimers, honeyProjectiles, HONEY_PROJECTILE_SPEED.
+      Trapper now uses same tryFire→ProjectileEntity loop as shooter with HONEY_BEAR_PROJECTILE_SPEED.
+      On honey hit: applyAOEDamage to ±1 rows + createHoneyPot per AOE row at hit col.
+      Honey pool renders at depth 2 (0xe65100, alpha 0.35). ProjectileEntity.isHoney flag.
+      DefenderEntity.playRecoil: trapper gets forward-lunge tween.
+      HoneyTrap.test.ts: new projectile-hit path test.
+      172 tests pass (171 + 1 new). ✓ US-56 complete — all 10 criteria met.
+    tokens: ~5k
