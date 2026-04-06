@@ -14,6 +14,16 @@ entries:
       Enemies.test.ts: basic>tough holds (0.25>0.15); armored covered by new hierarchy test.
       157 tests pass (156+1 new). ✓ US-50 complete
     tokens: ~2k
+  - task: 6
+    story: phase
+    description: "Update AGENTS.md enemy speeds/pacing, stage-one.md design notes"
+    result: pass
+    notes: |
+      AGENTS.md: enemy speeds added (basic=0.25, armored=0.20, tough=0.15, jumper=0.30), speed hierarchy noted,
+      level progression description updated with 2.0s minimum gap, PvZ-style pacing, setup delays.
+      stage-one.md: new 'Difficulty tuning' section with speed hierarchy rationale and wave pacing rationale.
+      162 tests pass (no regressions).
+    tokens: ~2k
   - task: 5
     story: phase
     description: "Branch B — both stories complete, queue structural update task"
