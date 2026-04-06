@@ -163,4 +163,203 @@ export const LEVEL_5: LevelConfig = {
   ],
 };
 
-export const ALL_LEVELS: LevelConfig[] = [LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5];
+// L6: Full 5 lanes, 4 waves — Cleaning Robot intro, warmup wave 1 only basic
+export const LEVEL_6: LevelConfig = {
+  startingBalance: 450,
+  enemyBio: { enemyKey: 'tough' },
+  setupDelay: 20,
+  interWaveDelay: 14,
+  announceDuration: 2.5,
+  waves: [
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 1.5 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 5 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 2 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 1.5 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 2.5 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 4 },
+      ],
+    },
+  ],
+};
+
+// L7: Honey Bear practice — all 5 lanes, 4 waves, tough in every wave
+export const LEVEL_7: LevelConfig = {
+  startingBalance: 500,
+  setupDelay: 18,
+  interWaveDelay: 13,
+  announceDuration: 2.5,
+  waves: [
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 1, delay: 5 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 2 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 5 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 2.5 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 1, delay: 5 },
+      ],
+    },
+  ],
+};
+
+// L8: Sock Puppet intro — 4 waves, no jumpers in wave 1, jumpers from wave 2 onward
+export const LEVEL_8: LevelConfig = {
+  startingBalance: 550,
+  enemyBio: { enemyKey: 'jumper' },
+  setupDelay: 18,
+  interWaveDelay: 13,
+  announceDuration: 2.5,
+  waves: [
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.jumper, lane: 1, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 1 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 2 },
+        { type: ENEMY_TYPES.jumper, lane: 4, delay: 3 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 0 },
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 1 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.jumper, lane: 3, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.jumper, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 2.5 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 3 },
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 4.5 },
+      ],
+    },
+  ],
+};
+
+// L9: Marble Mine practice — 5 waves, all 4 enemy types, first loadout selection moment
+export const LEVEL_9: LevelConfig = {
+  startingBalance: 600,
+  setupDelay: 16,
+  interWaveDelay: 12,
+  announceDuration: 2.5,
+  waves: [
+    {
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.jumper, lane: 1, delay: 3 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.armored, lane: 3, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 1 },
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 2 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.jumper, lane: 2, delay: 1 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 4 },
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 5 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 0 },
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 1 },
+        { type: ENEMY_TYPES.jumper, lane: 4, delay: 1.5 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 2.5 },
+        { type: ENEMY_TYPES.armored, lane: 1, delay: 3 },
+        { type: ENEMY_TYPES.tough, lane: 4, delay: 4 },
+      ],
+    },
+    {
+      spawns: [
+        { type: ENEMY_TYPES.tough, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.jumper, lane: 2, delay: 0.5 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 1 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 2 },
+        { type: ENEMY_TYPES.tough, lane: 3, delay: 2.5 },
+        { type: ENEMY_TYPES.jumper, lane: 0, delay: 3.5 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 4.5 },
+      ],
+    },
+  ],
+};
+
+export const ALL_LEVELS: LevelConfig[] = [
+  LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5,
+  LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_9,
+];

@@ -23,6 +23,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
     speed: 0.25,
     damage: 30,
     scale: 1.35,
+    bio: 'The Cleaning Robot is slow but very tough! Keep shooting \u2014 it takes a lot of hits to stop this one.',
   },
   armored: {
     name: 'Armored Bunny',
@@ -40,5 +41,6 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
     damage: 20,
     scale: 0.85,
     jumpsRemaining: 1,
+    bio: 'Watch out! The Sock Puppet jumps over the first toy it encounters. Put your shooters behind your walls!',
   },
 };
