@@ -24,12 +24,12 @@ config:
 state:
   # --- Lifecycle (owner: iterator) ---
   phase: stage-one-completion
-  phase_complete: false
+  phase_complete: true
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 7
-  next_task: "[phase] Update stage-one.md level table with L6-L9 rows and update AGENTS.md to reflect ALL_LEVELS length 9, UNLOCK_MAP changes, L1-L9 progression"
+  task_number: 9
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

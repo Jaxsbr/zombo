@@ -27,10 +27,31 @@ entries:
     notes: "US-45/46/47/48 complete. US-49 pending: .github/workflows/deploy.yml does not exist. vite.config.ts already has base:'./' (criterion met). Queued implement task for deploy.yml."
     tokens: ~1k
   - task: 5
+
     story: US-49
     description: "Create .github/workflows/deploy.yml — GitHub Pages on push to main"
     result: pass
     notes: "deploy.yml created: triggers on push to main, steps checkout/setup-node/npm-ci/npm-run-build/peaceiris-gh-pages@v4. vite.config.ts already has base:'./' — no changes needed. npm run build produces dist/index.html (TypeScript clean). 156 tests pass. ✓ US-49 complete"
+    tokens: ~2k
+  - task: 8
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All done-when criteria met. Evidence:
+      - US-45: ENEMY_TYPES.tough.bio added; LEVEL_6 config (450 sparks, enemyBio:tough, 4 waves, wave1 basic-only); LEVEL_6 in ALL_LEVELS (len 6); UNLOCK_MAP 6:trapper; tests added for trapper unlock; LoadoutSelection test renamed/expanded
+      - US-46: LEVEL_7 (500 sparks, no enemyBio, 4 waves, every wave has tough); LEVEL_7 in ALL_LEVELS (len 7)
+      - US-47: ENEMY_TYPES.jumper.bio added (explicitly mentions jump); LEVEL_8 (550 sparks, enemyBio:jumper, 4 waves, wave1 no jumpers); LEVEL_8 in ALL_LEVELS (len 8); UNLOCK_MAP 8:mine; tests added for mine unlock
+      - US-48: LEVEL_9 (600 sparks, no enemyBio, 5 waves, all 4 enemy types); LEVEL_9 in ALL_LEVELS (len 9); needsLoadoutSelection returns true after L8
+      - US-49: .github/workflows/deploy.yml created; vite.config.ts base:'./' unchanged; npm run build produces dist/index.html
+      - Phase: stage-one.md level table extended L6-L9; AGENTS.md updated (ALL_LEVELS 9, UNLOCK_MAP L6→trapper/L8→mine, L1-L9 progression, src/config/ entry updated)
+      156 tests pass, 0 regressions
+    tokens: ~2k
+  - task: 7
+    story: phase
+    description: "Update stage-one.md level table with L6-L9 rows and update AGENTS.md"
+    result: pass
+    notes: "stage-one.md: level table extended with L6-L9 rows (Cleaning Robot intro/Honey Bear unlock, Honey Bear practice, Sock Puppet intro/Marble Mine unlock, Marble Mine practice/full roster/loadout selection). Design notes updated. AGENTS.md: level progression updated to 9 levels, UNLOCK_MAP updated (L3→wall, L6→trapper, L8→mine), src/config/ directory entry updated to LEVEL_1-LEVEL_9. 156 tests pass."
     tokens: ~2k
   - task: 6
     story: phase
