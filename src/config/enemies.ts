@@ -13,14 +13,14 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   basic: {
     name: 'Dust Bunny',
     health: 80,
-    speed: 0.4,
+    speed: 0.25,
     damage: 10,
     scale: 1.0,
   },
   tough: {
     name: 'Cleaning Robot',
     health: 550,
-    speed: 0.25,
+    speed: 0.15,
     damage: 30,
     scale: 1.35,
     bio: 'The Cleaning Robot is slow but very tough! Keep shooting \u2014 it takes a lot of hits to stop this one.',
@@ -28,7 +28,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   armored: {
     name: 'Armored Bunny',
     health: 300,
-    speed: 0.45,
+    speed: 0.20,
     damage: 20,
     scale: 1.15,
     armorStages: 3, // full → cracked → bare
@@ -37,7 +37,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   jumper: {
     name: 'Sock Puppet',
     health: 150,
-    speed: 0.455,
+    speed: 0.30,
     damage: 20,
     scale: 0.85,
     jumpsRemaining: 1,

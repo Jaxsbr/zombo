@@ -7,8 +7,8 @@ describe('Armored Bunny — config', () => {
     expect(ENEMY_TYPES.armored.health).toBe(300);
   });
 
-  it('speed is 0.45', () => {
-    expect(ENEMY_TYPES.armored.speed).toBe(0.45);
+  it('speed is 0.20 (slower than basic, faster than tough — tank archetype)', () => {
+    expect(ENEMY_TYPES.armored.speed).toBe(0.20);
   });
 });
 
@@ -41,12 +41,20 @@ describe('Sock Puppet — jump logic', () => {
 });
 
 describe('Sock Puppet — config', () => {
-  it('has correct stats: health=150, speed=0.455', () => {
+  it('has correct stats: health=150, speed=0.30', () => {
     expect(ENEMY_TYPES.jumper.health).toBe(150);
-    expect(ENEMY_TYPES.jumper.speed).toBe(0.455);
+    expect(ENEMY_TYPES.jumper.speed).toBe(0.30);
   });
 
   it('starts with jumpsRemaining = 1', () => {
     expect(ENEMY_TYPES.jumper.jumpsRemaining).toBe(1);
+  });
+});
+
+describe('Enemy speed hierarchy', () => {
+  it('jumper > basic > armored > tough (kid-friendly PvZ archetype: tanky = slow)', () => {
+    expect(ENEMY_TYPES.jumper.speed).toBeGreaterThan(ENEMY_TYPES.basic.speed);
+    expect(ENEMY_TYPES.basic.speed).toBeGreaterThan(ENEMY_TYPES.armored.speed);
+    expect(ENEMY_TYPES.armored.speed).toBeGreaterThan(ENEMY_TYPES.tough.speed);
   });
 });
