@@ -103,3 +103,15 @@ entries:
       SingleUseDefenders.test.ts: boss mine hit reduces by MINE_BOSS_DAMAGE, not dead. Constant >= 300.
       174 tests pass (172 + 2 new). tsc --noEmit clean.
     tokens: ~3k
+  - task: 9
+    story: US-57
+    description: "Add drawBoss shape, boss stomp animation, verify EnemiesScene discovery"
+    result: pass
+    notes: |
+      EnemyEntity.ts: drawBoss function — mop-headed brute with armor plates, red eyes, heavy treads.
+      DRAW_ENEMY['boss'] registered. Boss movement: slow stomp tween (800ms, vertical + squash).
+      EnemiesScene: boss auto-discovered via Object.keys(ENEMY_TYPES) + bio_shown_enemy_boss pattern.
+      All 11 US-57 criteria verified: bossType, config, unique shape, health bar, animation,
+      hit flash, death particles, MINE_BOSS_DAMAGE, discovery. ✓ US-57 complete.
+      174 tests pass. tsc --noEmit clean.
+    tokens: ~3k
