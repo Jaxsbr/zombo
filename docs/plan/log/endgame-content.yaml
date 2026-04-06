@@ -154,3 +154,12 @@ entries:
       updated config directory listing (LEVEL_1-LEVEL_10), updated EnemyEntity key list.
       All phase criteria now checked.
     tokens: ~2k
+  - task: 13
+    story: review
+    description: "[review] review-pr pr=15 auto=true"
+    result: pass
+    notes: |
+      PR #15 reviewed. 0 critical, 1 concern (AOE row duplication in GameScene),
+      0 nits. Review posted as COMMENT. Concern: GameScene manually builds aoeRows
+      instead of calling getAOETargetRows from Combat.ts.
+    tokens: ~3k
