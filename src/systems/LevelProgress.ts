@@ -1,5 +1,5 @@
 const STORAGE_KEY = 'zombo_progress';
-const TOTAL_LEVELS = 5;
+const TOTAL_LEVELS = 9;
 
 export type LevelState = 'locked' | 'unlocked' | 'completed';
 
@@ -19,9 +19,14 @@ export function loadProgress(storage?: Storage): ProgressData {
     const raw = (storage ?? globalThis.localStorage)?.getItem(STORAGE_KEY);
     if (!raw) return defaultProgress();
     const data = JSON.parse(raw) as ProgressData;
-    if (!Array.isArray(data.levels) || data.levels.length !== TOTAL_LEVELS) {
-      return defaultProgress();
+    if (!Array.isArray(data.levels)) return defaultProgress();
+    // Migrate: pad shorter arrays (e.g. old 5-level saves) with 'locked'
+    if (data.levels.length < TOTAL_LEVELS) {
+      const padded: LevelState[] = [...data.levels];
+      while (padded.length < TOTAL_LEVELS) padded.push('locked');
+      return { levels: padded };
     }
+    if (data.levels.length > TOTAL_LEVELS) return defaultProgress();
     return data;
   } catch {
     return defaultProgress();
