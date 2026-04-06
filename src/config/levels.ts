@@ -51,7 +51,7 @@ export const LEVEL_3: LevelConfig = {
   activeLanes: [0, 1, 2, 3, 4],
   startingBalance: 100,
   setupDelay: 22,
-  interWaveDelay: 16,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -85,7 +85,7 @@ export const LEVEL_3: LevelConfig = {
 export const LEVEL_4: LevelConfig = {
   startingBalance: 100,
   setupDelay: 22,
-  interWaveDelay: 15,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -124,7 +124,7 @@ export const LEVEL_5: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'armored' },
   setupDelay: 20,
-  interWaveDelay: 14,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -189,7 +189,7 @@ export const LEVEL_6: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'tough' },
   setupDelay: 20,
-  interWaveDelay: 14,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -252,7 +252,7 @@ export const LEVEL_6: LevelConfig = {
 export const LEVEL_7: LevelConfig = {
   startingBalance: 100,
   setupDelay: 18,
-  interWaveDelay: 13,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -317,7 +317,7 @@ export const LEVEL_8: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'jumper' },
   setupDelay: 18,
-  interWaveDelay: 13,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
@@ -380,7 +380,7 @@ export const LEVEL_8: LevelConfig = {
 export const LEVEL_9: LevelConfig = {
   startingBalance: 100,
   setupDelay: 16,
-  interWaveDelay: 12,
+  interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
     {
