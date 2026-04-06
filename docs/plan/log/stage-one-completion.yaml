@@ -20,3 +20,9 @@ entries:
     result: pass
     notes: "enemies.ts: tough.bio and jumper.bio added. levels.ts: LEVEL_6-LEVEL_9 added (L6 Cleaning Robot intro/Honey Bear unlock, L7 Honey Bear practice, L8 Sock Puppet intro/Marble Mine unlock, L9 Marble Mine practice). DefenderUnlocks.ts: UNLOCK_MAP now {3:wall, 6:trapper, 8:mine}. ALL_LEVELS length 9. LoadoutSelection.test.ts test renamed and expanded with 3 new unlock tests. Levels.test.ts extended with L6-L9 tests. 156 tests pass (144+12). ✓ US-45 complete ✓ US-46 complete ✓ US-47 complete ✓ US-48 complete"
     tokens: ~8k
+  - task: 4
+    story: US-49
+    description: "Branch B investigation — check remaining criteria, US-49 is last story"
+    result: pass
+    notes: "US-45/46/47/48 complete. US-49 pending: .github/workflows/deploy.yml does not exist. vite.config.ts already has base:'./' (criterion met). Queued implement task for deploy.yml."
+    tokens: ~1k
