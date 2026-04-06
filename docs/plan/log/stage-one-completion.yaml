@@ -8,3 +8,9 @@ entries:
     result: pass
     notes: "144 tests pass (16 files). tough/jumper have no bio fields. LEVEL_1-5 exist, ALL_LEVELS length 5. UNLOCK_MAP={3:'wall'}. LoadoutSelection.test.ts has 'trapper and mine are not in initial defenders or unlock map' looping 5 levels — must update. Queued investigate task for vite.config and .github/workflows before implementing."
     tokens: ~3k
+  - task: 2
+    story: US-45
+    description: "Investigation — vite.config.ts, .github/workflows, levels.ts import structure"
+    result: pass
+    notes: "vite.config.ts already has base:'./' (US-49 criterion already met). .github/workflows has phase-retro-check.yml but no deploy.yml. levels.ts imports ENEMY_TYPES from ./enemies, LevelConfig from ../systems/WaveManager. Ready to implement L6-L9 configs + enemy bios + unlock map. Queued implement task."
+    tokens: ~1k

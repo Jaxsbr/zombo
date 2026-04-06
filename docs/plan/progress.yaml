@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 2
-  next_task: "[US-45] Investigate: vite.config.ts base setting, .github/workflows existence, enemies.ts import usage, and ALL_LEVELS export before implementing L6-L9 and unlock map changes"
+  task_number: 3
+  next_task: "[US-45] Implement: add bio to ENEMY_TYPES.tough and ENEMY_TYPES.jumper, add LEVEL_6-LEVEL_9 configs, update ALL_LEVELS, update UNLOCK_MAP with 6:trapper and 8:mine, update tests"
   last_result: pass
   consecutive_fails: 0
 
