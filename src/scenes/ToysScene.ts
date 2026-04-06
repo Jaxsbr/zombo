@@ -68,8 +68,12 @@ export class ToysScene extends Phaser.Scene {
       card.strokeRoundedRect(x, y, w, h, 6);
 
       // Defender visual at scale ≥ 1.5 (top of card)
+      const defContainer = this.add.container(x + w / 2, y + 44);
       const defGraphics = this.add.graphics();
-      DRAW_DEFENDER(defGraphics, key, x + w / 2, y + 44, 1.6);
+      const drawDefFn = DRAW_DEFENDER[key];
+      if (drawDefFn) drawDefFn(defGraphics);
+      defContainer.add(defGraphics);
+      defContainer.setScale(1.6);
 
       this.add.text(x + w / 2, y + 88, defender.name, {
         fontSize: '18px',
@@ -100,9 +104,13 @@ export class ToysScene extends Phaser.Scene {
       card.strokeRoundedRect(x, y, w, h, 6);
 
       // Darkened defender shape
+      const silContainer = this.add.container(x + w / 2, y + 44);
       const silhouette = this.add.graphics();
       silhouette.setAlpha(0.25);
-      DRAW_DEFENDER(silhouette, key, x + w / 2, y + 44, 1.6);
+      const drawSilFn = DRAW_DEFENDER[key];
+      if (drawSilFn) drawSilFn(silhouette);
+      silContainer.add(silhouette);
+      silContainer.setScale(1.6);
 
       this.add.text(x + w / 2, y + h / 2 + 10, '???', {
         fontSize: '14px',

@@ -68,8 +68,12 @@ export class EnemiesScene extends Phaser.Scene {
       card.strokeRoundedRect(x, y, w, h, 6);
 
       // Enemy visual at scale ≥ 1.5 (top of card)
+      const enemyContainer = this.add.container(x + w / 2, y + 50);
       const enemyGraphics = this.add.graphics();
-      DRAW_ENEMY(enemyGraphics, key, x + w / 2, y + 50, 1.6);
+      const drawEnemyFn = DRAW_ENEMY[key];
+      if (drawEnemyFn) drawEnemyFn(enemyGraphics);
+      enemyContainer.add(enemyGraphics);
+      enemyContainer.setScale(1.6);
 
       this.add.text(x + w / 2, y + 100, enemy.name, {
         fontSize: '18px',
@@ -94,9 +98,13 @@ export class EnemiesScene extends Phaser.Scene {
       card.lineStyle(1, 0x5d4037, 0.4);
       card.strokeRoundedRect(x, y, w, h, 6);
 
+      const silEnemyContainer = this.add.container(x + w / 2, y + 50);
       const silhouette = this.add.graphics();
       silhouette.setAlpha(0.25);
-      DRAW_ENEMY(silhouette, key, x + w / 2, y + 50, 1.6);
+      const drawSilEnemyFn = DRAW_ENEMY[key];
+      if (drawSilEnemyFn) drawSilEnemyFn(silhouette);
+      silEnemyContainer.add(silhouette);
+      silEnemyContainer.setScale(1.6);
 
       this.add.text(x + w / 2, y + h / 2 + 10, '???', {
         fontSize: '14px',

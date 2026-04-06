@@ -26,7 +26,7 @@ export class MainMenuScene extends Phaser.Scene {
     const hasProgress = progress.levels.some(s => s === 'completed');
     this.drawPlayButton(hasProgress, progress);
     this.drawNavButton('Toys', 225, () => this.scene.start('ToysScene'));
-    this.drawNavButton('Enemies', 273, () => this.scene.start('EnemiesScene'));
+    this.drawNavButton('Enemies', 285, () => this.scene.start('EnemiesScene'));
     this.drawSoundToggle();
   }
 
@@ -75,8 +75,9 @@ export class MainMenuScene extends Phaser.Scene {
 
   private drawPlayButton(hasProgress: boolean, progress: ReturnType<typeof loadProgress>): void {
     const label = hasProgress ? 'Continue' : 'Play';
+    const yCenter = 165;
     const x = GAME_WIDTH / 2 - BTN_W / 2;
-    const y = 165;
+    const y = yCenter - BTN_H / 2;
 
     const btnBg = this.add.graphics();
     btnBg.fillStyle(BTN_FILL, 1);
@@ -84,7 +85,7 @@ export class MainMenuScene extends Phaser.Scene {
     btnBg.lineStyle(2, BTN_BORDER, 1);
     btnBg.strokeRoundedRect(x, y, BTN_W, BTN_H, BTN_RADIUS);
 
-    this.add.text(GAME_WIDTH / 2, y + BTN_H / 2, label, {
+    this.add.text(GAME_WIDTH / 2, yCenter, label, {
       fontSize: '22px',
       color: '#ffc107',
       fontFamily: 'monospace',
