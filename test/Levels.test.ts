@@ -21,10 +21,10 @@ describe('Level progression — guided intro', () => {
   it('L1: a single Water Pistol survives the wave (total enemy HP <= pistol DPS x reasonable time)', () => {
     const pistolDPS = 15; // 15 damage per second
     const totalEnemyHP = LEVEL_1.waves[0].spawns.reduce((sum, s) => sum + s.type.health, 0);
-    // At 15 DPS, total HP / 15 = seconds needed. Enemies traverse 9 cols at 0.5 cells/s = 18s.
+    // At 15 DPS, total HP / 15 = seconds needed. Enemies traverse 9 cols at 0.25 cells/s = 36s.
     // Total kill time must be less than traverse time for a single pistol to survive
     const killTime = totalEnemyHP / pistolDPS;
-    expect(killTime).toBeLessThan(18);
+    expect(killTime).toBeLessThan(36);
   });
 
   it('L2: activeLanes=[1,2,3], 2 waves, basic enemies only', () => {
@@ -172,5 +172,70 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
     expect(allSpawns.some(s => s.type === ENEMY_TYPES.tough)).toBe(true);
     expect(allSpawns.some(s => s.type === ENEMY_TYPES.armored)).toBe(true);
     expect(allSpawns.some(s => s.type === ENEMY_TYPES.jumper)).toBe(true);
+  });
+});
+
+describe('Level wave pacing — difficulty-tuning (kid-friendly, PvZ-style smooth curve)', () => {
+  function minSpawnGap(level: typeof LEVEL_1): number {
+    let min = Infinity;
+    for (const wave of level.waves) {
+      for (let i = 1; i < wave.spawns.length; i++) {
+        const gap = wave.spawns[i].delay - wave.spawns[i - 1].delay;
+        if (gap < min) min = gap;
+      }
+    }
+    return min === Infinity ? Infinity : min; // single-spawn waves have no gap
+  }
+
+  it('no wave in any level has a minimum spawn interval below 2.0s', () => {
+    for (const level of ALL_LEVELS) {
+      for (const wave of level.waves) {
+        for (let i = 1; i < wave.spawns.length; i++) {
+          const gap = wave.spawns[i].delay - wave.spawns[i - 1].delay;
+          expect(gap).toBeGreaterThanOrEqual(2.0);
+        }
+      }
+    }
+  });
+
+  it('smooth difficulty curve: each level is equal or slightly tighter than the next (monotonic)', () => {
+    for (let i = 0; i < ALL_LEVELS.length - 1; i++) {
+      const gapN = minSpawnGap(ALL_LEVELS[i]);
+      const gapNext = minSpawnGap(ALL_LEVELS[i + 1]);
+      expect(gapN).toBeGreaterThanOrEqual(gapNext);
+    }
+  });
+
+  it('setup delay >= 18s for all levels', () => {
+    for (const level of ALL_LEVELS) {
+      expect(level.setupDelay).toBeGreaterThanOrEqual(18);
+    }
+  });
+
+  it('setup delay >= 25s for levels with enemyBio (L5, L6, L8)', () => {
+    const bioLevels = ALL_LEVELS.filter(l => l.enemyBio !== undefined);
+    for (const level of bioLevels) {
+      expect(level.setupDelay).toBeGreaterThanOrEqual(25);
+    }
+  });
+
+  it('within each level, last wave min interval is at least 60% of first wave min interval', () => {
+    for (const level of ALL_LEVELS) {
+      if (level.waves.length < 2) continue;
+      const firstWave = level.waves[0];
+      const lastWave = level.waves[level.waves.length - 1];
+      function waveMinGap(wave: typeof firstWave): number {
+        let min = Infinity;
+        for (let i = 1; i < wave.spawns.length; i++) {
+          const gap = wave.spawns[i].delay - wave.spawns[i - 1].delay;
+          if (gap < min) min = gap;
+        }
+        return min === Infinity ? Infinity : min;
+      }
+      const firstGap = waveMinGap(firstWave);
+      const lastGap = waveMinGap(lastWave);
+      if (firstGap === Infinity || lastGap === Infinity) continue;
+      expect(lastGap).toBeGreaterThanOrEqual(firstGap * 0.6);
+    }
   });
 });

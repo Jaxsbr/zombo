@@ -2,7 +2,7 @@ import { ENEMY_TYPES } from './enemies';
 import { LevelConfig } from '../systems/WaveManager';
 
 // L1: Tutorial — 1 lane, 1 wave, 2 basic enemies (single pistol survives)
-// Starting balance 50: generator (50) affordable, pistol requires collecting sparks first
+// Starting balance 100: generator (50) affordable, pistol (75) affordable after first spark
 export const LEVEL_1: LevelConfig = {
   activeLanes: [2],
   tutorialMode: true,
@@ -20,7 +20,8 @@ export const LEVEL_1: LevelConfig = {
   ],
 };
 
-// L2: 3 lanes, 2 waves, basic enemies across 3 lanes
+// L2: 3 lanes, 2 waves, basic enemies
+// Wave intervals: 4.0s→3.5s (smooth ramp, all above 2.0s minimum)
 export const LEVEL_2: LevelConfig = {
   activeLanes: [1, 2, 3],
   startingBalance: 100,
@@ -29,24 +30,27 @@ export const LEVEL_2: LevelConfig = {
   announceDuration: 2.5,
   waves: [
     {
+      // 3 enemies, 4.0s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 2, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 1, delay: 2 },
-        { type: ENEMY_TYPES.basic, lane: 3, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 8 },
       ],
     },
     {
+      // 4 enemies, 3.5s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 1, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 3, delay: 1.5 },
-        { type: ENEMY_TYPES.basic, lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.basic, lane: 1, delay: 4.5 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 3.5 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 7 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 10.5 },
       ],
     },
   ],
 };
 
 // L3: Full 5 lanes, 3 waves, basic enemies — economy tighter than L2
+// Wave intervals: 4.0s→3.5s→3.0s (smooth ramp, all above 2.0s minimum)
 export const LEVEL_3: LevelConfig = {
   activeLanes: [0, 1, 2, 3, 4],
   startingBalance: 100,
@@ -55,34 +59,37 @@ export const LEVEL_3: LevelConfig = {
   announceDuration: 2.5,
   waves: [
     {
+      // 3 enemies, 4.0s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 2, delay: 1.5 },
-        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 8 },
       ],
     },
     {
+      // 4 enemies, 3.5s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 1, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 3, delay: 1 },
-        { type: ENEMY_TYPES.basic, lane: 0, delay: 2 },
-        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 3.5 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 7 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 10.5 },
       ],
     },
     {
+      // 5 enemies, 3.0s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 1, delay: 1 },
-        { type: ENEMY_TYPES.basic, lane: 2, delay: 2 },
-        { type: ENEMY_TYPES.basic, lane: 3, delay: 3 },
-        { type: ENEMY_TYPES.basic, lane: 4, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 6 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 9 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 12 },
       ],
     },
   ],
 };
 
 // L4: 5 lanes, 3 waves, basic enemies — Block Tower now available
-// Spawn intervals: 3.0→2.5→2.0s (linear ramp, no tight clustering)
+// Wave intervals: 4.0s→3.0s→2.5s (smooth ramp, all above 2.0s minimum)
 export const LEVEL_4: LevelConfig = {
   startingBalance: 100,
   setupDelay: 22,
@@ -90,44 +97,45 @@ export const LEVEL_4: LevelConfig = {
   announceDuration: 2.5,
   waves: [
     {
-      // 4 enemies, 3.0s intervals
+      // 4 enemies, 4.0s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.basic, lane: 4, delay: 6 },
-        { type: ENEMY_TYPES.basic, lane: 1, delay: 9 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 8 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 12 },
       ],
     },
     {
-      // 5 enemies, 2.5s intervals
+      // 5 enemies, 3.0s intervals
+      spawns: [
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
+        { type: ENEMY_TYPES.basic, lane: 4, delay: 3 },
+        { type: ENEMY_TYPES.basic, lane: 2, delay: 6 },
+        { type: ENEMY_TYPES.basic, lane: 1, delay: 9 },
+        { type: ENEMY_TYPES.basic, lane: 3, delay: 12 },
+      ],
+    },
+    {
+      // 6 enemies, 2.5s intervals
       spawns: [
         { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
         { type: ENEMY_TYPES.basic, lane: 4, delay: 2.5 },
         { type: ENEMY_TYPES.basic, lane: 2, delay: 5 },
         { type: ENEMY_TYPES.basic, lane: 1, delay: 7.5 },
         { type: ENEMY_TYPES.basic, lane: 3, delay: 10 },
-      ],
-    },
-    {
-      // 6 enemies, 2.0s intervals
-      spawns: [
-        { type: ENEMY_TYPES.basic, lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.basic, lane: 4, delay: 2 },
-        { type: ENEMY_TYPES.basic, lane: 2, delay: 4 },
-        { type: ENEMY_TYPES.basic, lane: 1, delay: 6 },
-        { type: ENEMY_TYPES.basic, lane: 3, delay: 8 },
-        { type: ENEMY_TYPES.basic, lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.basic, lane: 0, delay: 12.5 },
       ],
     },
   ],
 };
 
 // L5: 5 lanes, 4 waves, basic + armored — wave 1 warmup (all basic), scaling to heavy armored
-// Wave scaling: 5→7→9→11 enemies, linear intervals 3.0→2.5→2.0→1.5s
+// Wave intervals: 3.0s→2.5s→2.0s→2.0s (all above 2.0s minimum)
+// setupDelay 25s: adequate prep time before Armored Bunny bio
 export const LEVEL_5: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'armored' },
-  setupDelay: 20,
+  setupDelay: 25,
   interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
@@ -168,19 +176,19 @@ export const LEVEL_5: LevelConfig = {
       ],
     },
     {
-      // 11 enemies, 1.5s intervals — armored heavy
+      // 11 enemies, 2.0s intervals — armored heavy (flat interval avoids within-level cliff)
       spawns: [
         { type: ENEMY_TYPES.armored, lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.armored, lane: 4, delay: 1.5 },
-        { type: ENEMY_TYPES.basic,   lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.armored, lane: 1, delay: 4.5 },
-        { type: ENEMY_TYPES.armored, lane: 3, delay: 6 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 7.5 },
-        { type: ENEMY_TYPES.armored, lane: 4, delay: 9 },
-        { type: ENEMY_TYPES.basic,   lane: 1, delay: 10.5 },
-        { type: ENEMY_TYPES.armored, lane: 3, delay: 12 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 13.5 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 15 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.basic,   lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.armored, lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.armored, lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.basic,   lane: 1, delay: 14 },
+        { type: ENEMY_TYPES.armored, lane: 3, delay: 16 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 18 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 20 },
       ],
     },
   ],
@@ -188,11 +196,12 @@ export const LEVEL_5: LevelConfig = {
 
 // L6: Full 5 lanes, 4 waves — Cleaning Robot intro; spawns basic + armored + tough
 // Wave 1 warmup has no tough; waves 2+ introduce tough alongside prior types
-// Wave scaling: 5→7→9→11 enemies, linear intervals 3.0→2.5→2.0→1.5s
+// Wave intervals: 3.0s→2.5s→2.0s→2.0s (all above 2.0s minimum)
+// setupDelay 25s: adequate prep time before Cleaning Robot bio
 export const LEVEL_6: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'tough' },
-  setupDelay: 20,
+  setupDelay: 25,
   interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
@@ -233,26 +242,26 @@ export const LEVEL_6: LevelConfig = {
       ],
     },
     {
-      // 11 enemies, 1.5s intervals — tough heavy
+      // 11 enemies, 2.0s intervals — tough heavy (flat interval avoids within-level cliff)
       spawns: [
         { type: ENEMY_TYPES.tough,   lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.armored, lane: 4, delay: 1.5 },
-        { type: ENEMY_TYPES.tough,   lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.basic,   lane: 1, delay: 4.5 },
-        { type: ENEMY_TYPES.tough,   lane: 3, delay: 6 },
-        { type: ENEMY_TYPES.armored, lane: 0, delay: 7.5 },
-        { type: ENEMY_TYPES.tough,   lane: 4, delay: 9 },
-        { type: ENEMY_TYPES.basic,   lane: 3, delay: 10.5 },
-        { type: ENEMY_TYPES.armored, lane: 1, delay: 12 },
-        { type: ENEMY_TYPES.tough,   lane: 2, delay: 13.5 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 15 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.tough,   lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.basic,   lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.tough,   lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.armored, lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.tough,   lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.basic,   lane: 3, delay: 14 },
+        { type: ENEMY_TYPES.armored, lane: 1, delay: 16 },
+        { type: ENEMY_TYPES.tough,   lane: 2, delay: 18 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 20 },
       ],
     },
   ],
 };
 
 // L7: Honey Bear practice — all 5 lanes, 4 waves, basic + armored + tough in every wave
-// Wave scaling: 5→7→9→11 enemies, linear intervals 3.0→2.5→2.0→1.5s
+// Wave intervals: 3.0s→2.5s→2.0s→2.0s (all above 2.0s minimum)
 export const LEVEL_7: LevelConfig = {
   startingBalance: 100,
   setupDelay: 18,
@@ -296,19 +305,19 @@ export const LEVEL_7: LevelConfig = {
       ],
     },
     {
-      // 11 enemies, 1.5s intervals — tough pressure
+      // 11 enemies, 2.0s intervals — tough pressure (flat interval avoids within-level cliff)
       spawns: [
         { type: ENEMY_TYPES.tough,   lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.armored, lane: 4, delay: 1.5 },
-        { type: ENEMY_TYPES.tough,   lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.basic,   lane: 1, delay: 4.5 },
-        { type: ENEMY_TYPES.armored, lane: 3, delay: 6 },
-        { type: ENEMY_TYPES.tough,   lane: 0, delay: 7.5 },
-        { type: ENEMY_TYPES.basic,   lane: 4, delay: 9 },
-        { type: ENEMY_TYPES.tough,   lane: 2, delay: 10.5 },
-        { type: ENEMY_TYPES.armored, lane: 1, delay: 12 },
-        { type: ENEMY_TYPES.tough,   lane: 3, delay: 13.5 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 15 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.tough,   lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.basic,   lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.armored, lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.tough,   lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.basic,   lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.tough,   lane: 2, delay: 14 },
+        { type: ENEMY_TYPES.armored, lane: 1, delay: 16 },
+        { type: ENEMY_TYPES.tough,   lane: 3, delay: 18 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 20 },
       ],
     },
   ],
@@ -316,11 +325,12 @@ export const LEVEL_7: LevelConfig = {
 
 // L8: Sock Puppet intro — 4 waves, no jumpers in wave 1, jumpers from wave 2 onward
 // All prior types (basic + armored + tough) present throughout; jumper joins wave 2+
-// Wave scaling: 5→7→9→11 enemies, linear intervals 3.0→2.5→2.0→1.5s
+// Wave intervals: 3.0s→2.5s→2.0s→2.0s (all above 2.0s minimum)
+// setupDelay 25s: adequate prep time before Sock Puppet bio
 export const LEVEL_8: LevelConfig = {
   startingBalance: 100,
   enemyBio: { enemyKey: 'jumper' },
-  setupDelay: 18,
+  setupDelay: 25,
   interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
@@ -361,29 +371,29 @@ export const LEVEL_8: LevelConfig = {
       ],
     },
     {
-      // 11 enemies, 1.5s intervals — jumper heavy
+      // 11 enemies, 2.0s intervals — jumper heavy (flat interval avoids within-level cliff)
       spawns: [
         { type: ENEMY_TYPES.jumper,  lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.tough,   lane: 4, delay: 1.5 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.jumper,  lane: 1, delay: 4.5 },
-        { type: ENEMY_TYPES.tough,   lane: 3, delay: 6 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 7.5 },
-        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 9 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 10.5 },
-        { type: ENEMY_TYPES.tough,   lane: 1, delay: 12 },
-        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 13.5 },
-        { type: ENEMY_TYPES.armored, lane: 0, delay: 15 },
+        { type: ENEMY_TYPES.tough,   lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.jumper,  lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.tough,   lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 14 },
+        { type: ENEMY_TYPES.tough,   lane: 1, delay: 16 },
+        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 18 },
+        { type: ENEMY_TYPES.armored, lane: 0, delay: 20 },
       ],
     },
   ],
 };
 
 // L9: Marble Mine practice — 5 waves, all 4 enemy types, first loadout selection moment
-// Wave scaling: 5→7→9→11→13 enemies, linear intervals 3.0→2.5→2.0→1.5→1.2s
+// Wave intervals: 3.0s→2.5s→2.0s→2.0s→2.0s (all above 2.0s minimum)
 export const LEVEL_9: LevelConfig = {
   startingBalance: 100,
-  setupDelay: 16,
+  setupDelay: 18,
   interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
@@ -424,37 +434,37 @@ export const LEVEL_9: LevelConfig = {
       ],
     },
     {
-      // 11 enemies, 1.5s intervals — heavy jumper + tough pressure
+      // 11 enemies, 2.0s intervals — heavy jumper + tough pressure
       spawns: [
         { type: ENEMY_TYPES.jumper,  lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.tough,   lane: 4, delay: 1.5 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 3 },
-        { type: ENEMY_TYPES.jumper,  lane: 1, delay: 4.5 },
-        { type: ENEMY_TYPES.tough,   lane: 3, delay: 6 },
-        { type: ENEMY_TYPES.basic,   lane: 0, delay: 7.5 },
-        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 9 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 10.5 },
-        { type: ENEMY_TYPES.tough,   lane: 1, delay: 12 },
-        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 13.5 },
-        { type: ENEMY_TYPES.tough,   lane: 0, delay: 15 },
+        { type: ENEMY_TYPES.tough,   lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.jumper,  lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.tough,   lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.basic,   lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 14 },
+        { type: ENEMY_TYPES.tough,   lane: 1, delay: 16 },
+        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 18 },
+        { type: ENEMY_TYPES.tough,   lane: 0, delay: 20 },
       ],
     },
     {
-      // 13 enemies, 1.2s intervals — intense finale
+      // 13 enemies, 2.0s intervals — intense finale
       spawns: [
         { type: ENEMY_TYPES.tough,   lane: 0, delay: 0 },
-        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 1.2 },
-        { type: ENEMY_TYPES.armored, lane: 2, delay: 2.4 },
-        { type: ENEMY_TYPES.tough,   lane: 1, delay: 3.6 },
-        { type: ENEMY_TYPES.basic,   lane: 3, delay: 4.8 },
-        { type: ENEMY_TYPES.armored, lane: 0, delay: 6 },
-        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 7.2 },
-        { type: ENEMY_TYPES.tough,   lane: 2, delay: 8.4 },
-        { type: ENEMY_TYPES.armored, lane: 1, delay: 9.6 },
-        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 10.8 },
-        { type: ENEMY_TYPES.tough,   lane: 0, delay: 12 },
-        { type: ENEMY_TYPES.armored, lane: 4, delay: 13.2 },
-        { type: ENEMY_TYPES.basic,   lane: 2, delay: 14.4 },
+        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 2 },
+        { type: ENEMY_TYPES.armored, lane: 2, delay: 4 },
+        { type: ENEMY_TYPES.tough,   lane: 1, delay: 6 },
+        { type: ENEMY_TYPES.basic,   lane: 3, delay: 8 },
+        { type: ENEMY_TYPES.armored, lane: 0, delay: 10 },
+        { type: ENEMY_TYPES.jumper,  lane: 4, delay: 12 },
+        { type: ENEMY_TYPES.tough,   lane: 2, delay: 14 },
+        { type: ENEMY_TYPES.armored, lane: 1, delay: 16 },
+        { type: ENEMY_TYPES.jumper,  lane: 3, delay: 18 },
+        { type: ENEMY_TYPES.tough,   lane: 0, delay: 20 },
+        { type: ENEMY_TYPES.armored, lane: 4, delay: 22 },
+        { type: ENEMY_TYPES.basic,   lane: 2, delay: 24 },
       ],
     },
   ],
