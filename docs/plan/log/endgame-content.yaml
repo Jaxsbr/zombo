@@ -67,3 +67,13 @@ entries:
       HoneyTrap.test.ts: new projectile-hit path test.
       172 tests pass (171 + 1 new). ✓ US-56 complete — all 10 criteria met.
     tokens: ~5k
+  - task: 6
+    story: US-57
+    description: "Branch B — queue investigation for Stage-1 Boss implementation"
+    result: pass
+    notes: |
+      US-56 complete. Moving to US-57 (Stage-1 Boss).
+      Need to investigate: EnemyEntity.ts per-key shape drawing, animation patterns,
+      SingleUse.ts/test for mine-boss interaction, EnemiesScene for discovery rendering.
+      Queued: investigate EnemyEntity.ts + SingleUse + GameScene patterns.
+    tokens: ~1k
