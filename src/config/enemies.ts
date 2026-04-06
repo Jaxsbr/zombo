@@ -19,7 +19,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   },
   tough: {
     name: 'Cleaning Robot',
-    health: 300,
+    health: 750,
     speed: 0.25,
     damage: 30,
     scale: 1.35,
@@ -37,7 +37,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   jumper: {
     name: 'Sock Puppet',
     health: 150,
-    speed: 0.35,
+    speed: 0.455,
     damage: 20,
     scale: 0.85,
     jumpsRemaining: 1,

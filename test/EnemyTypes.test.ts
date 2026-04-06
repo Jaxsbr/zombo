@@ -41,9 +41,9 @@ describe('Sock Puppet — jump logic', () => {
 });
 
 describe('Sock Puppet — config', () => {
-  it('has correct stats: health=150, speed=0.35', () => {
+  it('has correct stats: health=150, speed=0.455', () => {
     expect(ENEMY_TYPES.jumper.health).toBe(150);
-    expect(ENEMY_TYPES.jumper.speed).toBe(0.35);
+    expect(ENEMY_TYPES.jumper.speed).toBe(0.455);
   });
 
   it('starts with jumpsRemaining = 1', () => {

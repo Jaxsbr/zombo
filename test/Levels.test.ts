@@ -60,12 +60,13 @@ describe('Level progression — guided intro', () => {
     }
   });
 
-  it('L5: 5 lanes, 4 waves, basic + armored from wave 2 onward', () => {
+  it('L5: 5 lanes, 4 waves, startingBalance 50, basic + armored from wave 2 onward', () => {
     expect(LEVEL_5.activeLanes).toBeUndefined();
     expect(LEVEL_5.waves).toHaveLength(4);
     expect(LEVEL_5.enemyBio).toEqual({ enemyKey: 'armored' });
+    expect(LEVEL_5.startingBalance).toBe(50);
 
-    // Wave 1: basic only
+    // Wave 1: basic only (warmup before armored introduced)
     for (const spawn of LEVEL_5.waves[0].spawns) {
       expect(spawn.type).toBe(ENEMY_TYPES.basic);
     }
@@ -112,27 +113,27 @@ describe('Level progression — guided intro', () => {
 });
 
 describe('Level progression — stage-one-completion (L6-L9)', () => {
-  it('L6: no activeLanes override, enemyBio for tough, startingBalance >= 450, >= 4 waves', () => {
+  it('L6: no activeLanes override, enemyBio for tough, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_6.activeLanes).toBeUndefined();
     expect(LEVEL_6.enemyBio).toEqual({ enemyKey: 'tough' });
-    expect(LEVEL_6.startingBalance).toBeGreaterThanOrEqual(450);
+    expect(LEVEL_6.startingBalance).toBe(50);
     expect(LEVEL_6.waves.length).toBeGreaterThanOrEqual(4);
   });
 
-  it('L6: wave 1 spawns are all basic; each of waves 2+ contains at least one tough', () => {
-    for (const spawn of LEVEL_6.waves[0].spawns) {
-      expect(spawn.type).toBe(ENEMY_TYPES.basic);
-    }
+  it('L6: wave 1 has no tough; waves 2+ each have at least one tough; all waves include armored', () => {
+    const hasNoToughWave1 = LEVEL_6.waves[0].spawns.every(s => s.type !== ENEMY_TYPES.tough);
+    expect(hasNoToughWave1).toBe(true);
     for (let i = 1; i < LEVEL_6.waves.length; i++) {
-      const hasTough = LEVEL_6.waves[i].spawns.some(s => s.type === ENEMY_TYPES.tough);
-      expect(hasTough).toBe(true);
+      expect(LEVEL_6.waves[i].spawns.some(s => s.type === ENEMY_TYPES.tough)).toBe(true);
     }
+    const allSpawns = LEVEL_6.waves.flatMap(w => w.spawns);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.armored)).toBe(true);
   });
 
-  it('L7: no activeLanes override, no enemyBio, startingBalance >= 500, >= 4 waves', () => {
+  it('L7: no activeLanes override, no enemyBio, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_7.activeLanes).toBeUndefined();
     expect(LEVEL_7.enemyBio).toBeUndefined();
-    expect(LEVEL_7.startingBalance).toBeGreaterThanOrEqual(500);
+    expect(LEVEL_7.startingBalance).toBe(50);
     expect(LEVEL_7.waves.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -143,10 +144,10 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
     }
   });
 
-  it('L8: no activeLanes override, enemyBio for jumper, startingBalance >= 550, >= 4 waves', () => {
+  it('L8: no activeLanes override, enemyBio for jumper, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_8.activeLanes).toBeUndefined();
     expect(LEVEL_8.enemyBio).toEqual({ enemyKey: 'jumper' });
-    expect(LEVEL_8.startingBalance).toBeGreaterThanOrEqual(550);
+    expect(LEVEL_8.startingBalance).toBe(50);
     expect(LEVEL_8.waves.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -159,10 +160,10 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
     }
   });
 
-  it('L9: no activeLanes override, no enemyBio, startingBalance >= 600, >= 5 waves', () => {
+  it('L9: no activeLanes override, no enemyBio, startingBalance === 50, >= 5 waves', () => {
     expect(LEVEL_9.activeLanes).toBeUndefined();
     expect(LEVEL_9.enemyBio).toBeUndefined();
-    expect(LEVEL_9.startingBalance).toBeGreaterThanOrEqual(600);
+    expect(LEVEL_9.startingBalance).toBe(50);
     expect(LEVEL_9.waves.length).toBeGreaterThanOrEqual(5);
   });
 
