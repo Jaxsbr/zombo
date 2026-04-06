@@ -11,7 +11,7 @@ const game = new Phaser.Game(gameConfig);
   );
   keys.forEach(k => localStorage.removeItem(k));
   console.log(`zomboReset: cleared ${keys.length} keys — ${keys.join(', ')}`);
-  game.scene.start('TitleScene');
+  game.scene.start('MainMenuScene');
 };
 
 export { game };

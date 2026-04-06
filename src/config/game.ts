@@ -1,8 +1,10 @@
 import Phaser from 'phaser';
-import { TitleScene } from '../scenes/TitleScene';
+import { MainMenuScene } from '../scenes/MainMenuScene';
 import { LevelSelectScene } from '../scenes/LevelSelectScene';
 import { GameScene } from '../scenes/GameScene';
 import { GameOverScene } from '../scenes/GameOverScene';
+import { ToysScene } from '../scenes/ToysScene';
+import { EnemiesScene } from '../scenes/EnemiesScene';
 
 export const GRID_ROWS = 5;
 export const GRID_COLS = 9;
@@ -22,5 +24,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
-  scene: [TitleScene, LevelSelectScene, GameScene, GameOverScene],
+  scene: [MainMenuScene, LevelSelectScene, GameScene, GameOverScene, ToysScene, EnemiesScene],
 };
