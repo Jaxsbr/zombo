@@ -1,43 +1,76 @@
 ## Phase goal
 
-Balance and pacing pass to make the game feel gentler and more forgiving for kids — PvZ-style where most players clear stage one comfortably. All changes are config value updates in `src/config/enemies.ts` (speed values) and `src/config/levels.ts` (spawn intervals, setup delays). No system or scene code changes.
+Replace TitleScene with a proper main menu (MainMenuScene) that serves as the game's single entry point. Players can navigate to play/continue, browse a Toys discovery sub-scene, browse an Enemies discovery sub-scene, and toggle sound — all in the bedroom toy-box aesthetic. The Play/Continue button is context-aware: it shows "Continue" and pre-selects the next unbeaten level when the player has prior progress. Toys and Enemies sub-scenes use silhouette cards for locked/undiscovered entries, rewarding progression with revealed info.
 
 ### Stories in scope
-- US-50 — Reduce enemy speeds for kid-friendly pacing
-- US-51 — Rebalance wave pacing L1-L9 for smooth difficulty curve
+- US-52 — Main menu scene
+- US-53 — Play/Continue flow
+- US-54 — Toys discovery sub-scene
+- US-55 — Enemies discovery sub-scene
 
 ### Done-when (observable)
 
-#### US-50 — Reduce enemy speeds for kid-friendly pacing
-- [x] Dust Bunny (`ENEMY_TYPES.basic`) speed in range [0.2, 0.3] cells/s (reduced from 0.4) [US-50]
-- [x] Armored Bunny (`ENEMY_TYPES.armored`) speed strictly less than Dust Bunny speed [US-50]
-- [x] Cleaning Robot (`ENEMY_TYPES.tough`) speed in range [0.1, 0.18] cells/s (reduced from 0.25) — slowest enemy [US-50]
-- [x] Sock Puppet (`ENEMY_TYPES.jumper`) speed in range [0.25, 0.35] cells/s (reduced from 0.455) — fastest enemy [US-50]
-- [x] Speed hierarchy holds: `jumper.speed > basic.speed > armored.speed > tough.speed` [US-50]
-- [x] `test/EnemyTypes.test.ts` speed/stat assertions updated to match new values [US-50]
-- [x] `test/Enemies.test.ts` "basic.speed > tough.speed" assertion still holds (already true, but verify armored is also covered) [US-50]
-- [x] New test in `test/EnemyTypes.test.ts` (or `test/Enemies.test.ts`) validates the full speed hierarchy: `jumper.speed > basic.speed > armored.speed > tough.speed` [US-50]
-- [x] `npm test` passes [US-50]
+#### US-52 — Main menu scene
+- [ ] `src/scenes/MainMenuScene.ts` exists and extends `Phaser.Scene` with key `'MainMenuScene'` [US-52]
+- [ ] `src/main.ts` lists `MainMenuScene` as the first scene in the Phaser config scene array [US-52]
+- [ ] `src/main.ts` also registers `ToysScene` and `EnemiesScene` in the scene array [US-52]
+- [ ] `TitleScene` is removed from `src/main.ts` scene array (MainMenuScene is the replacement) [US-52]
+- [ ] MainMenuScene renders title "Toy Box Siege" (≥ 32px, amber `#ffc107`, monospace) and subtitle text [US-52]
+- [ ] MainMenuScene renders a Play/Continue button, a Toys button, an Enemies button, and a Sound toggle — all positioned per the menu layout plan (Play/Continue at y ≈ 165, Toys at y ≈ 225, Enemies at y ≈ 273, Sound at y ≈ 335, all centered) [US-52]
+- [ ] All interactive elements have hit area ≥ 48×48px [US-52]
+- [ ] MainMenuScene background uses `#5d4037` fill with floor-board lines and atmospheric decorations matching existing TitleScene visuals [US-52]
+- [ ] Sound toggle reads `isSfxMuted()` on scene create and displays `SFX ✓` (unmuted) or `SFX ✗` (muted) accordingly [US-52]
+- [ ] Clicking Sound toggle calls `setMuted(!isSfxMuted())` and updates toggle label in place [US-52]
+- [ ] HUD mute button in GameScene still functions independently (clicking it updates the same SFX module mute state) [US-52]
+- [ ] `npm test` passes after TitleScene removal and MainMenuScene addition [US-52]
 
-#### US-51 — Rebalance wave pacing L1-L9 for smooth difficulty curve
-- [x] No wave in any level (L1-L9) has a minimum spawn interval below 2.0s [US-51]
-- [x] Minimum spawn intervals do not tighten faster than levels progress: for each pair of adjacent levels, the tighter-interval level's minimum spawn gap is >= 70% of the wider-interval level's minimum spawn gap [US-51]
-- [x] Within each level, the last wave's minimum spawn interval is no less than 60% of the first wave's minimum spawn interval (prevents within-level difficulty cliffs) [US-51]
-- [x] Setup delay for levels with `enemyBio` (L5, L6, L8) >= 25s [US-51]
-- [x] Setup delay for all levels >= 18s [US-51]
-- [x] Level wave counts unchanged: L1(1), L2(2), L3(3), L4(3), L5(4), L6(4), L7(4), L8(4), L9(5) [US-51]
-- [x] Enemy type composition per wave preserved (all existing composition test assertions in `Levels.test.ts` pass) [US-51]
-- [x] Total enemy count per level is the same or higher than current values [US-51]
-- [x] A new test in `test/Levels.test.ts` validates the smooth difficulty curve: minimum spawn interval across all waves in level N is >= minimum spawn interval across all waves in level N+1 [US-51]
-- [x] `test/Levels.test.ts` starting balance and timing assertions updated to match new config values [US-51]
-- [x] `npm test` passes [US-51]
+#### US-53 — Play/Continue flow
+- [ ] `LevelProgress.ts` exports `nextUnbeatenLevel(data: ProgressData): number` [US-53]
+- [ ] `nextUnbeatenLevel` returns the index of the first level with state `'unlocked'`; returns `TOTAL_LEVELS - 1` if no level is `'unlocked'` (all completed) [US-53]
+- [ ] `LevelProgress.test.ts` covers `nextUnbeatenLevel` with: no completions → returns 0; levels 0–3 completed → returns 4; all 9 completed → returns 8 [US-53]
+- [ ] MainMenuScene calls `loadProgress()` on `create()` and renders button label `"Play"` when no levels have state `'completed'` [US-53]
+- [ ] MainMenuScene renders button label `"Continue"` when `loadProgress()` returns at least one level with state `'completed'` [US-53]
+- [ ] Clicking Play button calls `this.scene.start('LevelSelectScene')` with no init data [US-53]
+- [ ] Clicking Continue button calls `this.scene.start('LevelSelectScene', { selectedLevel: nextUnbeatenLevel(progress) })` [US-53]
+- [ ] `LevelSelectScene.create()` reads `(this.scene.settings.data as { selectedLevel?: number }).selectedLevel` and visually highlights that level's button when the value is provided [US-53]
+
+#### US-54 — Toys discovery sub-scene
+- [ ] `src/scenes/ToysScene.ts` exists and extends `Phaser.Scene` with key `'ToysScene'` [US-54]
+- [ ] Clicking Toys button in MainMenuScene calls `this.scene.start('ToysScene')` [US-54]
+- [ ] ToysScene renders a card for each of the 5 defender types in `DEFENDER_TYPES` [US-54]
+- [ ] Generator and shooter cards always render full card: DRAW_DEFENDER visual at scale ≥ 1.5, name ≥ 18px monospace, spark cost, bio text [US-54]
+- [ ] Wall card renders full card when `'wall'` is in `loadUnlocks()` result; renders silhouette + `"???"` label when not [US-54]
+- [ ] Trapper card renders full card when `'trapper'` is in `loadUnlocks()` result; renders silhouette + `"???"` when not [US-54]
+- [ ] Mine card renders full card when `'mine'` is in `loadUnlocks()` result; renders silhouette + `"???"` when not [US-54]
+- [ ] Silhouette cards use darkened fill (alpha ≤ 0.3) at same bounding dimensions as full card — no pointer cursor, no click response [US-54]
+- [ ] `DEFENDER_TYPES` in `src/config/defenders.ts` has non-empty `bio` string for all 5 entries (trapper and mine bios added in this phase; others verified present) [US-54]
+- [ ] Bio text for each defender is 1–2 sentences, kid-friendly voice, ≤ 25 words per sentence [US-54]
+- [ ] Back button at top-left of ToysScene, hit area ≥ 48×48px, calls `this.scene.start('MainMenuScene')` on click [US-54]
+- [ ] ToysScene assigns no depth values outside the existing depth layer map [US-54]
+- [ ] Silhouette cards read as "locked — not yet unlocked," not as a broken or missing asset (aspirational — visual verification required) [US-54]
+
+#### US-55 — Enemies discovery sub-scene
+- [ ] `src/scenes/EnemiesScene.ts` exists and extends `Phaser.Scene` with key `'EnemiesScene'` [US-55]
+- [ ] Clicking Enemies button in MainMenuScene calls `this.scene.start('EnemiesScene')` [US-55]
+- [ ] EnemiesScene renders a card for each of the 4 enemy types in `ENEMY_TYPES` [US-55]
+- [ ] Dust Bunny card always renders full card: DRAW_ENEMY visual at scale ≥ 1.5, name ≥ 18px monospace, bio text [US-55]
+- [ ] Cleaning Robot card renders full card when `localStorage.getItem('bio_shown_enemy_<cleaningRobotKey>')` is set; renders silhouette + `"???"` when not [US-55]
+- [ ] Armored Bunny card renders full card when `localStorage.getItem('bio_shown_enemy_<armoredKey>')` is set; renders silhouette + `"???"` when not [US-55]
+- [ ] Sock Puppet card renders full card when `localStorage.getItem('bio_shown_enemy_<sockPuppetKey>')` is set; renders silhouette + `"???"` when not [US-55]
+- [ ] Silhouette cards use darkened fill (alpha ≤ 0.3), no pointer cursor, no click response [US-55]
+- [ ] `ENEMY_TYPES` in `src/config/enemies.ts` has non-empty `bio` string for all 4 entries (cleaning_robot, armored_bunny, sock_puppet verified present; dust_bunny bio added in this phase) [US-55]
+- [ ] Bio text for each enemy is 1–2 sentences, kid-friendly voice, ≤ 25 words per sentence [US-55]
+- [ ] Back button at top-left of EnemiesScene, hit area ≥ 48×48px, calls `this.scene.start('MainMenuScene')` on click [US-55]
+- [ ] EnemiesScene assigns no depth values outside the existing depth layer map [US-55]
+- [ ] Silhouette cards read as "not yet encountered" — dark shape communicates mystery, not brokenness (aspirational — visual verification required) [US-55]
 
 #### Structural
-- [x] `AGENTS.md` level progression description updated to reflect new enemy speeds and pacing philosophy (gentle curve, PvZ-style stage one) [phase]
-- [x] `docs/product/stage-one.md` design notes section updated to mention the difficulty tuning rationale [phase]
+- [ ] AGENTS.md scene list updated: `MainMenuScene.ts`, `ToysScene.ts`, `EnemiesScene.ts` added; `TitleScene.ts` removed [phase]
+- [ ] AGENTS.md notes MainMenuScene as the initial scene (replaces TitleScene) [phase]
+- [ ] AGENTS.md notes `nextUnbeatenLevel` export in `LevelProgress.ts` [phase]
 
 ### Golden principles (phase-relevant)
-- Config-driven entities — all changes are config value updates in `enemies.ts` and `levels.ts`; no system/scene code changes
-- Game logic separated from Phaser rendering — speed values and spawn delays are consumed by existing pure TS systems (EnemyMovement, WaveManager)
-- no-silent-pass — new difficulty curve test must have unconditional assertions (no early returns before assertions)
-- agents-consistency — AGENTS.md updated to reflect shipped balance values before phase is marked complete
+- Game logic separated from Phaser rendering — `nextUnbeatenLevel` is pure TS in `LevelProgress.ts`, testable in Vitest node environment
+- Config-driven entities — bio text on `DefenderType` and `EnemyType` interfaces, discovery state read from existing localStorage keys
+- agents-consistency — AGENTS.md updated to reflect scene changes and new export
+- no-silent-pass — `nextUnbeatenLevel` covered by unit tests with distinct cases

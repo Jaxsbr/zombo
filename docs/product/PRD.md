@@ -33,3 +33,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | guided-intro | Shipped | US-40, US-41, US-42, US-43, US-44 | [phases/guided-intro.md](phases/guided-intro.md) |
 | stage-one-completion | Shipped | US-45, US-46, US-47, US-48, US-49 | [phases/stage-one-completion.md](phases/stage-one-completion.md) |
 | difficulty-tuning | Shipped | US-50, US-51 | [phases/difficulty-tuning.md](phases/difficulty-tuning.md) |
+| main-menu | Draft | US-52, US-53, US-54, US-55 | [phases/main-menu.md](phases/main-menu.md) |
