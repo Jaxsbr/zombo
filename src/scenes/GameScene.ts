@@ -17,6 +17,7 @@ import {
   checkProjectileHit,
   applyDamage,
   applyAOEDamage,
+  getAOETargetRows,
   isDead,
   wallBlocks,
   HONEY_BEAR_PROJECTILE_SPEED,
@@ -1359,9 +1360,7 @@ export class GameScene extends Phaser.Scene {
               }
             }
             // Create honey pots on each affected row at the hit column
-            const aoeRows = [proj.lane];
-            if (proj.lane > 0) aoeRows.push(proj.lane - 1);
-            if (proj.lane < GRID_ROWS - 1) aoeRows.push(proj.lane + 1);
+            const aoeRows = getAOETargetRows(proj.lane, GRID_ROWS);
             for (const row of aoeRows) {
               if (hitCol >= 0 && hitCol < GRID_COLS) {
                 const pot = createHoneyPot(row, hitCol, HONEY_POT_DURATION);
