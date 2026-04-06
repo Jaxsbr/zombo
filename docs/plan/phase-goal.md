@@ -65,9 +65,9 @@ Replace TitleScene with a proper main menu (MainMenuScene) that serves as the ga
 - [x] Silhouette cards read as "not yet encountered" — dark shape communicates mystery, not brokenness (aspirational — visual verification required) [US-55]
 
 #### Structural
-- [ ] AGENTS.md scene list updated: `MainMenuScene.ts`, `ToysScene.ts`, `EnemiesScene.ts` added; `TitleScene.ts` removed [phase]
-- [ ] AGENTS.md notes MainMenuScene as the initial scene (replaces TitleScene) [phase]
-- [ ] AGENTS.md notes `nextUnbeatenLevel` export in `LevelProgress.ts` [phase]
+- [x] AGENTS.md scene list updated: `MainMenuScene.ts`, `ToysScene.ts`, `EnemiesScene.ts` added; `TitleScene.ts` removed [phase]
+- [x] AGENTS.md notes MainMenuScene as the initial scene (replaces TitleScene) [phase]
+- [x] AGENTS.md notes `nextUnbeatenLevel` export in `LevelProgress.ts` [phase]
 
 ### Golden principles (phase-relevant)
 - Game logic separated from Phaser rendering — `nextUnbeatenLevel` is pure TS in `LevelProgress.ts`, testable in Vitest node environment

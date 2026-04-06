@@ -20,10 +20,12 @@ src/
 │   ├── enemies.ts       # Enemy type registry (4 types: basic, tough, armored, jumper)
 │   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_9, escalating difficulty)
 ├── scenes/
-│   ├── TitleScene.ts    # Title screen — "Toy Box Siege" branding, Play button
+│   ├── MainMenuScene.ts # Main menu — title, Play/Continue, Toys, Enemies nav, sound toggle
 │   ├── LevelSelectScene.ts # Level select — 9 toy-box entries, loadout selection
 │   ├── GameScene.ts     # Main gameplay scene — grid, HUD, placement, combat loop
-│   └── GameOverScene.ts # Win/lose display, continue to level select
+│   ├── GameOverScene.ts # Win/lose display, continue to level select
+│   ├── ToysScene.ts     # Toys browser — full card (unlocked) or silhouette (locked)
+│   └── EnemiesScene.ts  # Enemies browser — full card (discovered) or silhouette (unknown)
 ├── systems/
 │   ├── Grid.ts          # Grid state — cell coordinates, occupancy tracking
 │   ├── Economy.ts       # Resource balance — income, spend, passive generation
@@ -74,7 +76,7 @@ GameOverScene → LevelProgress (complete + unlock next) → LevelSelectScene
 ## Scene flow (shipped in `game-feel` phase, extended in `army-builder` phase)
 
 ```
-Game launch → TitleScene (Play button) → fade → LevelSelectScene
+Game launch → MainMenuScene → Play/Continue → LevelSelectScene (or ToysScene / EnemiesScene)
                                                     ↓
 LevelSelectScene → [LoadoutScreen if >4 unlocked] → fade → GameScene
                                                     ↓
@@ -106,7 +108,7 @@ Bedroom environment elements rendered at depth -10 (behind all gameplay):
 - Furniture silhouettes along top of play area (bookshelf, dresser)
 - Decorative toy details on random grid cells at level start (crayon, marble, brick, star)
 - Floating dust motes (15 semi-transparent dots with drift tweens)
-- Themed backgrounds on TitleScene and GameOverScene (floor boards, rug, furniture, scattered toys)
+- Themed backgrounds on MainMenuScene and GameOverScene (floor boards, rug, furniture, scattered toys)
 
 ### Spark economy
 
@@ -145,7 +147,9 @@ Bio fields: `DefenderType.bio` (required string) for unlock cards. `EnemyType.bi
 ### Scene flow
 
 ```
-TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene → GameOverScene → LevelSelectScene
+MainMenuScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene → GameOverScene → LevelSelectScene
+MainMenuScene → ToysScene → MainMenuScene (Back)
+MainMenuScene → EnemiesScene → MainMenuScene (Back)
 ```
 
 `LevelSelectScene.ts` renders 9 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
