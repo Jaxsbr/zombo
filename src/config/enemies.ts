@@ -12,7 +12,7 @@ export interface EnemyType {
 export const ENEMY_TYPES: Record<string, EnemyType> = {
   basic: {
     name: 'Dust Bunny',
-    health: 100,
+    health: 80,
     speed: 0.4,
     damage: 20,
     scale: 1.0,
@@ -27,7 +27,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   },
   armored: {
     name: 'Armored Bunny',
-    health: 300, // exactly 3x basic
+    health: 240, // exactly 3x basic
     speed: 0.4,  // same as basic
     damage: 20,
     scale: 1.15,
