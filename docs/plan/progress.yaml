@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 1
-  next_task: null
+  task_number: 2
+  next_task: "[US-53] Add nextUnbeatenLevel(data) to LevelProgress.ts and 3 test cases in LevelProgress.test.ts"
   last_result: pass
   consecutive_fails: 0
 

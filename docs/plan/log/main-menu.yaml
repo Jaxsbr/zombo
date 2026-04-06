@@ -2,3 +2,19 @@
 # Each entry: { task, story, description, result, notes, tokens }
 
 entries:
+  - task: 1
+    story: US-53
+    description: "Branch B investigation — read current state before implementation"
+    result: pass
+    notes: |
+      162 tests pass (16 files). Key findings:
+      SFX exports: setSfxMuted(value) + isSfxMuted(). Spec said "setMuted" — corrected to setSfxMuted.
+      Defender bios: all 5 already populated (generator, shooter, wall, trapper, mine). No additions needed.
+      Enemy bios: tough/armored/jumper present. basic (Dust Bunny) has no bio field — must add (US-55).
+      LevelProgress.ts: no nextUnbeatenLevel export yet.
+      game.ts: scene array = [TitleScene, LevelSelectScene, GameScene, GameOverScene].
+      main.ts: thin wrapper, imports via game.ts config.
+      TitleScene.ts: full bedroom atmosphere code — will port to MainMenuScene.
+      LevelSelectScene.ts: need to add selectedLevel init data reading.
+      Queued: add nextUnbeatenLevel + tests (US-53 pure logic).
+    tokens: ~3k
