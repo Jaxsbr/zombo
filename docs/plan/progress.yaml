@@ -29,7 +29,7 @@ state:
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 1
-  next_task: null
+  next_task: "[US-56] Investigate: read GameScene honey bear tossing logic and Water Pistol projectile rendering to plan Honey Bear projectile implementation"
   last_result: null
   consecutive_fails: 0
 

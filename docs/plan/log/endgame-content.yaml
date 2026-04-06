@@ -1,4 +1,19 @@
 # Phase log — endgame-content
 # Each entry: { task, story, description, result, notes, tokens }
 
-entries: []
+entries:
+  - task: 1
+    story: US-56
+    description: "Branch B investigation — read current state, identify affected files, plan Honey Bear projectile implementation"
+    result: pass
+    notes: |
+      165 tests pass (16 files). Key findings:
+      Combat.ts: PROJECTILE_SPEED=4, tryFire/ProjectileState pattern for Water Pistol. Honey Bear projectile speed must be < 4.
+      HoneyTrap.ts: createHoneyPot(row, col, duration) reusable. HONEY_TOSS_INTERVAL/HONEY_TOSS_RANGE for periodic tossing — remove.
+      SingleUse.ts: mineTriggerCheck returns enemy, doesn't kill. Kill logic in GameScene. Need MINE_BOSS_DAMAGE for boss.
+      defenders.ts: trapper has fireRate:0, damage:0 — needs updating for projectile behavior.
+      enemies.ts: EnemyType needs bossType? field. No 'boss' entry yet.
+      levels.ts: ALL_LEVELS length 9. LevelProgress.ts: TOTAL_LEVELS=9. Both need 10.
+      Phase type: server/schema/cross-cutting — investigate-first mandate applies.
+      Queued: investigate GameScene honey bear tossing and Water Pistol projectile rendering.
+    tokens: ~5k
