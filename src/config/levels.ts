@@ -6,8 +6,8 @@ import { LevelConfig } from '../systems/WaveManager';
 export const LEVEL_1: LevelConfig = {
   activeLanes: [2],
   tutorialMode: true,
-  startingBalance: 50,
-  setupDelay: 30,
+  startingBalance: 100,
+  setupDelay: 18,
   interWaveDelay: 18,
   announceDuration: 2.5,
   waves: [
@@ -23,7 +23,7 @@ export const LEVEL_1: LevelConfig = {
 // L2: 3 lanes, 2 waves, basic enemies across 3 lanes
 export const LEVEL_2: LevelConfig = {
   activeLanes: [1, 2, 3],
-  startingBalance: 50,
+  startingBalance: 100,
   setupDelay: 25,
   interWaveDelay: 18,
   announceDuration: 2.5,
@@ -49,7 +49,7 @@ export const LEVEL_2: LevelConfig = {
 // L3: Full 5 lanes, 3 waves, basic enemies — economy tighter than L2
 export const LEVEL_3: LevelConfig = {
   activeLanes: [0, 1, 2, 3, 4],
-  startingBalance: 50,
+  startingBalance: 100,
   setupDelay: 22,
   interWaveDelay: 16,
   announceDuration: 2.5,
@@ -83,7 +83,7 @@ export const LEVEL_3: LevelConfig = {
 
 // L4: 5 lanes, 3 waves, basic enemies — Block Tower now available
 export const LEVEL_4: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   setupDelay: 22,
   interWaveDelay: 15,
   announceDuration: 2.5,
@@ -121,7 +121,7 @@ export const LEVEL_4: LevelConfig = {
 // L5: 5 lanes, 4 waves, basic + armored — wave 1 warmup (1 armored), scaling to heavy armored
 // Wave scaling: 5→7→9→11 enemies, spawn intervals tighten each wave
 export const LEVEL_5: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   enemyBio: { enemyKey: 'armored' },
   setupDelay: 20,
   interWaveDelay: 14,
@@ -186,7 +186,7 @@ export const LEVEL_5: LevelConfig = {
 // Wave 1 warmup has no tough; waves 2+ introduce tough alongside prior types
 // Wave scaling: 5→7→9→11 enemies, tightening spawn intervals
 export const LEVEL_6: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   enemyBio: { enemyKey: 'tough' },
   setupDelay: 20,
   interWaveDelay: 14,
@@ -250,7 +250,7 @@ export const LEVEL_6: LevelConfig = {
 // L7: Honey Bear practice — all 5 lanes, 4 waves, basic + armored + tough in every wave
 // Wave scaling: 5→7→9→11 enemies, tightening intervals
 export const LEVEL_7: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   setupDelay: 18,
   interWaveDelay: 13,
   announceDuration: 2.5,
@@ -314,7 +314,7 @@ export const LEVEL_7: LevelConfig = {
 // All prior types (basic + armored + tough) present throughout; jumper joins wave 2+
 // Wave scaling: 5→7→9→11 enemies, tightening intervals
 export const LEVEL_8: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   enemyBio: { enemyKey: 'jumper' },
   setupDelay: 18,
   interWaveDelay: 13,
@@ -378,7 +378,7 @@ export const LEVEL_8: LevelConfig = {
 // L9: Marble Mine practice — 5 waves, all 4 enemy types, first loadout selection moment
 // Wave scaling: 5→7→9→11→13 enemies, tightening intervals for maximum intensity
 export const LEVEL_9: LevelConfig = {
-  startingBalance: 50,
+  startingBalance: 100,
   setupDelay: 16,
   interWaveDelay: 12,
   announceDuration: 2.5,

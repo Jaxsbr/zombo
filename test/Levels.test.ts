@@ -14,9 +14,8 @@ describe('Level progression — guided intro', () => {
     }
   });
 
-  it('L1: starting balance >= 50 (generator affordable) and < 100 (pistol not)', () => {
-    expect(LEVEL_1.startingBalance).toBeGreaterThanOrEqual(50);
-    expect(LEVEL_1.startingBalance).toBeLessThan(100);
+  it('L1: starting balance === 100 (generator affordable, pistol also affordable)', () => {
+    expect(LEVEL_1.startingBalance).toBe(100);
   });
 
   it('L1: a single Water Pistol survives the wave (total enemy HP <= pistol DPS x reasonable time)', () => {
@@ -64,7 +63,7 @@ describe('Level progression — guided intro', () => {
     expect(LEVEL_5.activeLanes).toBeUndefined();
     expect(LEVEL_5.waves).toHaveLength(4);
     expect(LEVEL_5.enemyBio).toEqual({ enemyKey: 'armored' });
-    expect(LEVEL_5.startingBalance).toBe(50);
+    expect(LEVEL_5.startingBalance).toBe(100);
 
     // Wave 1: basic only (warmup before armored introduced)
     for (const spawn of LEVEL_5.waves[0].spawns) {
@@ -116,7 +115,7 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
   it('L6: no activeLanes override, enemyBio for tough, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_6.activeLanes).toBeUndefined();
     expect(LEVEL_6.enemyBio).toEqual({ enemyKey: 'tough' });
-    expect(LEVEL_6.startingBalance).toBe(50);
+    expect(LEVEL_6.startingBalance).toBe(100);
     expect(LEVEL_6.waves.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -133,7 +132,7 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
   it('L7: no activeLanes override, no enemyBio, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_7.activeLanes).toBeUndefined();
     expect(LEVEL_7.enemyBio).toBeUndefined();
-    expect(LEVEL_7.startingBalance).toBe(50);
+    expect(LEVEL_7.startingBalance).toBe(100);
     expect(LEVEL_7.waves.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -147,7 +146,7 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
   it('L8: no activeLanes override, enemyBio for jumper, startingBalance === 50, >= 4 waves', () => {
     expect(LEVEL_8.activeLanes).toBeUndefined();
     expect(LEVEL_8.enemyBio).toEqual({ enemyKey: 'jumper' });
-    expect(LEVEL_8.startingBalance).toBe(50);
+    expect(LEVEL_8.startingBalance).toBe(100);
     expect(LEVEL_8.waves.length).toBeGreaterThanOrEqual(4);
   });
 
@@ -163,7 +162,7 @@ describe('Level progression — stage-one-completion (L6-L9)', () => {
   it('L9: no activeLanes override, no enemyBio, startingBalance === 50, >= 5 waves', () => {
     expect(LEVEL_9.activeLanes).toBeUndefined();
     expect(LEVEL_9.enemyBio).toBeUndefined();
-    expect(LEVEL_9.startingBalance).toBe(50);
+    expect(LEVEL_9.startingBalance).toBe(100);
     expect(LEVEL_9.waves.length).toBeGreaterThanOrEqual(5);
   });
 
