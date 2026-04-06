@@ -2,7 +2,7 @@
 
 ## Purpose
 
-**Toy Box Siege** — a bedroom-themed tower defense game inspired by Plants vs Zombies, built as a gift for Jaco's kids. Defenders are toys (Water Pistol, Jack-in-the-Box, Block Tower), enemies are household nuisances (Dust Bunnies, Cleaning Robots). The game starts with a title screen, uses PvZ-style wave pacing with setup periods and announcements, and ends with themed win/lose results.
+**Toy Box Siege** — a bedroom-themed tower defense game inspired by Plants vs Zombies, built as a gift for Jaco's kids. Defenders are toys (Water Pistol, Jack-in-the-Box, Block Tower), enemies are household nuisances (Dust Bunnies, Cleaning Robots). The game starts at a main menu (MainMenuScene), uses PvZ-style wave pacing with setup periods and announcements, and ends with themed win/lose results.
 
 ## Tech stack
 
@@ -18,8 +18,8 @@
 |---|---|
 | `src/main.ts` | Entry point — creates `Phaser.Game` instance |
 | `src/config/` | Game configuration — Phaser config (`game.ts`), defender type registry (`defenders.ts`), enemy type registry (`enemies.ts`), level configs LEVEL_1-LEVEL_9 and ALL_LEVELS (`levels.ts`) |
-| `src/scenes/` | Phaser scenes — `TitleScene.ts` (title + play), `LevelSelectScene.ts` (level select + loadout + enemy bio overlay), `GameScene.ts` (gameplay + tutorial dream bubbles), `GameOverScene.ts` (win/lose + continue + toy unlock card overlay) |
-| `src/systems/` | Pure game logic modules — `Grid.ts`, `Economy.ts`, `Placement.ts`, `WaveManager.ts`, `EnemyMovement.ts`, `Combat.ts`, `GameFlow.ts`, `SFX.ts`, `SingleUse.ts`, `LevelProgress.ts`, `DefenderUnlocks.ts`, `HoneyTrap.ts`, `Tutorial.ts` |
+| `src/scenes/` | Phaser scenes — `MainMenuScene.ts` (main menu — title, nav to play/continue/toys/enemies, sound toggle), `LevelSelectScene.ts` (level select + loadout + enemy bio overlay), `GameScene.ts` (gameplay + tutorial dream bubbles), `GameOverScene.ts` (win/lose + continue + toy unlock card overlay), `ToysScene.ts` (defender browsing — full card or silhouette based on unlock state), `EnemiesScene.ts` (enemy browsing — full card or silhouette based on discovery state) |
+| `src/systems/` | Pure game logic modules — `Grid.ts`, `Economy.ts`, `Placement.ts`, `WaveManager.ts`, `EnemyMovement.ts`, `Combat.ts`, `GameFlow.ts`, `SFX.ts`, `SingleUse.ts`, `LevelProgress.ts` (exports `loadProgress`, `saveProgress`, `completeLevel`, `getLevelState`, `nextUnbeatenLevel`), `DefenderUnlocks.ts`, `HoneyTrap.ts`, `Tutorial.ts` |
 | `src/entities/` | Phaser game objects — `DefenderEntity.ts` (per-key shape drawing incl. trapper/mine, idle animations, combat reactions), `EnemyEntity.ts` (per-key shape drawing incl. armored/jumper, movement animations, hit flash, helmet degradation, per-type scale), `ProjectileEntity.ts` (yellow circle) |
 | `test/` | Vitest unit tests — one test file per game logic module |
 | `docs/reference/` | PvZ1 game design reference library — plant catalogue, zombie catalogue, level/map reference, game systems, art/audio direction, spin-off proposals |
@@ -55,7 +55,7 @@
 - **SingleUse**: pure logic for mine trigger (`mineTriggerCheck`, `MineState` arm timer). No Phaser dependency.
 - **HoneyTrap**: pure logic for honey pot state management (`createHoneyPot`, `updateHoneyPots`, `getSpeedModifier`). Pots expire after `HONEY_POT_DURATION` (8s), apply `HONEY_POT_SLOW` (0.5x) speed multiplier. No Phaser dependency.
 - **Spark collection**: floating blue multi-layer diamond tokens spawn above grid every 12s (SPARK_SPAWN_INTERVAL=12000), drift down, player clicks to collect 50 sparks (SPARK_VALUE=50) via 48x48 click zone. Uncollected sparks removed at grid bottom. Jack-in-the-Box generator also drops clickable sparks at its position every 8s (GENERATOR_INCOME_INTERVAL=8000); generator sparks auto-expire after 5s (GENERATOR_SPARK_EXPIRY). Replaces invisible passive income timer
-- **Atmosphere**: bedroom environment — furniture silhouettes, decorative toy details, floating dust motes (all at depth -10, no pointer input). Themed backgrounds on TitleScene and GameOverScene
+- **Atmosphere**: bedroom environment — furniture silhouettes, decorative toy details, floating dust motes (all at depth -10, no pointer input). Themed backgrounds on MainMenuScene and GameOverScene
 - **GameFlow**: playing/won/lost state machine — lose when enemy reaches col 0, win when all waves spent and no enemies alive
 - **EnemyMovement**: `moveEnemy` for leftward advance, `attemptJump` for Sock Puppet jump-over-defender logic (pure TS)
 

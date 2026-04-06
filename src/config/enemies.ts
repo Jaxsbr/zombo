@@ -16,6 +16,7 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
     speed: 0.30,
     damage: 10,
     scale: 1.0,
+    bio: 'The Dust Bunny rolls in from the right! It\'s the softest enemy, but there\'s a lot of them.',
   },
   tough: {
     name: 'Cleaning Robot',

@@ -1,0 +1,98 @@
+# Phase log — main-menu
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-53
+    description: "Branch B investigation — read current state before implementation"
+    result: pass
+    notes: |
+      162 tests pass (16 files). Key findings:
+      SFX exports: setSfxMuted(value) + isSfxMuted(). Spec said "setMuted" — corrected to setSfxMuted.
+      Defender bios: all 5 already populated (generator, shooter, wall, trapper, mine). No additions needed.
+      Enemy bios: tough/armored/jumper present. basic (Dust Bunny) has no bio field — must add (US-55).
+      LevelProgress.ts: no nextUnbeatenLevel export yet.
+      game.ts: scene array = [TitleScene, LevelSelectScene, GameScene, GameOverScene].
+      main.ts: thin wrapper, imports via game.ts config.
+      TitleScene.ts: full bedroom atmosphere code — will port to MainMenuScene.
+      LevelSelectScene.ts: need to add selectedLevel init data reading.
+      Queued: add nextUnbeatenLevel + tests (US-53 pure logic).
+    tokens: ~3k
+  - task: 2
+    story: US-53
+    description: "Add nextUnbeatenLevel to LevelProgress.ts and 3 test cases in LevelProgress.test.ts"
+    result: pass
+    notes: |
+      LevelProgress.ts: added nextUnbeatenLevel(data) — returns first 'unlocked' index, or TOTAL_LEVELS-1 if all completed.
+      LevelProgress.test.ts: 3 new tests: no completions→0, levels 0-3 completed→4, all 9 completed→8.
+      165 tests pass (162+3 new). US-53 logic criteria met (3/8 criteria done); MainMenuScene still needed.
+    tokens: ~1k
+  - task: 3
+    story: US-52
+    description: "Create MainMenuScene.ts, ToysScene.ts, EnemiesScene.ts; update game.ts/main.ts to register new scenes and remove TitleScene"
+    result: pass
+    notes: |
+      MainMenuScene.ts: bedroom atmosphere (floor boards, rug, furniture, toys) matches TitleScene.
+      Title 42px amber at y=70, subtitle 16px at y=105. Play/Continue button 160×48px at y=165,
+      Toys at y=225, Enemies at y=273, Sound toggle at y=335. All hit areas ≥ 48×48.
+      Sound toggle: isSfxMuted() on create, setSfxMuted(!isSfxMuted()) on click, label updates in place.
+      Play→scene.start('LevelSelectScene'); Continue→scene.start('LevelSelectScene', {selectedLevel: N}).
+      ToysScene.ts: 5 defender cards, generator/shooter always-unlocked, wall/trapper/mine from loadUnlocks().
+      Silhouette: fillStyle alpha 0.25 + graphics.setAlpha(0.25). Back button zone 60×48px.
+      EnemiesScene.ts: 4 enemy cards, basic always-discovered, others from bio_shown_enemy_<key>.
+      game.ts: [MainMenuScene, LevelSelectScene, GameScene, GameOverScene, ToysScene, EnemiesScene].
+      main.ts: zomboReset updated to start MainMenuScene.
+      165 tests pass (no regressions). ✓ US-52 complete. ✓ US-54 complete.
+    tokens: ~4k
+  - task: 4
+    story: US-55
+    description: "Add bio field to ENEMY_TYPES.basic (Dust Bunny) in src/config/enemies.ts"
+    result: pass
+    notes: |
+      enemies.ts: basic.bio = 'The Dust Bunny rolls in from the right! It\'s the softest enemy, but there\'s a lot of them.'
+      All 4 ENEMY_TYPES now have non-empty bio strings. 165 tests pass (no change). ✓ US-55 complete.
+    tokens: ~0.5k
+  - task: 5
+    story: US-53
+    description: "Update LevelSelectScene.create() to read selectedLevel from scene init data and highlight pre-selected level"
+    result: pass
+    notes: |
+      LevelSelectScene.create() signature: data? now includes selectedLevel?: number.
+      Reads this.scene.settings.data as { selectedLevel?: number } and passes to drawLevelEntries().
+      drawLevelEntries(selectedLevel?): after drawing each entry, calls drawSelectionHighlight() if selectedLevel matches.
+      drawSelectionHighlight(): white double-ring (3px white + 1px amber outer ring) around selected entry.
+      165 tests pass (no regressions). ✓ US-53 complete.
+    tokens: ~1k
+  - task: 7
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All done-when criteria met. Evidence:
+      - US-52: MainMenuScene.ts at key 'MainMenuScene'. game.ts scene array: [MainMenuScene, ...] (first).
+        ToysScene + EnemiesScene registered. TitleScene removed. Title 42px amber y=70, subtitle y=105.
+        Play/Continue at y=165, Toys at y=225, Enemies at y=273, Sound toggle at y=335. All zones 160×48px.
+        Background #5d4037, floor boards, rug, furniture, toys (matches TitleScene). Sound toggle setSfxMuted. npm test ✓.
+      - US-53: nextUnbeatenLevel exported from LevelProgress.ts. 3 test cases in LevelProgress.test.ts.
+        MainMenuScene.create(): loadProgress(), Play when no completed, Continue when any completed.
+        LevelSelectScene.create() reads this.scene.settings.data.selectedLevel, highlights with white ring.
+      - US-54: ToysScene.ts key 'ToysScene'. 5 defender cards. generator/shooter always unlocked.
+        wall/trapper/mine: loadUnlocks(). Silhouette alpha 0.25. All bios present. Back zone 60×48px.
+      - US-55: EnemiesScene.ts key 'EnemiesScene'. 4 enemy cards. basic always discovered.
+        Others: localStorage bio_shown_enemy_<key>. Silhouette alpha 0.25. All bios including basic. Back zone 60×48px.
+      - Structural: AGENTS.md scenes updated, nextUnbeatenLevel noted, MainMenuScene as initial. ARCHITECTURE.md updated.
+      165 tests pass, 0 regressions (up from 162 — 3 new tests).
+    tokens: ~2k
+  - task: 6
+    story: phase
+    description: "Update AGENTS.md and ARCHITECTURE.md for main-menu phase scene changes"
+    result: pass
+    notes: |
+      AGENTS.md: scenes directory entry updated (MainMenuScene/ToysScene/EnemiesScene added, TitleScene removed).
+      LevelProgress.ts entry: exports nextUnbeatenLevel added.
+      Purpose: 'title screen' → 'main menu (MainMenuScene)'.
+      Atmosphere: TitleScene → MainMenuScene reference.
+      ARCHITECTURE.md: module topology updated, scene flow diagram updated (TitleScene→MainMenuScene).
+      ToysScene + EnemiesScene added to module list. All structural criteria met.
+      165 tests pass.
+    tokens: ~1k

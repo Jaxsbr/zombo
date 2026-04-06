@@ -4,6 +4,7 @@ import {
   saveProgress,
   completeLevel,
   getLevelState,
+  nextUnbeatenLevel,
   ProgressData,
 } from '../src/systems/LevelProgress';
 
@@ -63,6 +64,23 @@ describe('LevelProgress', () => {
     expect(getLevelState(restored, 1)).toBe('completed');
     expect(getLevelState(restored, 2)).toBe('unlocked');
     expect(getLevelState(restored, 3)).toBe('locked');
+  });
+
+  it('nextUnbeatenLevel: no completions returns 0 (L1 is unlocked by default)', () => {
+    const progress = loadProgress(storage);
+    expect(nextUnbeatenLevel(progress)).toBe(0);
+  });
+
+  it('nextUnbeatenLevel: levels 0–3 completed returns 4', () => {
+    let progress = loadProgress(storage);
+    for (let i = 0; i < 4; i++) progress = completeLevel(progress, i);
+    expect(nextUnbeatenLevel(progress)).toBe(4);
+  });
+
+  it('nextUnbeatenLevel: all 9 completed returns 8 (last index)', () => {
+    let progress = loadProgress(storage);
+    for (let i = 0; i < 9; i++) progress = completeLevel(progress, i);
+    expect(nextUnbeatenLevel(progress)).toBe(8);
   });
 
   it('replaying completed level does not change unlock state', () => {
