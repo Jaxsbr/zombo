@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 8
-  next_task: "[US-57] Add drawBoss shape to EnemyEntity.ts, boss movement animation, boss entry in EnemiesScene discovery"
+  task_number: 9
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-56]
+  completed_stories: [US-56, US-57]

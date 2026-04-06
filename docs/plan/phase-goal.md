@@ -24,17 +24,17 @@ Deliver endgame content: rework Honey Bear into a projectile-based area-denial d
 
 #### US-57 — Stage-1 Boss Enemy
 
-- [ ] EnemyType interface (in config/enemies.ts or a shared types file) has an optional `bossType?: boolean` field and TypeScript strict-mode compilation passes with npx tsc --noEmit [US-57]
-- [ ] enemies.ts registers a new type with key 'boss': bossType=true, hp >= 2000, speed <= 0.10 cells/s, scale >= 1.5, non-empty bio string [US-57]
-- [ ] EnemyEntity.ts renders a unique boss shape for key 'boss' via a dedicated drawing path (distinct if/case branch) — does not reuse any existing enemy shape routine (bunny, robot, puppet) [US-57]
-- [ ] Boss has a health bar proportional to its scale (health bar dimensions scale with entity scale, matching the per-type-scale pattern of existing enemies) [US-57]
-- [ ] Boss has a movement animation (stomp or rock tween) that triggers during gameplay traversal [US-57]
-- [ ] Boss displays a hit flash (white Graphics overlay, ~150 ms duration) on each damage event [US-57]
-- [ ] Boss emits death particles (per-type color burst) on death [US-57]
-- [ ] SingleUse.ts mineTriggerCheck: when the overlapping enemy has bossType=true, reduces enemy HP by MINE_BOSS_DAMAGE (>= 300) instead of instant kill; enemy entity remains on the grid [US-57]
-- [ ] MINE_BOSS_DAMAGE constant defined in SingleUse.ts or config/game.ts, value >= 300 [US-57]
-- [ ] EnemiesScene renders boss as silhouette before the player first encounters it in Level 10; shows full card after discovery (same discovery tracking pattern as existing enemy types) [US-57]
-- [ ] test/SingleUse.test.ts: boss mine hit test — mineTriggerCheck with a bossType=true enemy reduces enemy HP by MINE_BOSS_DAMAGE and does NOT mark the enemy as dead [US-57]
+- [x] EnemyType interface (in config/enemies.ts or a shared types file) has an optional `bossType?: boolean` field and TypeScript strict-mode compilation passes with npx tsc --noEmit [US-57]
+- [x] enemies.ts registers a new type with key 'boss': bossType=true, hp >= 2000, speed <= 0.10 cells/s, scale >= 1.5, non-empty bio string [US-57]
+- [x] EnemyEntity.ts renders a unique boss shape for key 'boss' via a dedicated drawing path (distinct if/case branch) — does not reuse any existing enemy shape routine (bunny, robot, puppet) [US-57]
+- [x] Boss has a health bar proportional to its scale (health bar dimensions scale with entity scale, matching the per-type-scale pattern of existing enemies) [US-57]
+- [x] Boss has a movement animation (stomp or rock tween) that triggers during gameplay traversal [US-57]
+- [x] Boss displays a hit flash (white Graphics overlay, ~150 ms duration) on each damage event [US-57]
+- [x] Boss emits death particles (per-type color burst) on death [US-57]
+- [x] SingleUse.ts mineTriggerCheck: when the overlapping enemy has bossType=true, reduces enemy HP by MINE_BOSS_DAMAGE (>= 300) instead of instant kill; enemy entity remains on the grid [US-57]
+- [x] MINE_BOSS_DAMAGE constant defined in SingleUse.ts or config/game.ts, value >= 300 [US-57]
+- [x] EnemiesScene renders boss as silhouette before the player first encounters it in Level 10; shows full card after discovery (same discovery tracking pattern as existing enemy types) [US-57]
+- [x] test/SingleUse.test.ts: boss mine hit test — mineTriggerCheck with a bossType=true enemy reduces enemy HP by MINE_BOSS_DAMAGE and does NOT mark the enemy as dead [US-57]
 
 #### US-58 — Level 10: Formation Waves & Boss Fight
 
