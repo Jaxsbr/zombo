@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zombo</title>
+  <style>
+    body {
+      margin: 0;
+      background: #3e2723;
+      background-image:
+        repeating-linear-gradient(
+          0deg,
+          transparent,
+          transparent 39px,
+          rgba(78, 52, 46, 0.4) 39px,
+          rgba(78, 52, 46, 0.4) 40px
+        );
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+    #game-container {
+      width: calc(100vw - 48px);
+      height: calc(100vh - 48px);
+    }
+    canvas {
+      border: 3px solid #5d4037;
+      border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+  <script type="module" crossorigin src="./assets/index-DllF35uE.js"></script>
+</head>
+<body>
+  <div id="game-container"></div>
+</body>
+</html>
