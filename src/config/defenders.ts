@@ -42,7 +42,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
   wall: {
     name: 'Block Tower',
     cost: 15,
-    health: 90,
+    health: 65,
     damage: 0,
     range: 0,
     fireRate: 0,
