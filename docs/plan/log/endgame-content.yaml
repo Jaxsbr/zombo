@@ -141,3 +141,16 @@ entries:
       FP tolerance fix for 0.8s interval check (+0.001).
       176 tests pass (174 + 2 new). tsc --noEmit clean. ✓ US-58 complete — all 8 criteria met.
     tokens: ~4k
+  - task: 12
+    story: phase
+    description: "Update AGENTS.md — Honey Bear projectile AOE, Stage-1 Boss, Level 10, honey pool depth layer"
+    result: pass
+    notes: |
+      AGENTS.md updates for 3 structural criteria:
+      1. Honey Bear: replaced periodic tossing with projectile + 3-lane AOE + honey pool on hit.
+      2. Enemies: added Mega Mop/boss (0.08 cells/s, 2000 HP, scale 1.6, bossType, MINE_BOSS_DAMAGE=400).
+      3. Level progression: 9→10 levels, added L10 (formation rush, boss fight).
+      Also: added honey pools at depth 2 in depth layer map, updated ProjectileEntity description,
+      updated config directory listing (LEVEL_1-LEVEL_10), updated EnemyEntity key list.
+      All phase criteria now checked.
+    tokens: ~2k

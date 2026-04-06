@@ -28,7 +28,7 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 11
+  task_number: 12
   next_task: null
   last_result: pass
   consecutive_fails: 0
