@@ -140,11 +140,64 @@ function drawSockPuppet(g: Phaser.GameObjects.Graphics): void {
   }
 }
 
+function drawBoss(g: Phaser.GameObjects.Graphics): void {
+  // Mega Mop — massive mop-headed brute, unique shape
+  // Body — wide dark blue-gray rectangle (industrial cleaning machine)
+  g.fillStyle(0x455a64, 1);
+  g.fillRect(-20, -8, 40, 32);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-20, -8, 40, 32);
+  // Head — large oval with shaggy mop strands
+  g.fillStyle(0x90a4ae, 1);
+  g.fillCircle(0, -16, 18);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeCircle(0, -16, 18);
+  // Mop strands — radiating lines from head (gives shaggy/menacing look)
+  g.lineStyle(3, 0xbdbdbd, 0.8);
+  for (let angle = -150; angle <= -30; angle += 15) {
+    const rad = (angle * Math.PI) / 180;
+    g.lineBetween(
+      Math.cos(rad) * 16, -16 + Math.sin(rad) * 16,
+      Math.cos(rad) * 26, -16 + Math.sin(rad) * 26,
+    );
+  }
+  // Eyes — large angry red
+  g.fillStyle(0xff1744, 1);
+  g.fillCircle(-7, -18, 5);
+  g.fillCircle(7, -18, 5);
+  g.fillStyle(0x000000, 1);
+  g.fillCircle(-6, -17, 2.5);
+  g.fillCircle(8, -17, 2.5);
+  // Angry brow lines
+  g.lineStyle(2, 0x000000, 1);
+  g.lineBetween(-12, -24, -4, -22);
+  g.lineBetween(12, -24, 4, -22);
+  // Armor plates on body
+  g.fillStyle(0x37474f, 1);
+  g.fillRect(-16, 0, 14, 10);
+  g.fillRect(2, 0, 14, 10);
+  g.lineStyle(1, 0x263238, 0.8);
+  g.strokeRect(-16, 0, 14, 10);
+  g.strokeRect(2, 0, 14, 10);
+  // Heavy treads at bottom
+  g.fillStyle(0x263238, 1);
+  g.fillRect(-18, 22, 10, 6);
+  g.fillRect(8, 22, 10, 6);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-18, 22, 10, 6);
+  g.strokeRect(8, 22, 10, 6);
+  // Bolts on treads
+  g.fillStyle(0x9e9e9e, 1);
+  g.fillCircle(-13, 25, 2);
+  g.fillCircle(13, 25, 2);
+}
+
 export const DRAW_ENEMY: Record<string, (g: Phaser.GameObjects.Graphics) => void> = {
   basic: drawDustBunny,
   tough: drawCleaningRobot,
   armored: drawArmoredBunny,
   jumper: drawSockPuppet,
+  boss: drawBoss,
 };
 
 export class EnemyEntity extends Phaser.GameObjects.Container {
@@ -258,6 +311,19 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
           y: this.y - 5,
           angle: 3,
           duration: 350,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'boss':
+        // Mega Mop — slow heavy stomp (vertical bounce + slight squash)
+        scene.tweens.add({
+          targets: this,
+          y: this.y + 3,
+          scaleX: 1.05,
+          scaleY: 0.95,
+          duration: 800,
           ease: 'Sine.easeInOut',
           yoyo: true,
           repeat: -1,
