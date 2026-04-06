@@ -80,7 +80,6 @@ export class GameScene extends Phaser.Scene {
   private tutorialBubble: Phaser.GameObjects.Container | null = null;
   private tutorialPointer: Phaser.GameObjects.Graphics | null = null;
   private tutorialHighlight: Phaser.Tweens.Tween | null = null;
-  private tutorialHighlightGfx: Phaser.GameObjects.Graphics | null = null;
   private transitioning = false;
 
   constructor() {
@@ -288,20 +287,16 @@ export class GameScene extends Phaser.Scene {
 
     this.tutorialBubble = bubble;
 
-    // Flashing highlight on the target panel card
+    // Pulsing scale on the target panel card — reuses the same scale as selection emphasis
     this.destroyTutorialHighlight();
     const highlightKey = step === 'PLACE_GENERATOR' ? 'generator' : step === 'PLACE_PISTOL' ? 'shooter' : null;
     if (highlightKey) {
       const card = this.panelCards.get(highlightKey);
       if (card) {
-        const hlGfx = this.add.graphics();
-        hlGfx.setDepth(106);
-        hlGfx.lineStyle(3, 0xffc107, 1);
-        hlGfx.strokeRoundedRect(card.x - 2, card.y - 2, this.cardWidth + 4, this.cardHeight + 4, 8);
-        this.tutorialHighlightGfx = hlGfx;
         this.tutorialHighlight = this.tweens.add({
-          targets: hlGfx,
-          alpha: { from: 1, to: 0.2 },
+          targets: card,
+          scaleX: { from: 1.0, to: 1.12 },
+          scaleY: { from: 1.0, to: 1.12 },
           duration: 500,
           yoyo: true,
           repeat: -1,
@@ -344,12 +339,13 @@ export class GameScene extends Phaser.Scene {
 
   private destroyTutorialHighlight(): void {
     if (this.tutorialHighlight) {
+      // Reset scale on the card the tween was targeting
+      const targets = this.tutorialHighlight.targets;
+      if (targets?.length) {
+        (targets[0] as Phaser.GameObjects.Container).setScale(1.0);
+      }
       this.tutorialHighlight.destroy();
       this.tutorialHighlight = null;
-    }
-    if (this.tutorialHighlightGfx) {
-      this.tutorialHighlightGfx.destroy();
-      this.tutorialHighlightGfx = null;
     }
   }
 
