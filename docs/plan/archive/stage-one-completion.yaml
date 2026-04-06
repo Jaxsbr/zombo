@@ -71,3 +71,11 @@ entries:
     result: pass
     notes: "2 fix threads (both ARCHITECTURE.md): Multi-level structure updated 5→9 levels with L6-L9 descriptions; Defender unlock progression updated to final UNLOCK_MAP {3:wall,6:trapper,8:mine}. Also fixed LevelSelectScene '5 entries'→'9 entries'. AGENTS.md enemy bio screen '(L5)' → 'L5/L6/L8'. 1 skip (nit: log task order). Both threads resolved. Summary posted. 156 tests pass. review_complete=true."
     tokens: ~6k
+
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done

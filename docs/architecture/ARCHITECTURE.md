@@ -18,10 +18,10 @@ src/
 │   ├── game.ts          # Phaser game config (dimensions, physics, scenes)
 │   ├── defenders.ts     # Defender type registry (5 types: shooter, generator, wall, trapper, mine)
 │   ├── enemies.ts       # Enemy type registry (4 types: basic, tough, armored, jumper)
-│   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_5, escalating difficulty)
+│   └── levels.ts        # Level config registry (LEVEL_1-LEVEL_9, escalating difficulty)
 ├── scenes/
 │   ├── TitleScene.ts    # Title screen — "Toy Box Siege" branding, Play button
-│   ├── LevelSelectScene.ts # Level select — 5 toy-box entries, loadout selection
+│   ├── LevelSelectScene.ts # Level select — 9 toy-box entries, loadout selection
 │   ├── GameScene.ts     # Main gameplay scene — grid, HUD, placement, combat loop
 │   └── GameOverScene.ts # Win/lose display, continue to level select
 ├── systems/
