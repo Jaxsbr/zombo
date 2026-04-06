@@ -1,76 +1,62 @@
 ## Phase goal
 
-Replace TitleScene with a proper main menu (MainMenuScene) that serves as the game's single entry point. Players can navigate to play/continue, browse a Toys discovery sub-scene, browse an Enemies discovery sub-scene, and toggle sound — all in the bedroom toy-box aesthetic. The Play/Continue button is context-aware: it shows "Continue" and pre-selects the next unbeaten level when the player has prior progress. Toys and Enemies sub-scenes use silhouette cards for locked/undiscovered entries, rewarding progression with revealed info.
+Deliver endgame content: rework Honey Bear into a projectile-based area-denial defender with 3-lane vertical AOE and honey pool on hit, introduce a Stage-1 Boss enemy with unique visuals and boss-specific mine damage, and build Level 10 as a climactic boss fight with tight formation waves. This phase completes the game's first full playthrough arc (10 levels).
 
 ### Stories in scope
-- US-52 — Main menu scene
-- US-53 — Play/Continue flow
-- US-54 — Toys discovery sub-scene
-- US-55 — Enemies discovery sub-scene
+- US-56 — Honey Bear: Projectile Attack & Vertical AOE
+- US-57 — Stage-1 Boss Enemy
+- US-58 — Level 10: Formation Waves & Boss Fight
 
 ### Done-when (observable)
 
-#### US-52 — Main menu scene
-- [x] `src/scenes/MainMenuScene.ts` exists and extends `Phaser.Scene` with key `'MainMenuScene'` [US-52]
-- [x] `src/main.ts` lists `MainMenuScene` as the first scene in the Phaser config scene array [US-52]
-- [x] `src/main.ts` also registers `ToysScene` and `EnemiesScene` in the scene array [US-52]
-- [x] `TitleScene` is removed from `src/main.ts` scene array (MainMenuScene is the replacement) [US-52]
-- [x] MainMenuScene renders title "Toy Box Siege" (≥ 32px, amber `#ffc107`, monospace) and subtitle text [US-52]
-- [x] MainMenuScene renders a Play/Continue button, a Toys button, an Enemies button, and a Sound toggle — all positioned per the menu layout plan (Play/Continue at y ≈ 165, Toys at y ≈ 225, Enemies at y ≈ 273, Sound at y ≈ 335, all centered) [US-52]
-- [x] All interactive elements have hit area ≥ 48×48px [US-52]
-- [x] MainMenuScene background uses `#5d4037` fill with floor-board lines and atmospheric decorations matching existing TitleScene visuals [US-52]
-- [x] Sound toggle reads `isSfxMuted()` on scene create and displays `SFX ✓` (unmuted) or `SFX ✗` (muted) accordingly [US-52]
-- [x] Clicking Sound toggle calls `setMuted(!isSfxMuted())` and updates toggle label in place [US-52]
-- [x] HUD mute button in GameScene still functions independently (clicking it updates the same SFX module mute state) [US-52]
-- [x] `npm test` passes after TitleScene removal and MainMenuScene addition [US-52]
+#### US-56 — Honey Bear: Projectile Attack & Vertical AOE
 
-#### US-53 — Play/Continue flow
-- [x] `LevelProgress.ts` exports `nextUnbeatenLevel(data: ProgressData): number` [US-53]
-- [x] `nextUnbeatenLevel` returns the index of the first level with state `'unlocked'`; returns `TOTAL_LEVELS - 1` if no level is `'unlocked'` (all completed) [US-53]
-- [x] `LevelProgress.test.ts` covers `nextUnbeatenLevel` with: no completions → returns 0; levels 0–3 completed → returns 4; all 9 completed → returns 8 [US-53]
-- [x] MainMenuScene calls `loadProgress()` on `create()` and renders button label `"Play"` when no levels have state `'completed'` [US-53]
-- [x] MainMenuScene renders button label `"Continue"` when `loadProgress()` returns at least one level with state `'completed'` [US-53]
-- [x] Clicking Play button calls `this.scene.start('LevelSelectScene')` with no init data [US-53]
-- [x] Clicking Continue button calls `this.scene.start('LevelSelectScene', { selectedLevel: nextUnbeatenLevel(progress) })` [US-53]
-- [x] `LevelSelectScene.create()` reads `(this.scene.settings.data as { selectedLevel?: number }).selectedLevel` and visually highlights that level's button when the value is provided [US-53]
+- [ ] Honey Bear fires a projectile toward the nearest enemy in its lane; projectile uses an amber fill color (hex in range #e65100–#ffd54f), visually distinct from the Water Pistol's yellow projectile [US-56]
+- [ ] Honey Bear projectile speed is defined as a named constant (e.g. HONEY_BEAR_PROJECTILE_SPEED); value is strictly less than the Water Pistol equivalent projectile speed [US-56]
+- [ ] Honey Bear fire interval is defined as a named constant (e.g. HONEY_BEAR_FIRE_INTERVAL); Honey Bear fires at most one projectile per interval — no concurrent overlapping shots from a single Honey Bear [US-56]
+- [ ] On projectile hit, damage >= 1 is applied to all enemies in the target row +/- 1 row (up to 3 rows, clamped to valid grid row bounds 0-4) at the hit column [US-56]
+- [ ] test/Combat.test.ts (or a dedicated honey-AOE test) includes a test verifying that a honey projectile hit applies damage to enemies in the target row and each adjacent row within grid bounds [US-56]
+- [ ] On projectile hit, HoneyTrap.createHoneyPot is called for each affected row at the hit column; resulting pools slow passing enemies to HONEY_POT_SLOW (0.5x) for HONEY_POT_DURATION (8 s) [US-56]
+- [ ] Honey pool renders on the grid at depth 2 (above grid tiles at 0, below entities at 5) with amber fill (hex in range #e65100–#ffd54f), alpha 0.3–0.6, and no pointer input zone — reads as a ground-level hazard, not a collectible [US-56]
+- [ ] Periodic honey pot tossing removed — Honey Bear entity no longer schedules honey pots on a recurring interval timer [US-56]
+- [ ] Honey Bear plays a fire animation reaction (recoil or forward-lunge tween) on each projectile launch [US-56]
+- [ ] test/HoneyTrap.test.ts confirms honey pools created via a projectile-hit code path expire after HONEY_POT_DURATION and return the correct HONEY_POT_SLOW modifier from getSpeedModifier [US-56]
 
-#### US-54 — Toys discovery sub-scene
-- [x] `src/scenes/ToysScene.ts` exists and extends `Phaser.Scene` with key `'ToysScene'` [US-54]
-- [x] Clicking Toys button in MainMenuScene calls `this.scene.start('ToysScene')` [US-54]
-- [x] ToysScene renders a card for each of the 5 defender types in `DEFENDER_TYPES` [US-54]
-- [x] Generator and shooter cards always render full card: DRAW_DEFENDER visual at scale ≥ 1.5, name ≥ 18px monospace, spark cost, bio text [US-54]
-- [x] Wall card renders full card when `'wall'` is in `loadUnlocks()` result; renders silhouette + `"???"` label when not [US-54]
-- [x] Trapper card renders full card when `'trapper'` is in `loadUnlocks()` result; renders silhouette + `"???"` when not [US-54]
-- [x] Mine card renders full card when `'mine'` is in `loadUnlocks()` result; renders silhouette + `"???"` when not [US-54]
-- [x] Silhouette cards use darkened fill (alpha ≤ 0.3) at same bounding dimensions as full card — no pointer cursor, no click response [US-54]
-- [x] `DEFENDER_TYPES` in `src/config/defenders.ts` has non-empty `bio` string for all 5 entries (trapper and mine bios added in this phase; others verified present) [US-54]
-- [x] Bio text for each defender is 1–2 sentences, kid-friendly voice, ≤ 25 words per sentence [US-54]
-- [x] Back button at top-left of ToysScene, hit area ≥ 48×48px, calls `this.scene.start('MainMenuScene')` on click [US-54]
-- [x] ToysScene assigns no depth values outside the existing depth layer map [US-54]
-- [x] Silhouette cards read as "locked — not yet unlocked," not as a broken or missing asset (aspirational — visual verification required) [US-54]
+#### US-57 — Stage-1 Boss Enemy
 
-#### US-55 — Enemies discovery sub-scene
-- [x] `src/scenes/EnemiesScene.ts` exists and extends `Phaser.Scene` with key `'EnemiesScene'` [US-55]
-- [x] Clicking Enemies button in MainMenuScene calls `this.scene.start('EnemiesScene')` [US-55]
-- [x] EnemiesScene renders a card for each of the 4 enemy types in `ENEMY_TYPES` [US-55]
-- [x] Dust Bunny card always renders full card: DRAW_ENEMY visual at scale ≥ 1.5, name ≥ 18px monospace, bio text [US-55]
-- [x] Cleaning Robot card renders full card when `localStorage.getItem('bio_shown_enemy_<cleaningRobotKey>')` is set; renders silhouette + `"???"` when not [US-55]
-- [x] Armored Bunny card renders full card when `localStorage.getItem('bio_shown_enemy_<armoredKey>')` is set; renders silhouette + `"???"` when not [US-55]
-- [x] Sock Puppet card renders full card when `localStorage.getItem('bio_shown_enemy_<sockPuppetKey>')` is set; renders silhouette + `"???"` when not [US-55]
-- [x] Silhouette cards use darkened fill (alpha ≤ 0.3), no pointer cursor, no click response [US-55]
-- [x] `ENEMY_TYPES` in `src/config/enemies.ts` has non-empty `bio` string for all 4 entries (cleaning_robot, armored_bunny, sock_puppet verified present; dust_bunny bio added in this phase) [US-55]
-- [x] Bio text for each enemy is 1–2 sentences, kid-friendly voice, ≤ 25 words per sentence [US-55]
-- [x] Back button at top-left of EnemiesScene, hit area ≥ 48×48px, calls `this.scene.start('MainMenuScene')` on click [US-55]
-- [x] EnemiesScene assigns no depth values outside the existing depth layer map [US-55]
-- [x] Silhouette cards read as "not yet encountered" — dark shape communicates mystery, not brokenness (aspirational — visual verification required) [US-55]
+- [ ] EnemyType interface (in config/enemies.ts or a shared types file) has an optional `bossType?: boolean` field and TypeScript strict-mode compilation passes with npx tsc --noEmit [US-57]
+- [ ] enemies.ts registers a new type with key 'boss': bossType=true, hp >= 2000, speed <= 0.10 cells/s, scale >= 1.5, non-empty bio string [US-57]
+- [ ] EnemyEntity.ts renders a unique boss shape for key 'boss' via a dedicated drawing path (distinct if/case branch) — does not reuse any existing enemy shape routine (bunny, robot, puppet) [US-57]
+- [ ] Boss has a health bar proportional to its scale (health bar dimensions scale with entity scale, matching the per-type-scale pattern of existing enemies) [US-57]
+- [ ] Boss has a movement animation (stomp or rock tween) that triggers during gameplay traversal [US-57]
+- [ ] Boss displays a hit flash (white Graphics overlay, ~150 ms duration) on each damage event [US-57]
+- [ ] Boss emits death particles (per-type color burst) on death [US-57]
+- [ ] SingleUse.ts mineTriggerCheck: when the overlapping enemy has bossType=true, reduces enemy HP by MINE_BOSS_DAMAGE (>= 300) instead of instant kill; enemy entity remains on the grid [US-57]
+- [ ] MINE_BOSS_DAMAGE constant defined in SingleUse.ts or config/game.ts, value >= 300 [US-57]
+- [ ] EnemiesScene renders boss as silhouette before the player first encounters it in Level 10; shows full card after discovery (same discovery tracking pattern as existing enemy types) [US-57]
+- [ ] test/SingleUse.test.ts: boss mine hit test — mineTriggerCheck with a bossType=true enemy reduces enemy HP by MINE_BOSS_DAMAGE and does NOT mark the enemy as dead [US-57]
 
-#### Structural
-- [x] AGENTS.md scene list updated: `MainMenuScene.ts`, `ToysScene.ts`, `EnemiesScene.ts` added; `TitleScene.ts` removed [phase]
-- [x] AGENTS.md notes MainMenuScene as the initial scene (replaces TitleScene) [phase]
-- [x] AGENTS.md notes `nextUnbeatenLevel` export in `LevelProgress.ts` [phase]
+#### US-58 — Level 10: Formation Waves & Boss Fight
+
+- [ ] LEVEL_10 config object exists in src/config/levels.ts; ALL_LEVELS array has length 10 [US-58]
+- [ ] Level 10 config has >= 5 waves [US-58]
+- [ ] Waves 1-4 configure enemy spawn intervals <= 0.8 s between successive spawns within the wave [US-58]
+- [ ] Wave 5 (the final wave) includes exactly one spawn of enemy type 'boss' [US-58]
+- [ ] Level 10 entry is visible in LevelSelectScene; locked until Level 9 is completed; unlocked after completing Level 9 [US-58]
+- [ ] LEVEL_10 config has enemyBio configured for 'boss' type, triggering the enemy bio overlay before the level starts [US-58]
+- [ ] LEVEL_10 setupDelay >= 20000 (20 seconds) [US-58]
+- [ ] LevelProgress.ts nextUnbeatenLevel correctly handles 10 levels — returns L10 as the next unbeaten level after L9 is completed [US-58]
+
+#### Structural / phase criteria
+
+- [ ] AGENTS.md Honey Bear entry updated to reflect the new projectile + 3-lane AOE + honey pool on hit mechanic (periodic tossing removed) [phase]
+- [ ] AGENTS.md Enemies section updated to include Stage-1 Boss (key: 'boss', bossType flag, stats, boss mine damage behaviour) [phase]
+- [ ] AGENTS.md Level progression section updated to include Level 10 (formation waves 1-4, Stage-1 Boss in wave 5) [phase]
 
 ### Golden principles (phase-relevant)
-- Game logic separated from Phaser rendering — `nextUnbeatenLevel` is pure TS in `LevelProgress.ts`, testable in Vitest node environment
-- Config-driven entities — bio text on `DefenderType` and `EnemyType` interfaces, discovery state read from existing localStorage keys
-- agents-consistency — AGENTS.md updated to reflect scene changes and new export
-- no-silent-pass — `nextUnbeatenLevel` covered by unit tests with distinct cases
+- Game logic in src/systems/ as pure TypeScript, no Phaser dependencies — AOE damage logic in Combat.ts, boss mine interaction in SingleUse.ts
+- Config-driven entities — Stage-1 Boss added to enemies.ts registry, not hardcoded in scene or system logic
+- Per-key shape drawing convention maintained in EnemyEntity.ts (dedicated if/case branch for 'boss')
+- Depth layer map maintained: honey pools at depth 2, entities at depth 5, HUD at depth 50
+- All enemy types follow the animation baseline: movement animation + hit flash + death particles + scaled health bar
+- Named constants for all tunable values (HONEY_BEAR_PROJECTILE_SPEED, HONEY_BEAR_FIRE_INTERVAL, MINE_BOSS_DAMAGE)
