@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, ALL_LEVELS } from '../src/config/levels';
+import { LEVEL_1, LEVEL_2, LEVEL_3, LEVEL_4, LEVEL_5, LEVEL_6, LEVEL_7, LEVEL_8, LEVEL_9, ALL_LEVELS } from '../src/config/levels';
 import { ENEMY_TYPES } from '../src/config/enemies';
 
 describe('Level progression — guided intro', () => {
@@ -14,9 +14,8 @@ describe('Level progression — guided intro', () => {
     }
   });
 
-  it('L1: starting balance >= 50 (generator affordable) and < 100 (pistol not)', () => {
-    expect(LEVEL_1.startingBalance).toBeGreaterThanOrEqual(50);
-    expect(LEVEL_1.startingBalance).toBeLessThan(100);
+  it('L1: starting balance === 100 (generator affordable, pistol also affordable)', () => {
+    expect(LEVEL_1.startingBalance).toBe(100);
   });
 
   it('L1: a single Water Pistol survives the wave (total enemy HP <= pistol DPS x reasonable time)', () => {
@@ -60,12 +59,13 @@ describe('Level progression — guided intro', () => {
     }
   });
 
-  it('L5: 5 lanes, 4 waves, basic + armored from wave 2 onward', () => {
+  it('L5: 5 lanes, 4 waves, startingBalance 50, basic + armored from wave 2 onward', () => {
     expect(LEVEL_5.activeLanes).toBeUndefined();
     expect(LEVEL_5.waves).toHaveLength(4);
     expect(LEVEL_5.enemyBio).toEqual({ enemyKey: 'armored' });
+    expect(LEVEL_5.startingBalance).toBe(100);
 
-    // Wave 1: basic only
+    // Wave 1: basic only (warmup before armored introduced)
     for (const spawn of LEVEL_5.waves[0].spawns) {
       expect(spawn.type).toBe(ENEMY_TYPES.basic);
     }
@@ -104,5 +104,73 @@ describe('Level progression — guided intro', () => {
         }
       }
     }
+  });
+
+  it('ALL_LEVELS has 9 entries', () => {
+    expect(ALL_LEVELS).toHaveLength(9);
+  });
+});
+
+describe('Level progression — stage-one-completion (L6-L9)', () => {
+  it('L6: no activeLanes override, enemyBio for tough, startingBalance === 50, >= 4 waves', () => {
+    expect(LEVEL_6.activeLanes).toBeUndefined();
+    expect(LEVEL_6.enemyBio).toEqual({ enemyKey: 'tough' });
+    expect(LEVEL_6.startingBalance).toBe(100);
+    expect(LEVEL_6.waves.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('L6: wave 1 has no tough; waves 2+ each have at least one tough; all waves include armored', () => {
+    const hasNoToughWave1 = LEVEL_6.waves[0].spawns.every(s => s.type !== ENEMY_TYPES.tough);
+    expect(hasNoToughWave1).toBe(true);
+    for (let i = 1; i < LEVEL_6.waves.length; i++) {
+      expect(LEVEL_6.waves[i].spawns.some(s => s.type === ENEMY_TYPES.tough)).toBe(true);
+    }
+    const allSpawns = LEVEL_6.waves.flatMap(w => w.spawns);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.armored)).toBe(true);
+  });
+
+  it('L7: no activeLanes override, no enemyBio, startingBalance === 50, >= 4 waves', () => {
+    expect(LEVEL_7.activeLanes).toBeUndefined();
+    expect(LEVEL_7.enemyBio).toBeUndefined();
+    expect(LEVEL_7.startingBalance).toBe(100);
+    expect(LEVEL_7.waves.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('L7: every wave contains at least one tough spawn', () => {
+    for (const wave of LEVEL_7.waves) {
+      const hasTough = wave.spawns.some(s => s.type === ENEMY_TYPES.tough);
+      expect(hasTough).toBe(true);
+    }
+  });
+
+  it('L8: no activeLanes override, enemyBio for jumper, startingBalance === 50, >= 4 waves', () => {
+    expect(LEVEL_8.activeLanes).toBeUndefined();
+    expect(LEVEL_8.enemyBio).toEqual({ enemyKey: 'jumper' });
+    expect(LEVEL_8.startingBalance).toBe(100);
+    expect(LEVEL_8.waves.length).toBeGreaterThanOrEqual(4);
+  });
+
+  it('L8: wave 1 contains no jumpers; each of waves 2+ contains at least one jumper', () => {
+    const hasJumperWave1 = LEVEL_8.waves[0].spawns.some(s => s.type === ENEMY_TYPES.jumper);
+    expect(hasJumperWave1).toBe(false);
+    for (let i = 1; i < LEVEL_8.waves.length; i++) {
+      const hasJumper = LEVEL_8.waves[i].spawns.some(s => s.type === ENEMY_TYPES.jumper);
+      expect(hasJumper).toBe(true);
+    }
+  });
+
+  it('L9: no activeLanes override, no enemyBio, startingBalance === 50, >= 5 waves', () => {
+    expect(LEVEL_9.activeLanes).toBeUndefined();
+    expect(LEVEL_9.enemyBio).toBeUndefined();
+    expect(LEVEL_9.startingBalance).toBe(100);
+    expect(LEVEL_9.waves.length).toBeGreaterThanOrEqual(5);
+  });
+
+  it('L9: waves collectively include at least one each of basic, tough, armored, jumper', () => {
+    const allSpawns = LEVEL_9.waves.flatMap(w => w.spawns);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.basic)).toBe(true);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.tough)).toBe(true);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.armored)).toBe(true);
+    expect(allSpawns.some(s => s.type === ENEMY_TYPES.jumper)).toBe(true);
   });
 });

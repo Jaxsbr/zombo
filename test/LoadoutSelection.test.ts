@@ -53,16 +53,47 @@ describe('DefenderUnlocks', () => {
     expect(unlocked).toHaveLength(2);
   });
 
-  it('trapper and mine are not in initial defenders or unlock map', () => {
+  it('completing only L1-L5 (indices 0-4) does not yield trapper or mine', () => {
     let unlocked = loadUnlocks(storage);
     expect(unlocked).not.toContain('trapper');
     expect(unlocked).not.toContain('mine');
-    // Complete all levels — only wall should be added
+    // Complete L1-L5 — only wall should be added (trapper unlocks at L6, mine at L8)
     for (let i = 0; i < 5; i++) {
       unlocked = updateUnlocksAfterLevel(unlocked, i);
     }
     expect(unlocked).not.toContain('trapper');
     expect(unlocked).not.toContain('mine');
+  });
+
+  it('completing L6 (index 5) unlocks trapper (Honey Bear)', () => {
+    let unlocked = loadUnlocks(storage);
+    for (let i = 0; i <= 5; i++) {
+      unlocked = updateUnlocksAfterLevel(unlocked, i);
+    }
+    expect(unlocked).toContain('trapper');
+    expect(unlocked).not.toContain('mine');
+  });
+
+  it('completing L8 (index 7) unlocks mine (Marble Mine)', () => {
+    let unlocked = loadUnlocks(storage);
+    for (let i = 0; i <= 7; i++) {
+      unlocked = updateUnlocksAfterLevel(unlocked, i);
+    }
+    expect(unlocked).toContain('trapper');
+    expect(unlocked).toContain('mine');
+  });
+
+  it('needsLoadoutSelection returns true when 5 defenders unlocked (after L6)', () => {
+    let unlocked = loadUnlocks(storage);
+    for (let i = 0; i <= 5; i++) {
+      unlocked = updateUnlocksAfterLevel(unlocked, i);
+    }
+    // After L6: generator, shooter, wall, trapper = 4 → not yet
+    expect(needsLoadoutSelection(unlocked)).toBe(false);
+    // After L8: + mine = 5 → needs selection
+    unlocked = updateUnlocksAfterLevel(unlocked, 6);
+    unlocked = updateUnlocksAfterLevel(unlocked, 7);
+    expect(needsLoadoutSelection(unlocked)).toBe(true);
   });
 
   it('loadout array persisted and restored from localStorage', () => {

@@ -12,22 +12,23 @@ export interface EnemyType {
 export const ENEMY_TYPES: Record<string, EnemyType> = {
   basic: {
     name: 'Dust Bunny',
-    health: 100,
-    speed: 0.5,
-    damage: 20,
+    health: 80,
+    speed: 0.4,
+    damage: 10,
     scale: 1.0,
   },
   tough: {
     name: 'Cleaning Robot',
-    health: 300,
+    health: 550,
     speed: 0.25,
     damage: 30,
     scale: 1.35,
+    bio: 'The Cleaning Robot is slow but very tough! Keep shooting \u2014 it takes a lot of hits to stop this one.',
   },
   armored: {
     name: 'Armored Bunny',
-    health: 300, // exactly 3x basic
-    speed: 0.5,  // same as basic
+    health: 300,
+    speed: 0.45,
     damage: 20,
     scale: 1.15,
     armorStages: 3, // full → cracked → bare
@@ -36,9 +37,10 @@ export const ENEMY_TYPES: Record<string, EnemyType> = {
   jumper: {
     name: 'Sock Puppet',
     health: 150,
-    speed: 0.35,
+    speed: 0.455,
     damage: 20,
     scale: 0.85,
     jumpsRemaining: 1,
+    bio: 'Watch out! The Sock Puppet jumps over the first toy it encounters. Put your shooters behind your walls!',
   },
 };

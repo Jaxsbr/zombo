@@ -1,0 +1,73 @@
+# Phase log — stage-one-completion
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-45
+    description: "Branch B investigation — read enemies.ts, levels.ts, DefenderUnlocks.ts, test files, run verify"
+    result: pass
+    notes: "144 tests pass (16 files). tough/jumper have no bio fields. LEVEL_1-5 exist, ALL_LEVELS length 5. UNLOCK_MAP={3:'wall'}. LoadoutSelection.test.ts has 'trapper and mine are not in initial defenders or unlock map' looping 5 levels — must update. Queued investigate task for vite.config and .github/workflows before implementing."
+    tokens: ~3k
+  - task: 2
+    story: US-45
+    description: "Investigation — vite.config.ts, .github/workflows, levels.ts import structure"
+    result: pass
+    notes: "vite.config.ts already has base:'./' (US-49 criterion already met). .github/workflows has phase-retro-check.yml but no deploy.yml. levels.ts imports ENEMY_TYPES from ./enemies, LevelConfig from ../systems/WaveManager. Ready to implement L6-L9 configs + enemy bios + unlock map. Queued implement task."
+    tokens: ~1k
+  - task: 3
+    story: US-45
+    description: "Add bio to ENEMY_TYPES.tough and .jumper, add LEVEL_6-LEVEL_9 configs, update UNLOCK_MAP (6:trapper, 8:mine), update ALL_LEVELS, update tests"
+    result: pass
+    notes: "enemies.ts: tough.bio and jumper.bio added. levels.ts: LEVEL_6-LEVEL_9 added (L6 Cleaning Robot intro/Honey Bear unlock, L7 Honey Bear practice, L8 Sock Puppet intro/Marble Mine unlock, L9 Marble Mine practice). DefenderUnlocks.ts: UNLOCK_MAP now {3:wall, 6:trapper, 8:mine}. ALL_LEVELS length 9. LoadoutSelection.test.ts test renamed and expanded with 3 new unlock tests. Levels.test.ts extended with L6-L9 tests. 156 tests pass (144+12). ✓ US-45 complete ✓ US-46 complete ✓ US-47 complete ✓ US-48 complete"
+    tokens: ~8k
+  - task: 4
+    story: US-49
+    description: "Branch B investigation — check remaining criteria, US-49 is last story"
+    result: pass
+    notes: "US-45/46/47/48 complete. US-49 pending: .github/workflows/deploy.yml does not exist. vite.config.ts already has base:'./' (criterion met). Queued implement task for deploy.yml."
+    tokens: ~1k
+  - task: 5
+
+    story: US-49
+    description: "Create .github/workflows/deploy.yml — GitHub Pages on push to main"
+    result: pass
+    notes: "deploy.yml created: triggers on push to main, steps checkout/setup-node/npm-ci/npm-run-build/peaceiris-gh-pages@v4. vite.config.ts already has base:'./' — no changes needed. npm run build produces dist/index.html (TypeScript clean). 156 tests pass. ✓ US-49 complete"
+    tokens: ~2k
+  - task: 8
+    story: phase
+    description: "Phase completion gate — all done-when criteria verified"
+    result: pass
+    notes: |
+      All done-when criteria met. Evidence:
+      - US-45: ENEMY_TYPES.tough.bio added; LEVEL_6 config (450 sparks, enemyBio:tough, 4 waves, wave1 basic-only); LEVEL_6 in ALL_LEVELS (len 6); UNLOCK_MAP 6:trapper; tests added for trapper unlock; LoadoutSelection test renamed/expanded
+      - US-46: LEVEL_7 (500 sparks, no enemyBio, 4 waves, every wave has tough); LEVEL_7 in ALL_LEVELS (len 7)
+      - US-47: ENEMY_TYPES.jumper.bio added (explicitly mentions jump); LEVEL_8 (550 sparks, enemyBio:jumper, 4 waves, wave1 no jumpers); LEVEL_8 in ALL_LEVELS (len 8); UNLOCK_MAP 8:mine; tests added for mine unlock
+      - US-48: LEVEL_9 (600 sparks, no enemyBio, 5 waves, all 4 enemy types); LEVEL_9 in ALL_LEVELS (len 9); needsLoadoutSelection returns true after L8
+      - US-49: .github/workflows/deploy.yml created; vite.config.ts base:'./' unchanged; npm run build produces dist/index.html
+      - Phase: stage-one.md level table extended L6-L9; AGENTS.md updated (ALL_LEVELS 9, UNLOCK_MAP L6→trapper/L8→mine, L1-L9 progression, src/config/ entry updated)
+      156 tests pass, 0 regressions
+    tokens: ~2k
+  - task: 7
+    story: phase
+    description: "Update stage-one.md level table with L6-L9 rows and update AGENTS.md"
+    result: pass
+    notes: "stage-one.md: level table extended with L6-L9 rows (Cleaning Robot intro/Honey Bear unlock, Honey Bear practice, Sock Puppet intro/Marble Mine unlock, Marble Mine practice/full roster/loadout selection). Design notes updated. AGENTS.md: level progression updated to 9 levels, UNLOCK_MAP updated (L3→wall, L6→trapper, L8→mine), src/config/ directory entry updated to LEVEL_1-LEVEL_9. 156 tests pass."
+    tokens: ~2k
+  - task: 6
+    story: phase
+    description: "Branch B investigation — check structural criteria"
+    result: pass
+    notes: "All 5 stories complete. Structural criteria unmet: stage-one.md only has L1-L5, needs L6-L9 rows. AGENTS.md needs update for ALL_LEVELS length 9, UNLOCK_MAP L6→trapper/L8→mine, progression L1-L9. Queued structural update task."
+    tokens: ~1k
+  - task: 10
+    story: review
+    description: "Create PR #12, run review-pr pr=12 auto=true"
+    result: pass
+    notes: "PR #12 created from build/stage-one-completion to main. review-pr posted: 0 critical, 3 concerns, 1 nit. Concerns: ARCHITECTURE.md Multi-level structure section still says 5 levels (not extended to L6-L9), ARCHITECTURE.md Defender unlock progression says trapper/mine 'added in later phases' (stale — they're added now), AGENTS.md enemy bio screen bullet still says '(L5)' when L6/L8 also trigger bios. Nit: log task order is reversed (8,7,6)."
+    tokens: ~5k
+  - task: 12
+    story: review
+    description: "Run handle-pr-review pr=12 auto=true — triage, fix, challenge, post summary"
+    result: pass
+    notes: "2 fix threads (both ARCHITECTURE.md): Multi-level structure updated 5→9 levels with L6-L9 descriptions; Defender unlock progression updated to final UNLOCK_MAP {3:wall,6:trapper,8:mine}. Also fixed LevelSelectScene '5 entries'→'9 entries'. AGENTS.md enemy bio screen '(L5)' → 'L5/L6/L8'. 1 skip (nit: log task order). Both threads resolved. Summary posted. 156 tests pass. review_complete=true."
+    tokens: ~6k

@@ -78,13 +78,44 @@ export class LevelSelectScene extends Phaser.Scene {
     const gap = 16;
     const totalWidth = 5 * entryWidth + 4 * gap;
     const startX = (GAME_WIDTH - totalWidth) / 2;
-    const startY = (GAME_HEIGHT - entryHeight) / 2 + 10;
+    const totalRowsHeight = 2 * entryHeight + gap;
+    const startY = (GAME_HEIGHT - totalRowsHeight) / 2;
 
+    // Row 1: levels 1-5 (indices 0-4)
     for (let i = 0; i < 5; i++) {
       const x = startX + i * (entryWidth + gap);
       const state = getLevelState(this.progress, i);
       this.drawLevelEntry(x, startY, entryWidth, entryHeight, i, state);
     }
+
+    // Row 2: levels 6-9 (indices 5-8) + boss placeholder at slot 10
+    const row2Y = startY + entryHeight + gap;
+    for (let i = 5; i < 9; i++) {
+      const x = startX + (i - 5) * (entryWidth + gap);
+      const state = getLevelState(this.progress, i);
+      this.drawLevelEntry(x, row2Y, entryWidth, entryHeight, i, state);
+    }
+    // Slot 10: boss placeholder (always locked)
+    const bossX = startX + 4 * (entryWidth + gap);
+    this.drawBossPlaceholder(bossX, row2Y, entryWidth, entryHeight);
+  }
+
+  private drawBossPlaceholder(x: number, y: number, width: number, height: number): void {
+    const g = this.add.graphics();
+    g.fillStyle(0x4a0000, 0.6);
+    g.fillRoundedRect(x, y, width, height, 8);
+    g.lineStyle(2, 0x8b0000, 0.5);
+    g.strokeRoundedRect(x, y, width, height, 8);
+    // Skull: circle head + two eye sockets + teeth bar
+    g.fillStyle(0x8b0000, 0.45);
+    g.fillCircle(x + width / 2, y + 36, 16);
+    g.fillStyle(0x4a0000, 0.9);
+    g.fillCircle(x + width / 2 - 6, y + 33, 4);
+    g.fillCircle(x + width / 2 + 6, y + 33, 4);
+    g.fillRect(x + width / 2 - 8, y + 46, 16, 4);
+    this.add.text(x + width / 2, y + height - 18, '? BOSS', {
+      fontSize: '10px', color: '#8b0000', fontFamily: 'monospace',
+    }).setOrigin(0.5);
   }
 
   private drawLevelEntry(

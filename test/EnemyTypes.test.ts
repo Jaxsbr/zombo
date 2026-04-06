@@ -3,12 +3,12 @@ import { ENEMY_TYPES } from '../src/config/enemies';
 import { attemptJump } from '../src/systems/EnemyMovement';
 
 describe('Armored Bunny — config', () => {
-  it('health equals exactly 3x basic health', () => {
-    expect(ENEMY_TYPES.armored.health).toBe(ENEMY_TYPES.basic.health * 3);
+  it('health is 300', () => {
+    expect(ENEMY_TYPES.armored.health).toBe(300);
   });
 
-  it('speed equals basic speed', () => {
-    expect(ENEMY_TYPES.armored.speed).toBe(ENEMY_TYPES.basic.speed);
+  it('speed is 0.45', () => {
+    expect(ENEMY_TYPES.armored.speed).toBe(0.45);
   });
 });
 
@@ -41,9 +41,9 @@ describe('Sock Puppet — jump logic', () => {
 });
 
 describe('Sock Puppet — config', () => {
-  it('has correct stats: health=150, speed=0.35', () => {
+  it('has correct stats: health=150, speed=0.455', () => {
     expect(ENEMY_TYPES.jumper.health).toBe(150);
-    expect(ENEMY_TYPES.jumper.speed).toBe(0.35);
+    expect(ENEMY_TYPES.jumper.speed).toBe(0.455);
   });
 
   it('starts with jumpsRemaining = 1', () => {

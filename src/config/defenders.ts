@@ -17,7 +17,7 @@ export interface DefenderType {
 export const DEFENDER_TYPES: Record<string, DefenderType> = {
   generator: {
     name: 'Jack-in-the-Box',
-    cost: 50,
+    cost: 30,
     health: 40,
     damage: 0,
     range: 0,
@@ -29,9 +29,9 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
   },
   shooter: {
     name: 'Water Pistol',
-    cost: 100,
+    cost: 75,
     health: 40,
-    damage: 15,
+    damage: 20,
     range: 9, // full lane
     fireRate: 1,
     generatesIncome: 0,
@@ -41,8 +41,8 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
   },
   wall: {
     name: 'Block Tower',
-    cost: 25,
-    health: 90,
+    cost: 20,
+    health: 65,
     damage: 0,
     range: 0,
     fireRate: 0,

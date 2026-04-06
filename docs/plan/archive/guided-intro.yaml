@@ -1,5 +1,13 @@
-# Phase log — guided-intro
+# Phase log — guided-intro (archived)
 # Each entry: { task, story, description, result, notes, tokens }
+
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done
 
 entries:
   - task: 1

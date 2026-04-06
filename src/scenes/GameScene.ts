@@ -38,11 +38,12 @@ import {
   isSfxMuted,
 } from '../systems/SFX';
 
-const DEFAULT_STARTING_BALANCE = 500;
+const DEFAULT_STARTING_BALANCE = 50;
 const SPARK_SPAWN_INTERVAL = 12000; // ms between spark spawns
-const SPARK_VALUE = 50; // sparks balance added per collection
+const SPARK_VALUE = 25; // sparks balance added per collection
+const HONEY_PROJECTILE_SPEED = 120; // px/s — honey pot moves slowly through the air
 const SPARK_FALL_SPEED = 30; // pixels per second
-const GENERATOR_INCOME_INTERVAL = 8000; // ms between generator spark spawns
+const GENERATOR_INCOME_INTERVAL = 10000; // ms between generator spark spawns
 const GENERATOR_SPARK_EXPIRY = 5000; // ms before uncollected generator sparks despawn
 const FADE_DURATION = 600;
 
@@ -69,7 +70,7 @@ export class GameScene extends Phaser.Scene {
   private sparks: Phaser.GameObjects.Container[] = [];
   private mineStates: Map<DefenderEntity, MineState> = new Map();
   private honeyPots: HoneyPot[] = [];
-  private honeyPotSprites: Map<HoneyPot, Phaser.GameObjects.Graphics> = new Map();
+  private honeyProjectiles: { outer: Phaser.GameObjects.Arc; inner: Phaser.GameObjects.Arc; targetRow: number; targetCol: number; targetX: number; targetY: number }[] = [];
   private generatorTimers: Map<DefenderEntity, number> = new Map(); // ms until next spark
   private trapperTimers: Map<DefenderEntity, number> = new Map(); // ms since last toss
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
@@ -1101,22 +1102,6 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
-  private spawnHoneyPotSprite(pot: HoneyPot): void {
-    const x = pot.col * CELL_SIZE + CELL_SIZE / 2;
-    const y = HUD_HEIGHT + pot.row * CELL_SIZE + CELL_SIZE / 2;
-    const gfx = this.add.graphics();
-    gfx.setDepth(5);
-    // Amber/golden puddle — reads as sticky slow zone
-    gfx.fillStyle(0xffb300, 0.6);
-    gfx.fillEllipse(x, y, CELL_SIZE * 0.7, CELL_SIZE * 0.4);
-    gfx.fillStyle(0xffd54f, 0.4);
-    gfx.fillEllipse(x, y, CELL_SIZE * 0.5, CELL_SIZE * 0.25);
-    // Shine highlight
-    gfx.fillStyle(0xfff8e1, 0.5);
-    gfx.fillCircle(x - 5, y - 3, 4);
-    this.honeyPotSprites.set(pot, gfx);
-  }
-
   private spawnDeathParticles(x: number, y: number, color: number): void {
     const count = 8;
     for (let i = 0; i < count; i++) {
@@ -1234,36 +1219,54 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Honey Bear trapper — toss honey pots
+    // Honey Bear trapper — launch slow honey pot projectiles toward cells ahead
     for (const def of this.defenders) {
       if (isDead(def) || def.defenderType.behavior !== 'trapper') continue;
       const elapsed = (this.trapperTimers.get(def) ?? 0) + delta;
       if (elapsed >= HONEY_TOSS_INTERVAL) {
         this.trapperTimers.set(def, 0);
-        // Toss honey pot to a random cell ahead in the same lane
         const targetCol = def.gridCol + 1 + Math.floor(Math.random() * Math.min(HONEY_TOSS_RANGE, GRID_COLS - def.gridCol - 1));
         if (targetCol < GRID_COLS) {
-          const pot = createHoneyPot(def.gridRow, targetCol, HONEY_POT_DURATION);
-          this.honeyPots.push(pot);
-          this.spawnHoneyPotSprite(pot);
+          const targetX = targetCol * CELL_SIZE + CELL_SIZE / 2;
+          const targetY = HUD_HEIGHT + def.gridRow * CELL_SIZE + CELL_SIZE / 2;
+          const outer = this.add.circle(def.x, def.y, 8, 0xffb300, 0.9).setDepth(8);
+          const inner = this.add.circle(def.x, def.y, 4, 0xffd54f, 0.7).setDepth(9);
+          this.honeyProjectiles.push({ outer, inner, targetRow: def.gridRow, targetCol, targetX, targetY });
         }
       } else {
         this.trapperTimers.set(def, elapsed);
       }
     }
 
-    // Update honey pots — expire old ones
-    const prevPots = new Set(this.honeyPots);
-    this.honeyPots = updateHoneyPots(this.honeyPots, delta);
-    for (const pot of prevPots) {
-      if (!this.honeyPots.includes(pot)) {
-        const sprite = this.honeyPotSprites.get(pot);
-        if (sprite) {
-          sprite.destroy();
-          this.honeyPotSprites.delete(pot);
-        }
+    // Move honey projectiles toward their target cells
+    for (let i = this.honeyProjectiles.length - 1; i >= 0; i--) {
+      const hp = this.honeyProjectiles[i];
+      const dx = hp.targetX - hp.outer.x;
+      const dy = hp.targetY - hp.outer.y;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      const step = HONEY_PROJECTILE_SPEED * dt;
+      if (dist <= step * 2) {
+        // Arrived — create honey pot slow zone and a brief amber burst
+        const pot = createHoneyPot(hp.targetRow, hp.targetCol, HONEY_POT_DURATION);
+        this.honeyPots.push(pot);
+        const burst = this.add.circle(hp.targetX, hp.targetY, 12, 0xffb300, 0.55).setDepth(8);
+        this.tweens.add({
+          targets: burst, scaleX: 2.5, scaleY: 2.5, alpha: 0,
+          duration: 350, ease: 'Quad.easeOut', onComplete: () => burst.destroy(),
+        });
+        hp.outer.destroy();
+        hp.inner.destroy();
+        this.honeyProjectiles.splice(i, 1);
+      } else {
+        hp.outer.x += (dx / dist) * step;
+        hp.outer.y += (dy / dist) * step;
+        hp.inner.x = hp.outer.x;
+        hp.inner.y = hp.outer.y;
       }
     }
+
+    // Update honey pots — expire old ones (no sprites to clean up)
+    this.honeyPots = updateHoneyPots(this.honeyPots, delta);
 
     // Mine arm timer + trigger check
     for (const [def, mineState] of this.mineStates) {

@@ -3,7 +3,9 @@ const STORAGE_KEY = 'zombo_unlocks';
 // Unlock map: which defenders are available at start and which unlock on level completion
 const INITIAL_DEFENDERS = ['generator', 'shooter'];
 const UNLOCK_MAP: Record<number, string> = {
-  3: 'wall',  // completing Level 3 unlocks Block Tower
+  3: 'wall',     // completing Level 3 unlocks Block Tower
+  6: 'trapper',  // completing Level 6 unlocks Honey Bear
+  8: 'mine',     // completing Level 8 unlocks Marble Mine
 };
 
 /** Get the list of unlocked defender keys for a given set of completed levels. */

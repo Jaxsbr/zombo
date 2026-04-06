@@ -1,75 +1,59 @@
 ## Phase goal
 
-Introduce new players to the game gradually through a guided 5-level progression. L1 uses a dream bubble tutorial to teach generator placement, spark collection, and pistol placement step-by-step. Levels start with 1 lane and expand to the full 5-lane grid. Block Tower is unlocked after L3 with a toy unlock card. L5 introduces the Armored Bunny with a pre-round enemy bio screen. Each level teaches exactly one new concept.
+Extend the guided progression from 5 to 9 levels by adding L6–L9 as pure config additions, and deploy the game to GitHub Pages. L6 introduces the Cleaning Robot enemy with a pre-round bio screen and unlocks the Honey Bear on completion. L7 is a Honey Bear practice level. L8 introduces the Sock Puppet with a bio screen and unlocks the Marble Mine. L9 is a Marble Mine practice level featuring the full enemy roster and the first loadout selection moment. A GitHub Actions workflow deploys `dist/` to the `gh-pages` branch on every push to `main`.
 
 ### Stories in scope
-- US-40 — Variable lane grid
-- US-41 — Tutorial dream bubbles
-- US-42 — Toy unlock card
-- US-43 — Pre-round enemy bio
-- US-44 — Guided level progression
+- US-45 — L6: Introduce the Cleaning Robot
+- US-46 — L7: Honey Bear practice level
+- US-47 — L8: Introduce the Sock Puppet
+- US-48 — L9: Marble Mine practice level
+- US-49 — GitHub Pages deployment
 
 ### Done-when (observable)
 
-- [x] LevelConfig interface in `src/systems/WaveManager.ts` includes `activeLanes?: number[]` field [US-40]
-- [x] GameScene drawGrid renders active lane rows with normal carpet colors; inactive rows rendered with darkened fill (alpha <= 0.3 overlay or fill at 25% brightness) so they read as non-playable background, not selectable terrain [US-40]
-- [x] GameScene createGridClickZones creates interactive zones only for rows listed in activeLanes [US-40]
-- [x] WaveManager or GameScene spawn logic constrains enemy lane values to activeLanes set [US-40]
-- [x] Level with `activeLanes: [2]` renders a single playable row at grid row 2 [US-40]
-- [x] Level with `activeLanes: [1,2,3]` renders 3 playable rows [US-40]
-- [x] Level with `activeLanes` omitted renders all 5 rows (backward compatible with existing config) [US-40]
-- [x] Atmosphere decorations (furniture silhouettes, toy details) only spawn in active lane cells [US-40]
-- [x] Unit tests for active lane filtering exist and pass (test that enemy spawn with lane outside activeLanes is rejected or remapped) [US-40]
-- [x] `src/systems/Tutorial.ts` exists as pure TS module exporting tutorial step state machine (no Phaser imports) [US-41]
-- [x] Tutorial state machine has 3 steps: PLACE_GENERATOR, COLLECT_SPARK, PLACE_PISTOL, plus COMPLETE state [US-41]
-- [x] GameScene detects tutorial mode from LevelConfig `tutorialMode: true` and activates dream bubble overlays [US-41]
-- [x] Step 1: Dream bubble renders as thought-cloud shape (white/cream fill, rounded body, 3 trailing circles at bottom-right) at depth 105 with text <= 8 words and animated pointer (depth 106) toward generator panel card [US-41]
-- [x] Step 1: Bubble top edge at y >= 85 (below HUD bar). Bubble does not extend below active lane area [US-41]
-- [x] Step 1: Only generator panel card is interactive; all grid zones and other panel cards have `disableInteractive()` called [US-41]
-- [x] Step 2: After generator placed, spark spawns immediately (not on timer). Dream bubble repositions near spark with collection instruction (<= 8 words) [US-41]
-- [x] Step 3: After spark(s) collected and balance >= 100 (pistol cost), dream bubble shows pistol placement instruction (<= 8 words); pistol card becomes interactive, grid zones for active lane re-enabled [US-41]
-- [x] After step 3 placement, all dream bubble graphics destroyed and all zones re-enabled via `setInteractive()` [US-41]
-- [x] Tutorial only runs on first L1 play. Replaying L1 after completion skips tutorial (tracked via localStorage key `tutorial_complete`) [US-41]
-- [x] Tutorial unit tests: all step transitions (PLACE_GENERATOR -> COLLECT_SPARK -> PLACE_PISTOL -> COMPLETE) verified, including edge case where user has no valid placement cell [US-41]
-- [x] Dream bubble reads as a friendly instruction for a young child — thought-cloud shape, short text, clear pointer, not mistakable for a game obstacle or collectible (aspirational — visual verification required) [US-41]
-- [x] DefenderType interface in `src/config/defenders.ts` includes `bio: string` field [US-42]
-- [x] Block Tower entry in DEFENDER_TYPES has bio text (1-2 sentences, kid-friendly, explains blocking) [US-42]
-- [x] After completing a level that triggers an unlock, full-screen overlay appears: dimmed background (0x000000, alpha 0.7) at depth 199, card at depth 200 [US-42]
-- [x] Overlay card shows: toy visual rendered via DRAW_DEFENDER at scale >= 1.5 occupying >= 40% of card height, toy name (>= 18px monospace), spark cost, and bio text (>= 14px monospace) [US-42]
-- [x] Card border: #5d4037 (warm brown), width >= 3px [US-42]
-- [x] Card entry animation: card slides into center from above (tween duration 300-500ms) [US-42]
-- [x] "Collect!" button at depth 201, hit area >= 48x48px, dismisses overlay on click, transitioning to LevelSelectScene [US-42]
-- [x] While overlay is visible, all grid click zones and LevelSelectScene buttons have `disableInteractive()` called. Only the "Collect!" button is interactive [US-42]
-- [x] localStorage key `bio_shown_defender_<key>` set to `true` after card shown; re-completing L3 does not re-show the Block Tower card [US-42]
-- [x] Unlock card reads as a reward — gift-tag/toy-label styling, toy visual prominent, not mistakable for an error dialog or loading screen (aspirational — visual verification required) [US-42]
-- [x] EnemyType interface in `src/config/enemies.ts` includes `bio: string` field [US-43]
-- [x] Armored Bunny entry in ENEMY_TYPES has bio text (1-2 sentences, kid-friendly, explains armor degradation mechanic) [US-43]
-- [x] Before L5 game starts, full-screen overlay appears: dimmed background (0x000000, alpha 0.7) at depth 199, card at depth 200, showing enemy visual (EnemyEntity renderer at scale >= 1.5), name, bio text [US-43]
-- [x] "Continue" button at depth 201, hit area >= 48x48px, dismisses overlay and starts the level normally [US-43]
-- [x] Card follows same visual pattern as unlock card: border #5d4037 >= 3px, monospace text (name >= 18px, bio >= 14px) [US-43]
-- [x] While overlay is visible, LevelSelectScene buttons have `disableInteractive()` called. Only "Continue" button is interactive [US-43]
-- [x] localStorage key `bio_shown_enemy_<key>` set to `true` after bio shown; replaying L5 does not re-show the bio [US-43]
-- [x] Armored Bunny in L5 inherits all baseline enemy behaviors: movement animation, health bar display, collision with defenders, lane pathfinding [US-43]
-- [x] Enemy bio reads as a heads-up warning about a new challenge — not a punishment or game-over screen (aspirational — visual verification required) [US-43]
-- [x] `src/config/levels.ts` exports 5 level configs matching the progression in `docs/product/stage-one.md` [US-44]
-- [x] LevelConfig interface includes `startingBalance: number` field [US-44]
-- [x] GameScene reads `startingBalance` from LevelConfig instead of using global constant [US-44]
-- [x] L1 config: `activeLanes: [2]`, `tutorialMode: true`, 1 wave, <= 3 basic enemies, starting balance < 100 (pistol unaffordable) and >= 50 (generator affordable) [US-44]
-- [x] L2 config: `activeLanes: [1,2,3]`, 2 waves, basic enemies only [US-44]
-- [x] L3 config: `activeLanes: [0,1,2,3,4]`, 3 waves, basic enemies only [US-44]
-- [x] L4 config: 5 lanes, 3-4 waves, basic enemies only, Block Tower available [US-44]
-- [x] L5 config: 5 lanes, 4 waves, basic + armored enemies from wave 2 onward, `enemyBio: { enemyKey: 'armored' }` [US-44]
-- [x] INITIAL_DEFENDERS in DefenderUnlocks.ts is `['generator', 'shooter']` (wall removed) [US-44]
-- [x] UNLOCK_MAP in DefenderUnlocks.ts is `{ 3: 'wall' }` (L3 completion unlocks Block Tower) [US-44]
-- [x] Trapper and mine are not in INITIAL_DEFENDERS or UNLOCK_MAP [US-44]
-- [x] A single Water Pistol survives L1's wave: total enemy HP in wave <= pistol DPS (15/s) x wave duration [US-44]
-- [x] L1 starting balance is a value X where 50 <= X < 100 (generator affordable, pistol not) — verified by unit test [US-44]
-- [x] npm test passes with updated level configs and unlock progression [US-44]
-- [x] AGENTS.md reflects: variable lane system, tutorial dream bubble system, toy unlock cards, enemy bio screens, guided level progression (L1-L5 structure), updated defender unlock schedule [phase]
-- [x] AGENTS.md includes explicit depth layer map: grid 0, atmosphere -10, entities 5, sparks 10, HUD 50, dream-bubble 105, pointer 106, overlay-bg 199, overlay-card 200, overlay-btn 201 [phase]
+#### US-45 — L6: Introduce the Cleaning Robot
+- [x] `ENEMY_TYPES.tough` in `src/config/enemies.ts` has a non-empty `bio` string field (kid-friendly description mentioning the Cleaning Robot is slow but very tough) [US-45]
+- [x] `LEVEL_6` in `src/config/levels.ts` has no `activeLanes` override (all 5 lanes), `enemyBio: { enemyKey: 'tough' }`, `startingBalance >= 450`, and >= 4 waves [US-45]
+- [x] L6 wave 1 spawns are all `ENEMY_TYPES.basic`; each of waves 2+ contains at least one `ENEMY_TYPES.tough` spawn [US-45]
+- [x] `LEVEL_6` is included in `ALL_LEVELS` (array length becomes 6) [US-45]
+- [x] `UNLOCK_MAP` in `src/systems/DefenderUnlocks.ts` contains entry `6: 'trapper'` [US-45]
+- [x] Unit test: `getUnlockedDefenders` called with completed levels [1,2,3,4,5,6] returns array containing `'trapper'`; called with [1,2,3,4,5] it does not [US-45]
+- [x] `LoadoutSelection.test.ts` test "trapper and mine are not in initial defenders or unlock map" is renamed/updated to reflect they are now in `UNLOCK_MAP` at L6 and L8 — the updated test verifies completing only L1–L5 (indices 0–4) still does not yield trapper or mine [US-45]
+- [x] `npm test` passes [US-45]
+
+#### US-46 — L7: Honey Bear practice level
+- [x] `LEVEL_7` in `src/config/levels.ts` has no `activeLanes` override, no `enemyBio`, `startingBalance >= 500`, and >= 4 waves [US-46]
+- [x] Every wave in L7 contains at least one `ENEMY_TYPES.tough` spawn [US-46]
+- [x] `LEVEL_7` is included in `ALL_LEVELS` (array length becomes 7) [US-46]
+- [x] `npm test` passes [US-46]
+
+#### US-47 — L8: Introduce the Sock Puppet
+- [x] `ENEMY_TYPES.jumper` in `src/config/enemies.ts` has a non-empty `bio` string field that explicitly states the Sock Puppet jumps over the first toy/defender it encounters [US-47]
+- [x] `LEVEL_8` in `src/config/levels.ts` has no `activeLanes` override, `enemyBio: { enemyKey: 'jumper' }`, `startingBalance >= 550`, and >= 4 waves [US-47]
+- [x] L8 wave 1 contains no `ENEMY_TYPES.jumper` spawns; each of waves 2+ contains at least one `ENEMY_TYPES.jumper` spawn [US-47]
+- [x] `LEVEL_8` is included in `ALL_LEVELS` (array length becomes 8) [US-47]
+- [x] `UNLOCK_MAP` in `src/systems/DefenderUnlocks.ts` contains entry `8: 'mine'` [US-47]
+- [x] Unit test: `getUnlockedDefenders` called with completed levels [1,2,3,4,5,6,7,8] returns array containing `'mine'`; called with [1,2,3,4,5,6,7] it does not [US-47]
+- [x] `npm test` passes [US-47]
+
+#### US-48 — L9: Marble Mine practice level
+- [x] `LEVEL_9` in `src/config/levels.ts` has no `activeLanes` override, no `enemyBio`, `startingBalance >= 600`, and >= 5 waves [US-48]
+- [x] L9 waves collectively include at least one spawn each of `ENEMY_TYPES.basic`, `ENEMY_TYPES.tough`, `ENEMY_TYPES.armored`, and `ENEMY_TYPES.jumper` [US-48]
+- [x] `LEVEL_9` is included in `ALL_LEVELS` (array length becomes 9) [US-48]
+- [x] `needsLoadoutSelection(getUnlockedDefenders([1,2,3,4,5,6,7,8]))` returns `true` — 5 unlocked defenders exceeds `MAX_LOADOUT=4`, triggering the loadout selection screen before L9 [US-48]
+- [x] `npm test` passes [US-48]
+
+#### US-49 — GitHub Pages deployment
+- [x] `.github/workflows/deploy.yml` exists with a workflow job triggered on `push` to `main` [US-49]
+- [x] Workflow steps include: `actions/checkout`, Node.js setup, `npm ci`, `npm run build`, and deployment of `dist/` to the `gh-pages` branch [US-49]
+- [x] `vite.config.ts` retains `base: './'` (relative paths compatible with GitHub Pages subdirectory hosting) [US-49]
+- [x] `npm run build` completes without TypeScript errors and produces `dist/index.html` [US-49]
+
+#### Structural
+- [ ] `docs/product/stage-one.md` level table extended with rows for L6 (Cleaning Robot intro, Honey Bear unlock reward), L7 (Honey Bear practice), L8 (Sock Puppet intro, Marble Mine unlock reward), and L9 (Marble Mine practice) [phase]
+- [ ] `AGENTS.md` updated to reflect: `ALL_LEVELS` length 9, `UNLOCK_MAP` entries L6→trapper and L8→mine, level progression description extended to L1–L9 [phase]
 
 ### Golden principles (phase-relevant)
-- Game logic separated from Phaser rendering — Tutorial.ts is pure TS with no Phaser dependency, testable in isolation
-- Config-driven entities — bio text on DefenderType/EnemyType, activeLanes and startingBalance on LevelConfig, tutorialMode flag
-- agents-consistency — AGENTS.md updated to reflect all new systems and changed progression
-- no-silent-pass — Tutorial state machine has unit tests; level config changes covered by existing test suite
+- Config-driven entities — new levels are pure `LevelConfig` additions; bio text added to `EnemyType.bio` fields; no new Phaser scene code required
+- Game logic separated from Phaser rendering — `DefenderUnlocks.ts` changes are pure TS and covered by existing test suite
+- agents-consistency — AGENTS.md and stage-one.md updated to reflect shipped level progression and unlock schedule

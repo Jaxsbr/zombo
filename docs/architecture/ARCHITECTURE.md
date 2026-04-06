@@ -35,14 +35,15 @@ src/
 │   ├── SingleUse.ts     # Mine arm/trigger logic (pure TS)
 │   ├── HoneyTrap.ts     # Honey pot state: create, update/expire, speed modifier (pure TS)
 │   ├── LevelProgress.ts # Level completion + localStorage persistence (pure TS)
-│   └── DefenderUnlocks.ts # Defender unlock map + localStorage persistence (pure TS)
+│   ├── DefenderUnlocks.ts # Defender unlock map + localStorage persistence (pure TS)
+│   └── Tutorial.ts      # L1 tutorial state machine — 3-step dream bubble flow (pure TS, no Phaser)
 └── entities/
     ├── DefenderEntity.ts  # Defender game object — per-key shape drawing (pistol, box, blocks, honey bear), health bar
     ├── EnemyEntity.ts     # Enemy game object — per-key shape drawing (fluffy blob, robot, puppet), per-type scale, health bar
     └── ProjectileEntity.ts # Projectile game object — yellow circle, movement
 ```
 
-(shipped in `core-loop` phase; `entities/`, `config/levels.ts`, and `systems/EnemyMovement.ts` shipped in `playable` phase)
+(shipped in `core-loop` phase; `entities/`, `config/levels.ts`, and `systems/EnemyMovement.ts` shipped in `playable` phase; `systems/Tutorial.ts` shipped in `guided-intro` phase)
 
 ## Data flow
 
@@ -135,9 +136,11 @@ Honey Bear — 75 sparks, persistent defender. Periodically tosses honey pots on
 
 Enemy types have an optional `scale` field controlling rendered size. Visual hierarchy: Cleaning Robot (1.35) > Armored Bunny (1.15) > Dust Bunny (1.0) > Sock Puppet (0.85). Cleaning Robot has gear bolt details; Sock Puppet has spring coil. Health bars, flash overlays, and death particles scale proportionally.
 
-### Multi-level structure
+### Multi-level structure (extended in `guided-intro` and `stage-one-completion` phases)
 
-5 levels (LEVEL_1 through LEVEL_5) with escalating wave count (3-5) and enemy composition (L1 basic only → L5 all types). `LevelProgress.ts` manages localStorage persistence (`zombo_progress`). `DefenderUnlocks.ts` manages unlock state (`zombo_unlocks`).
+9 guided levels (LEVEL_1 through LEVEL_9). LevelConfig includes `startingBalance`, `activeLanes`, `tutorialMode`, and `enemyBio` fields. L1: 1 lane (center), tutorial mode, 75 starting balance. L2: 3 lanes, 2 waves. L3: 5 lanes, 3 waves. L4: 5 lanes, 3 waves, Block Tower available. L5: 5 lanes, 4 waves, Armored Bunny from wave 2, pre-round enemy bio. L6: 5 lanes, 4 waves, Cleaning Robot from wave 2, pre-round enemy bio, Honey Bear unlock on completion. L7: 5 lanes, 4 waves, Cleaning Robots in every wave (Honey Bear practice). L8: 5 lanes, 4 waves, Sock Puppet from wave 2, pre-round enemy bio, Marble Mine unlock on completion. L9: 5 lanes, 5 waves, all 4 enemy types, first loadout selection moment. `LevelProgress.ts` manages localStorage persistence (`zombo_progress`). `DefenderUnlocks.ts` manages unlock state (`zombo_unlocks`).
+
+Bio fields: `DefenderType.bio` (required string) for unlock cards. `EnemyType.bio` (optional string) for pre-round bio overlays. Bio overlays use depth 199–201 (dim bg, card, button).
 
 ### Scene flow
 
@@ -145,10 +148,10 @@ Enemy types have an optional `scale` field controlling rendered size. Visual hie
 TitleScene → LevelSelectScene → [LoadoutScreen if >4 unlocked] → GameScene → GameOverScene → LevelSelectScene
 ```
 
-`LevelSelectScene.ts` renders 5 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
+`LevelSelectScene.ts` renders 9 toy-box level entries (locked/unlocked/completed states). Loadout selection appears when player has > 4 unlocked defenders (max 4 selectable). GameScene receives `activeLoadout` and filters the HUD defender panel.
 
 Loadout card layout uses proportional sizing relative to GAME_WIDTH/GAME_HEIGHT: padding=0.05×GW, gap=0.02×GW, cardHeight=0.45×GH. Cards animate in with staggered entry (Back.easeOut), selection bounce (1.08×), and an idle preview bob (Sine.easeInOut).
 
-### Defender unlock progression
+### Defender unlock progression (updated in `guided-intro` and `stage-one-completion` phases)
 
-L1 start: [shooter, generator, wall]. Completing L2: +trapper (Honey Bear). Completing L3: +mine. Loadout selection (pick 4) activates after L3 completion when roster exceeds 4-slot limit.
+L1 start: [generator, shooter]. UNLOCK_MAP: `{ 3: 'wall', 6: 'trapper', 8: 'mine' }` — completing L3 unlocks Block Tower, completing L6 unlocks Honey Bear, completing L8 unlocks Marble Mine. Loadout selection (pick 4) activates when roster exceeds 4-slot limit (first triggered naturally before L9 when 5 defenders are unlocked).
