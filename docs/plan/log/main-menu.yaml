@@ -52,3 +52,14 @@ entries:
       enemies.ts: basic.bio = 'The Dust Bunny rolls in from the right! It\'s the softest enemy, but there\'s a lot of them.'
       All 4 ENEMY_TYPES now have non-empty bio strings. 165 tests pass (no change). ✓ US-55 complete.
     tokens: ~0.5k
+  - task: 5
+    story: US-53
+    description: "Update LevelSelectScene.create() to read selectedLevel from scene init data and highlight pre-selected level"
+    result: pass
+    notes: |
+      LevelSelectScene.create() signature: data? now includes selectedLevel?: number.
+      Reads this.scene.settings.data as { selectedLevel?: number } and passes to drawLevelEntries().
+      drawLevelEntries(selectedLevel?): after drawing each entry, calls drawSelectionHighlight() if selectedLevel matches.
+      drawSelectionHighlight(): white double-ring (3px white + 1px amber outer ring) around selected entry.
+      165 tests pass (no regressions). ✓ US-53 complete.
+    tokens: ~1k

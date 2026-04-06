@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 5
-  next_task: "[US-53] Update LevelSelectScene.create() to read selectedLevel from scene init data and visually highlight that level button"
+  task_number: 6
+  next_task: "[phase] Update AGENTS.md: scene list (MainMenuScene/ToysScene/EnemiesScene added, TitleScene removed), initial scene, nextUnbeatenLevel export"
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-52, US-54, US-55]
+  completed_stories: [US-52, US-53, US-54, US-55]
