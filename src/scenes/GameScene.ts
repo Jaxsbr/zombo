@@ -78,6 +78,8 @@ export class GameScene extends Phaser.Scene {
   private tutorial: Tutorial | null = null;
   private tutorialBubble: Phaser.GameObjects.Container | null = null;
   private tutorialPointer: Phaser.GameObjects.Graphics | null = null;
+  private tutorialHighlight: Phaser.Tweens.Tween | null = null;
+  private tutorialHighlightGfx: Phaser.GameObjects.Graphics | null = null;
   private transitioning = false;
 
   constructor() {
@@ -121,10 +123,13 @@ export class GameScene extends Phaser.Scene {
     this.createProgressDots();
     this.createCountdownBar();
 
-    // Spark spawner (replaces passive income timer)
+    // Spark spawner (replaces passive income timer) — suppressed during tutorial
     this.time.addEvent({
       delay: SPARK_SPAWN_INTERVAL,
-      callback: () => this.spawnSpark(),
+      callback: () => {
+        if (this.tutorial && !this.tutorial.isComplete) return;
+        this.spawnSpark();
+      },
       loop: true,
     });
 
@@ -210,72 +215,105 @@ export class GameScene extends Phaser.Scene {
     const step = this.tutorial.step;
 
     const messages: Record<TutorialStep, string> = {
-      PLACE_GENERATOR: 'Place your Jack-in-the-Box!',
-      COLLECT_SPARK: 'Click the spark!',
-      PLACE_PISTOL: 'Now place a Water Pistol!',
+      PLACE_GENERATOR: 'Place it on the carpet!',
+      COLLECT_SPARK: 'Tap the spark!',
+      PLACE_PISTOL: 'Place it on the carpet!',
       COMPLETE: '',
     };
     const text = messages[step];
     if (!text) return;
 
-    // Bubble position: centered horizontally, top edge at y >= 85 (below HUD)
+    // Bubble position: centered horizontally, below HUD
     const bubbleX = (GRID_COLS * CELL_SIZE) / 2;
-    const bubbleY = 110;
+    const bubbleY = 125;
 
     const bubble = this.add.container(bubbleX, bubbleY);
     bubble.setDepth(105);
 
-    // Thought-cloud shape: white/cream fill, rounded body
+    // Thought-cloud shape: wider to fit icon + text
+    const bubbleW = 200;
+    const bubbleH = 64;
     const gfx = this.add.graphics();
-    // Main bubble body
-    gfx.fillStyle(0xfffde7, 1); // cream
-    gfx.fillRoundedRect(-120, -28, 240, 56, 20);
-    gfx.lineStyle(2, 0xbcaaa4, 0.6);
-    gfx.strokeRoundedRect(-120, -28, 240, 56, 20);
-    // 3 trailing thought circles at bottom-right
     gfx.fillStyle(0xfffde7, 1);
-    gfx.fillCircle(90, 35, 8);
-    gfx.strokeCircle(90, 35, 8);
-    gfx.fillCircle(105, 48, 5);
-    gfx.strokeCircle(105, 48, 5);
-    gfx.fillCircle(115, 58, 3);
-    gfx.strokeCircle(115, 58, 3);
+    gfx.fillRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 20);
+    gfx.lineStyle(2, 0xbcaaa4, 0.6);
+    gfx.strokeRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 20);
+    // Trailing thought circles at bottom-right
+    gfx.fillStyle(0xfffde7, 1);
+    gfx.fillCircle(bubbleW / 2 - 15, bubbleH / 2 + 7, 8);
+    gfx.strokeCircle(bubbleW / 2 - 15, bubbleH / 2 + 7, 8);
+    gfx.fillCircle(bubbleW / 2 + 2, bubbleH / 2 + 18, 5);
+    gfx.strokeCircle(bubbleW / 2 + 2, bubbleH / 2 + 18, 5);
+    gfx.fillCircle(bubbleW / 2 + 12, bubbleH / 2 + 26, 3);
+    gfx.strokeCircle(bubbleW / 2 + 12, bubbleH / 2 + 26, 3);
     bubble.add(gfx);
 
-    // Text inside bubble
-    const bubbleText = this.add.text(0, 0, text, {
-      fontSize: '16px',
+    // Icon inside bubble (left side)
+    const iconContainer = this.add.container(-bubbleW / 2 + 35, 0);
+    const iconGfx = this.add.graphics();
+    if (step === 'PLACE_GENERATOR') {
+      const drawFn = DRAW_DEFENDER['generator'];
+      if (drawFn) drawFn(iconGfx);
+    } else if (step === 'COLLECT_SPARK') {
+      // Small spark diamond
+      iconGfx.fillStyle(0x4fc3f7, 0.9);
+      iconGfx.beginPath();
+      iconGfx.moveTo(0, -10);
+      iconGfx.lineTo(8, 0);
+      iconGfx.lineTo(0, 10);
+      iconGfx.lineTo(-8, 0);
+      iconGfx.closePath();
+      iconGfx.fillPath();
+      iconGfx.fillStyle(0xffffff, 0.9);
+      iconGfx.fillCircle(0, 0, 3);
+    } else if (step === 'PLACE_PISTOL') {
+      const drawFn = DRAW_DEFENDER['shooter'];
+      if (drawFn) drawFn(iconGfx);
+    }
+    iconContainer.add(iconGfx);
+    iconContainer.setScale(0.8);
+    bubble.add(iconContainer);
+
+    // Text to the right of icon
+    const bubbleText = this.add.text(15, 0, text, {
+      fontSize: '14px',
       color: '#3e2723',
       fontFamily: 'monospace',
       fontStyle: 'bold',
       align: 'center',
+      wordWrap: { width: bubbleW - 80 },
     }).setOrigin(0.5);
     bubble.add(bubbleText);
 
     this.tutorialBubble = bubble;
 
-    // Animated pointer arrow
-    const pointer = this.add.graphics();
-    pointer.setDepth(106);
-
-    if (step === 'PLACE_GENERATOR') {
-      // Point toward generator panel card
-      const genCard = this.panelCards.get('generator');
-      if (genCard) {
-        const targetX = genCard.x + this.cardWidth / 2;
-        const targetY = genCard.y + this.cardHeight + 5;
-        this.drawPointerArrow(pointer, targetX, targetY);
-        // Animate bob
-        this.tweens.add({
-          targets: pointer,
-          y: pointer.y + 6,
-          duration: 600,
+    // Flashing highlight on the target panel card
+    this.destroyTutorialHighlight();
+    const highlightKey = step === 'PLACE_GENERATOR' ? 'generator' : step === 'PLACE_PISTOL' ? 'shooter' : null;
+    if (highlightKey) {
+      const card = this.panelCards.get(highlightKey);
+      if (card) {
+        const hlGfx = this.add.graphics();
+        hlGfx.setDepth(106);
+        hlGfx.lineStyle(3, 0xffc107, 1);
+        hlGfx.strokeRoundedRect(card.x - 2, card.y - 2, this.cardWidth + 4, this.cardHeight + 4, 8);
+        this.tutorialHighlightGfx = hlGfx;
+        this.tutorialHighlight = this.tweens.add({
+          targets: hlGfx,
+          alpha: { from: 1, to: 0.2 },
+          duration: 500,
           yoyo: true,
           repeat: -1,
           ease: 'Sine.easeInOut',
         });
       }
-    } else if (step === 'COLLECT_SPARK') {
+    }
+
+    // Animated pointer arrow (no pointer for card steps — highlight is enough)
+    const pointer = this.add.graphics();
+    pointer.setDepth(106);
+
+    if (step === 'COLLECT_SPARK') {
       // Point toward center of grid (spark spawn area)
       const targetX = (GRID_COLS * CELL_SIZE) / 2;
       const targetY = HUD_HEIGHT + 20;
@@ -288,22 +326,6 @@ export class GameScene extends Phaser.Scene {
         repeat: -1,
         ease: 'Sine.easeInOut',
       });
-    } else if (step === 'PLACE_PISTOL') {
-      // Point toward pistol/shooter panel card
-      const shooterCard = this.panelCards.get('shooter');
-      if (shooterCard) {
-        const targetX = shooterCard.x + this.cardWidth / 2;
-        const targetY = shooterCard.y + this.cardHeight + 5;
-        this.drawPointerArrow(pointer, targetX, targetY);
-        this.tweens.add({
-          targets: pointer,
-          y: pointer.y + 6,
-          duration: 600,
-          yoyo: true,
-          repeat: -1,
-          ease: 'Sine.easeInOut',
-        });
-      }
     }
 
     this.tutorialPointer = pointer;
@@ -319,6 +341,17 @@ export class GameScene extends Phaser.Scene {
     gfx.fillPath();
   }
 
+  private destroyTutorialHighlight(): void {
+    if (this.tutorialHighlight) {
+      this.tutorialHighlight.destroy();
+      this.tutorialHighlight = null;
+    }
+    if (this.tutorialHighlightGfx) {
+      this.tutorialHighlightGfx.destroy();
+      this.tutorialHighlightGfx = null;
+    }
+  }
+
   private destroyTutorialBubble(): void {
     if (this.tutorialBubble) {
       this.tutorialBubble.destroy();
@@ -328,6 +361,7 @@ export class GameScene extends Phaser.Scene {
       this.tutorialPointer.destroy();
       this.tutorialPointer = null;
     }
+    this.destroyTutorialHighlight();
   }
 
   // --- End tutorial methods ---
@@ -1048,14 +1082,16 @@ export class GameScene extends Phaser.Scene {
   update(_time: number, delta: number): void {
     const dt = delta / 1000;
 
-    // Wave spawning — only spawn enemies in active lanes
-    const spawns = this.waveManager.update(dt);
-    for (const spawn of spawns) {
-      if (!this.activeLanes.includes(spawn.lane)) continue;
-      const spawnCol = GRID_COLS; // right edge
-      const enemyKey = Object.entries(ENEMY_TYPES).find(([, v]) => v === spawn.type)?.[0] ?? 'basic';
-      const enemy = new EnemyEntity(this, spawn.lane, spawnCol, enemyKey, spawn.type);
-      this.enemies.push(enemy);
+    // Wave spawning — paused during tutorial, only spawn enemies in active lanes
+    if (!this.tutorial || this.tutorial.isComplete) {
+      const spawns = this.waveManager.update(dt);
+      for (const spawn of spawns) {
+        if (!this.activeLanes.includes(spawn.lane)) continue;
+        const spawnCol = GRID_COLS; // right edge
+        const enemyKey = Object.entries(ENEMY_TYPES).find(([, v]) => v === spawn.type)?.[0] ?? 'basic';
+        const enemy = new EnemyEntity(this, spawn.lane, spawnCol, enemyKey, spawn.type);
+        this.enemies.push(enemy);
+      }
     }
 
     // Enemy movement
