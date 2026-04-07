@@ -24,12 +24,12 @@ config:
 state:
   # --- Lifecycle (owner: iterator) ---
   phase: toy-arsenal
-  phase_complete: false
+  phase_complete: true
   status: running
 
   # --- Task orchestration (owner: iterator) ---
   task_number: 19
-  next_task: "[phase] Update stage-one.md and AGENTS.md structural docs for new toys and loadout changes"
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 

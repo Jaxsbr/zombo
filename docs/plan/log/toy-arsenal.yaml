@@ -242,3 +242,16 @@ entries:
       All 13 US-61 criteria met. 190 tests pass. tsc clean.
       ✓ US-61 complete.
     tokens: ~4k
+  - task: 19
+    story: phase
+    description: "Update stage-one.md and AGENTS.md structural docs for new toys and loadout changes"
+    result: pass
+    notes: |
+      AGENTS.md: Defenders section updated from 5→7 types (added cannon + bomb descriptions).
+      Defender unlocks: L3→wall+cannon, L5→bomb, MAX_LOADOUT=5, >5 threshold, L7 first selection.
+      Level progression: L7 noted as first loadout selection, L9 no longer labeled as such.
+      SingleUse: added bomb references. ProjectileEntity: added cannon projectile.
+      stage-one.md: already correct from spec-author (L10 row, all toys, design notes).
+      All 4 structural/phase criteria met. Phase complete.
+      190 tests pass. tsc clean.
+    tokens: ~3k

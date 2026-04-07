@@ -69,10 +69,10 @@ Expand the toy arsenal with two new defenders — Water Cannon (powerful knockba
 
 #### Structural / phase criteria
 
-- [ ] stage-one.md updated: L10 boss level row added; "Available toys" column reflects new unlocks (Water Cannon at L3, Glitter Bomb at L5); design notes updated for new toys [phase]
-- [ ] AGENTS.md Defenders section updated with Water Cannon (key 'cannon', behavior, stats, knockback) and Glitter Bomb (key 'bomb', behavior, 3×3 AOE, BOMB_BOSS_DAMAGE) [phase]
-- [ ] AGENTS.md Defender unlocks section updated: L3 unlocks wall + cannon, L5 unlocks bomb, L6 unlocks trapper, L8 unlocks mine [phase]
-- [ ] AGENTS.md Level progression section reflects that loadout selection first appears at L7 (6 unlocked > 5 max) [phase]
+- [x] stage-one.md updated: L10 boss level row added; "Available toys" column reflects new unlocks (Water Cannon at L3, Glitter Bomb at L5); design notes updated for new toys [phase]
+- [x] AGENTS.md Defenders section updated with Water Cannon (key 'cannon', behavior, stats, knockback) and Glitter Bomb (key 'bomb', behavior, 3×3 AOE, BOMB_BOSS_DAMAGE) [phase]
+- [x] AGENTS.md Defender unlocks section updated: L3 unlocks wall + cannon, L5 unlocks bomb, L6 unlocks trapper, L8 unlocks mine [phase]
+- [x] AGENTS.md Level progression section reflects that loadout selection first appears at L7 (6 unlocked > 5 max) [phase]
 
 ### Golden principles (phase-relevant)
 - Game logic in src/systems/ as pure TypeScript, no Phaser dependencies — knockback logic, AOE detonation logic
