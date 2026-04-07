@@ -2,3 +2,15 @@
 # Each entry: { task, story, description, result, notes, tokens }
 
 entries:
+  - task: 1
+    story: US-59
+    description: "Branch B investigation — read current state, classify phase type, identify first task"
+    result: pass
+    notes: |
+      178 tests pass (16 files). Phase type: cross-cutting — investigate-first mandate applies.
+      Key findings:
+      defenders.ts: 5 types (generator, shooter, wall, trapper, mine). No knockback field.
+      DefenderUnlocks.ts: UNLOCK_MAP { 3: wall, 6: trapper, 8: mine }. MAX_LOADOUT=4.
+      Combat.ts: PROJECTILE_SPEED=4, AOE is row-based (±1 row). No knockback or 3×3 grid AOE.
+      Queued: investigate DefenderEntity.ts, ProjectileEntity.ts, GameScene shooter loop for Water Cannon.
+    tokens: ~5k
