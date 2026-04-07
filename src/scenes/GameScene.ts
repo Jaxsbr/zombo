@@ -1501,10 +1501,9 @@ export class GameScene extends Phaser.Scene {
             // Water Pistol / Water Cannon: single-target damage
             applyDamage(enemy, proj.damage);
             if (proj.isCannon) {
-              // Water Cannon knockback — subtle nudge with smooth lerp
+              // Water Cannon knockback — per-enemy amount with smooth lerp
               const oldCol = enemy.col;
-              const kb = DEFENDER_TYPES.cannon.knockback ?? 0.2;
-              applyKnockback(enemy, kb, GRID_COLS - 1);
+              applyKnockback(enemy, GRID_COLS - 1);
               if (enemy.col !== oldCol) {
                 const targetX = enemy.col * CELL_SIZE + CELL_SIZE / 2;
                 this.tweens.add({

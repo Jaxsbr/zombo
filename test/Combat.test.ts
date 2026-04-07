@@ -195,53 +195,49 @@ describe('Combat — Honey Bear AOE', () => {
   });
 });
 
-describe('Combat — Knockback', () => {
-  it('non-boss enemy is knocked back by the specified amount', () => {
-    const enemy = makeEnemy({ col: 4 });
-    const newCol = applyKnockback(enemy, 1);
-    expect(newCol).toBe(5);
-    expect(enemy.col).toBe(5);
+describe('Combat — Knockback (per-enemy amount)', () => {
+  it('Dust Bunny knocked back by 0.6 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.6 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.6);
+    expect(enemy.col).toBeCloseTo(4.6);
   });
 
-  it('knockback is clamped to maxCol (grid right edge)', () => {
-    const enemy = makeEnemy({ col: 8 });
-    const newCol = applyKnockback(enemy, 1);
-    expect(newCol).toBe(8);
-    expect(enemy.col).toBe(8);
+  it('Sock Puppet knocked back by 0.5 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.5 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.5);
   });
 
-  it('knockback clamps when push would exceed maxCol', () => {
-    const enemy = makeEnemy({ col: 7.8 });
-    const newCol = applyKnockback(enemy, 1);
-    expect(newCol).toBe(8);
-    expect(enemy.col).toBe(8);
-  });
-
-  it('fractional knockback nudges enemy by partial cell', () => {
-    const enemy = makeEnemy({ col: 4 });
-    const newCol = applyKnockback(enemy, 0.3);
+  it('Armored Bunny knocked back by 0.3 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.3 };
+    const newCol = applyKnockback(enemy);
     expect(newCol).toBeCloseTo(4.3);
-    expect(enemy.col).toBeCloseTo(4.3);
   });
 
-  it('boss-type enemy is NOT knocked back', () => {
-    const enemy = { ...makeEnemy({ col: 4 }), bossType: true };
-    const newCol = applyKnockback(enemy, 1);
+  it('Cleaning Robot knocked back by 0.1 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.1 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.1);
+  });
+
+  it('boss (knockbackAmount 0) is NOT knocked back', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0 };
+    const newCol = applyKnockback(enemy);
     expect(newCol).toBe(4);
     expect(enemy.col).toBe(4);
   });
 
-  it('tough (Cleaning Robot) enemy is NOT knocked back', () => {
-    const enemy = { ...makeEnemy({ col: 4 }), enemyKey: 'tough' };
-    const newCol = applyKnockback(enemy, 0.3);
+  it('enemy without knockbackAmount is NOT knocked back', () => {
+    const enemy = makeEnemy({ col: 4 });
+    const newCol = applyKnockback(enemy);
     expect(newCol).toBe(4);
-    expect(enemy.col).toBe(4);
   });
 
-  it('armored (Armored Bunny) enemy is NOT knocked back', () => {
-    const enemy = { ...makeEnemy({ col: 4 }), enemyKey: 'armored' };
-    const newCol = applyKnockback(enemy, 0.3);
-    expect(newCol).toBe(4);
-    expect(enemy.col).toBe(4);
+  it('knockback is clamped to maxCol', () => {
+    const enemy = { ...makeEnemy({ col: 7.8 }), knockbackAmount: 0.6 };
+    const newCol = applyKnockback(enemy, 8);
+    expect(newCol).toBe(8);
+    expect(enemy.col).toBe(8);
   });
 });
