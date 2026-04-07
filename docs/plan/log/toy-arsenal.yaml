@@ -14,3 +14,16 @@ entries:
       Combat.ts: PROJECTILE_SPEED=4, AOE is row-based (±1 row). No knockback or 3×3 grid AOE.
       Queued: investigate DefenderEntity.ts, ProjectileEntity.ts, GameScene shooter loop for Water Cannon.
     tokens: ~5k
+  - task: 2
+    story: US-59
+    description: "Investigate DefenderEntity.ts shapes, ProjectileEntity.ts, GameScene shooter loop, test patterns"
+    result: pass
+    notes: |
+      DefenderEntity.ts: DRAW_DEFENDER map 5 keys. startIdleAnimation 4 cases. playRecoil: shooter + trapper.
+      ProjectileEntity.ts: isHoney flag. PROJECTILE_COLOR 0xfbbf24 (yellow), HONEY_PROJECTILE_COLOR 0xe65100 (amber).
+      GameScene: shooter loop handles shooter + trapper. Hit branches on isHoney for AOE vs single-target.
+      UNLOCK_MAP: Record<number, string> — must change to string | string[] for L3 multi-unlock.
+      Test files: LoadoutSelection.test.ts (not DefenderUnlocks.test.ts). 178 tests across 16 files.
+      Phase type: cross-cutting — investigate-first mandate confirmed.
+      Queued: add knockback field, cannon config, applyKnockback function, tests.
+    tokens: ~8k

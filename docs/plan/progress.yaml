@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 2
-  next_task: "[US-59] Investigate: review DefenderEntity.ts shapes, ProjectileEntity.ts, GameScene shooter loop, and test patterns for Water Cannon + knockback implementation"
+  task_number: 3
+  next_task: "[US-59] Add knockback field to DefenderType, register 'cannon' in defenders.ts, add applyKnockback to Combat.ts, add knockback tests"
   last_result: pass
   consecutive_fails: 0
 
