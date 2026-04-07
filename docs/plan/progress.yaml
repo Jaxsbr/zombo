@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 11
-  next_task: null
+  task_number: 12
+  next_task: "[US-60] Investigate: review SingleUse.ts mine behavior, GameScene placement handler, and bomb detonation requirements"
   last_result: pass
   consecutive_fails: 0
 

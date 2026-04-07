@@ -104,6 +104,18 @@ entries:
       ✓ US-59 complete.
       183 tests pass. tsc clean.
     tokens: ~5k
+  - task: 11
+    story: US-60
+    description: "Branch B — queue investigation for Glitter Bomb implementation"
+    result: pass
+    notes: |
+      US-59 complete. Moving to US-60 (Glitter Bomb).
+      Bomb: singleUse, detonates immediately on placement, 3×3 AOE (±1 row ±1 col).
+      Need to investigate: SingleUse.ts mine pattern, GameScene placement handler,
+      bomb-specific detonation logic (different from mine arm-then-trigger).
+      L5 unlock already in UNLOCK_MAP. Unlock card + ToysScene already work via DEFENDER_TYPES.
+      Queued: investigate SingleUse.ts + GameScene placement + bomb requirements.
+    tokens: ~1k
   - task: 7
     story: US-59
     description: "Add drawWaterCannon shape, cannon projectile variant (blue/cyan, larger), idle bob, fire recoil"
