@@ -74,7 +74,7 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     generatesIncome: 0,
     behavior: 'shooter',
     singleUse: false,
-    knockback: 1, // pushes non-boss enemies back ~1 cell on hit
+    knockback: 0.3, // gentle nudge — pushes non-boss enemies back a fraction of a cell
     bio: 'KA-SPLASH! A massive water blaster that blows enemies backwards! Way stronger than the pistol.',
   },
   bomb: {

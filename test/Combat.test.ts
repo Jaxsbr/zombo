@@ -217,6 +217,13 @@ describe('Combat — Knockback', () => {
     expect(enemy.col).toBe(8);
   });
 
+  it('fractional knockback nudges enemy by partial cell', () => {
+    const enemy = makeEnemy({ col: 4 });
+    const newCol = applyKnockback(enemy, 0.3);
+    expect(newCol).toBeCloseTo(4.3);
+    expect(enemy.col).toBeCloseTo(4.3);
+  });
+
   it('boss-type enemy is NOT knocked back', () => {
     const enemy = { ...makeEnemy({ col: 4 }), bossType: true };
     const newCol = applyKnockback(enemy, 1);
