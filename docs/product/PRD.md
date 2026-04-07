@@ -35,3 +35,4 @@ Kids (primary), family co-play. Must be clean, fun, and accessible — no microt
 | difficulty-tuning | Shipped | US-50, US-51 | [phases/difficulty-tuning.md](phases/difficulty-tuning.md) |
 | main-menu | Shipped | US-52, US-53, US-54, US-55 | [phases/main-menu.md](phases/main-menu.md) |
 | endgame-content | Shipped | US-56, US-57, US-58 | [phases/endgame-content.md](phases/endgame-content.md) |
+| toy-arsenal | Draft | US-59, US-60, US-61 | [phases/toy-arsenal.md](phases/toy-arsenal.md) |

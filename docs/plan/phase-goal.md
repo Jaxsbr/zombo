@@ -1,62 +1,85 @@
 ## Phase goal
 
-Deliver endgame content: rework Honey Bear into a projectile-based area-denial defender with 3-lane vertical AOE and honey pool on hit, introduce a Stage-1 Boss enemy with unique visuals and boss-specific mine damage, and build Level 10 as a climactic boss fight with tight formation waves. This phase completes the game's first full playthrough arc (10 levels).
+Expand the toy arsenal with two new defenders — Water Cannon (powerful knockback shooter unlocked at L3) and Glitter Bomb (instant AOE single-use unlocked at L5) — and redesign the loadout system to support 5 selected defenders in a 2-row grid layout that scales gracefully to 7 total toys.
 
 ### Stories in scope
-- US-56 — Honey Bear: Projectile Attack & Vertical AOE
-- US-57 — Stage-1 Boss Enemy
-- US-58 — Level 10: Formation Waves & Boss Fight
+- US-59 — Water Cannon Defender
+- US-60 — Glitter Bomb Defender
+- US-61 — Expanded Loadout & Toy Selection Redesign
 
 ### Done-when (observable)
 
-#### US-56 — Honey Bear: Projectile Attack & Vertical AOE
+#### US-59 — Water Cannon Defender
 
-- [x] Honey Bear fires a projectile toward the nearest enemy in its lane; projectile uses an amber fill color (hex in range #e65100–#ffd54f), visually distinct from the Water Pistol's yellow projectile [US-56]
-- [x] Honey Bear projectile speed is defined as a named constant (e.g. HONEY_BEAR_PROJECTILE_SPEED); value is strictly less than the Water Pistol equivalent projectile speed [US-56]
-- [x] Honey Bear fire interval is defined as a named constant (e.g. HONEY_BEAR_FIRE_INTERVAL); Honey Bear fires at most one projectile per interval — no concurrent overlapping shots from a single Honey Bear [US-56]
-- [x] On projectile hit, damage >= 1 is applied to all enemies in the target row +/- 1 row (up to 3 rows, clamped to valid grid row bounds 0-4) at the hit column [US-56]
-- [x] test/Combat.test.ts (or a dedicated honey-AOE test) includes a test verifying that a honey projectile hit applies damage to enemies in the target row and each adjacent row within grid bounds [US-56]
-- [x] On projectile hit, HoneyTrap.createHoneyPot is called for each affected row at the hit column; resulting pools slow passing enemies to HONEY_POT_SLOW (0.5x) for HONEY_POT_DURATION (8 s) [US-56]
-- [x] Honey pool renders on the grid at depth 2 (above grid tiles at 0, below entities at 5) with amber fill (hex in range #e65100–#ffd54f), alpha 0.3–0.6, and no pointer input zone — reads as a ground-level hazard, not a collectible [US-56]
-- [x] Periodic honey pot tossing removed — Honey Bear entity no longer schedules honey pots on a recurring interval timer [US-56]
-- [x] Honey Bear plays a fire animation reaction (recoil or forward-lunge tween) on each projectile launch [US-56]
-- [x] test/HoneyTrap.test.ts confirms honey pools created via a projectile-hit code path expire after HONEY_POT_DURATION and return the correct HONEY_POT_SLOW modifier from getSpeedModifier [US-56]
+- [ ] defenders.ts registers 'cannon' with behavior 'shooter', damage >= 24, cost >= 125, range 9, singleUse false, non-empty bio string [US-59]
+- [ ] DefenderType interface extended with optional `knockback?: number` field (or equivalent mechanism); 'cannon' entry sets knockback > 0; TypeScript strict-mode compilation passes (npx tsc --noEmit) [US-59]
+- [ ] DefenderEntity.ts has a dedicated drawing path for key 'cannon' — distinct if/case branch, does NOT reuse the 'shooter' (Water Pistol) shape [US-59]
+- [ ] Water Cannon reads as a big toy water blaster — chunky barrel/nozzle shape, playful proportions, not military hardware (visually distinct silhouette from Water Pistol's simple pistol shape) [US-59] (aspirational — visual verification required)
+- [ ] ProjectileEntity.ts renders Water Cannon projectile with blue/cyan fill color (distinct from Water Pistol yellow and Honey Bear amber) and visually larger radius than Water Pistol projectile [US-59]
+- [ ] On Water Cannon projectile hit, non-boss enemy col position increases by ~1 cell (knockback toward right edge); enemy col does not exceed grid col bound (8) [US-59]
+- [ ] On Water Cannon projectile hit against a bossType=true enemy, no knockback is applied (col position unchanged) [US-59]
+- [ ] Knockback function resides in src/systems/ (pure TypeScript, no Phaser import) [US-59]
+- [ ] test/Combat.test.ts or dedicated knockback test: non-boss enemy knocked back ~1 cell on Water Cannon hit; boss-type enemy NOT knocked back; knockback clamped to col 8 [US-59]
+- [ ] Water Cannon unlocks after completing L3: updateUnlocksAfterLevel with completedLevelIndex=2 returns an unlock set containing both 'wall' AND 'cannon' [US-59]
+- [ ] test/DefenderUnlocks.test.ts: completing level index 2 unlocks both 'wall' and 'cannon' [US-59]
+- [ ] Toy unlock card overlay displays for Water Cannon on first unlock — follows existing pattern (DRAW_DEFENDER at 2x, name, cost, bio, cream background, warm brown border, slide-in, "Collect!" button, localStorage tracking via bio_shown_defender_cannon) [US-59]
+- [ ] ToysScene renders Water Cannon card — silhouette before unlock, full card (name + visual + bio) after unlock [US-59]
+- [ ] Water Cannon has fire animation reaction (recoil or forward-lunge tween) on each projectile launch [US-59]
+- [ ] Water Cannon preview in ToysScene and loadout screen shows idle bob animation (same tween pattern as existing defender previews) [US-59]
+- [ ] ToysScene and unlock card overlay render Water Cannon using the container + DRAW_DEFENDER['cannon'] Record lookup pattern (not a function call) — same pattern as existing defenders [US-59]
+- [ ] GameScene knockback application calls the knockback function from src/systems/ — no inline re-implementation of knockback logic in scene code [US-59]
 
-#### US-57 — Stage-1 Boss Enemy
+#### US-60 — Glitter Bomb Defender
 
-- [x] EnemyType interface (in config/enemies.ts or a shared types file) has an optional `bossType?: boolean` field and TypeScript strict-mode compilation passes with npx tsc --noEmit [US-57]
-- [x] enemies.ts registers a new type with key 'boss': bossType=true, hp >= 2000, speed <= 0.10 cells/s, scale >= 1.5, non-empty bio string [US-57]
-- [x] EnemyEntity.ts renders a unique boss shape for key 'boss' via a dedicated drawing path (distinct if/case branch) — does not reuse any existing enemy shape routine (bunny, robot, puppet) [US-57]
-- [x] Boss has a health bar proportional to its scale (health bar dimensions scale with entity scale, matching the per-type-scale pattern of existing enemies) [US-57]
-- [x] Boss has a movement animation (stomp or rock tween) that triggers during gameplay traversal [US-57]
-- [x] Boss displays a hit flash (white Graphics overlay, ~150 ms duration) on each damage event [US-57]
-- [x] Boss emits death particles (per-type color burst) on death [US-57]
-- [x] SingleUse.ts mineTriggerCheck: when the overlapping enemy has bossType=true, reduces enemy HP by MINE_BOSS_DAMAGE (>= 300) instead of instant kill; enemy entity remains on the grid [US-57]
-- [x] MINE_BOSS_DAMAGE constant defined in SingleUse.ts or config/game.ts, value >= 300 [US-57]
-- [x] EnemiesScene renders boss as silhouette before the player first encounters it in Level 10; shows full card after discovery (same discovery tracking pattern as existing enemy types) [US-57]
-- [x] test/SingleUse.test.ts: boss mine hit test — mineTriggerCheck with a bossType=true enemy reduces enemy HP by MINE_BOSS_DAMAGE and does NOT mark the enemy as dead [US-57]
+- [ ] defenders.ts registers 'bomb' with singleUse true, cost in range 75–125, rechargeTime >= 12000, non-empty bio string [US-60]
+- [ ] DefenderBehavior type union includes 'bomb' (or Glitter Bomb integrates with existing 'mine' behavior); TypeScript strict-mode compilation passes (npx tsc --noEmit) [US-60]
+- [ ] DefenderEntity.ts has a dedicated drawing path for key 'bomb' — distinct if/case branch, sparkly/fun visual [US-60]
+- [ ] Glitter Bomb reads as a sparkly party favor — not a military explosive; pink/gold/glitter palette, fun shape (aspirational — visual verification required) [US-60]
+- [ ] On placement, all non-boss enemies in the 3×3 grid area (center = bomb cell, ±1 row, ±1 col, clamped to rows 0–4 and cols 0–8) are killed [US-60]
+- [ ] On placement, boss-type enemies in the 3×3 area take >= BOMB_BOSS_DAMAGE HP reduction; BOMB_BOSS_DAMAGE is a named constant >= 300 defined in a config or system file [US-60]
+- [ ] Enemies outside the 3×3 area are not affected by the detonation [US-60]
+- [ ] Glitter Bomb entity is removed from the grid immediately after detonation [US-60]
+- [ ] Detonation plays a sparkle/glitter burst visual effect at the bomb's grid position (depth 5 — entity layer) [US-60]
+- [ ] AOE detonation logic resides in src/systems/ (pure TypeScript, no Phaser import) [US-60]
+- [ ] test/SingleUse.test.ts or dedicated bomb test: detonation kills non-boss enemies inside 3×3, deals BOMB_BOSS_DAMAGE to boss-type inside 3×3, does NOT affect enemies outside 3×3, clamps to grid bounds when bomb is placed at edge [US-60]
+- [ ] Glitter Bomb unlocks after completing L5: updateUnlocksAfterLevel with completedLevelIndex=4 returns 'bomb' [US-60]
+- [ ] test/DefenderUnlocks.test.ts: completing level index 4 unlocks 'bomb' [US-60]
+- [ ] Toy unlock card overlay displays for Glitter Bomb on first unlock (same pattern as existing: DRAW_DEFENDER at 2x, name, cost, bio, cream/brown card, slide-in, "Collect!", localStorage bio_shown_defender_bomb) [US-60]
+- [ ] ToysScene renders Glitter Bomb card — silhouette before unlock, full card after [US-60]
+- [ ] Glitter Bomb preview in ToysScene and loadout screen shows idle bob animation (same tween pattern as existing defender previews) [US-60]
+- [ ] ToysScene and unlock card overlay render Glitter Bomb using the container + DRAW_DEFENDER['bomb'] Record lookup pattern (not a function call) [US-60]
+- [ ] GameScene bomb detonation calls the AOE function from src/systems/ — no inline re-implementation of detonation logic in scene code [US-60]
+- [ ] Glitter Bomb detonation includes a guard preventing double-detonation if placement handler fires multiple times [US-60]
 
-#### US-58 — Level 10: Formation Waves & Boss Fight
+#### US-61 — Expanded Loadout & Toy Selection Redesign
 
-- [x] LEVEL_10 config object exists in src/config/levels.ts; ALL_LEVELS array has length 10 [US-58]
-- [x] Level 10 config has >= 5 waves [US-58]
-- [x] Waves 1-4 configure enemy spawn intervals <= 0.8 s between successive spawns within the wave [US-58]
-- [x] Wave 5 (the final wave) includes exactly one spawn of enemy type 'boss' [US-58]
-- [x] Level 10 entry is visible in LevelSelectScene; locked until Level 9 is completed; unlocked after completing Level 9 [US-58]
-- [x] LEVEL_10 config has enemyBio configured for 'boss' type, triggering the enemy bio overlay before the level starts [US-58]
-- [x] LEVEL_10 setupDelay >= 20000 (20 seconds) [US-58]
-- [x] LevelProgress.ts nextUnbeatenLevel correctly handles 10 levels — returns L10 as the next unbeaten level after L9 is completed [US-58]
+- [ ] MAX_LOADOUT constant = 5 in DefenderUnlocks.ts [US-61]
+- [ ] needsLoadoutSelection returns true when unlocked.length > 5 (not > 4) [US-61]
+- [ ] test/DefenderUnlocks.test.ts: needsLoadoutSelection returns false for 5 unlocked, true for 6 unlocked [US-61]
+- [ ] Loadout selection screen subtitle text contains "5" (e.g., "Choose up to 5 defenders") [US-61]
+- [ ] When 6+ defenders shown on loadout screen, cards render in 2-row grid layout (top row has ceil(n/2) cards, bottom row has remaining, bottom row horizontally centered) [US-61]
+- [ ] When 5 or fewer defenders shown, cards render in a single row (backward compatible with existing layout) [US-61]
+- [ ] All cards are within the 576×400 logical canvas bounds with no overlap or clipping [US-61]
+- [ ] Staggered card entry animation fires for all cards in both rows (120ms delay between consecutive cards) [US-61]
+- [ ] Selection bounce animation (120ms scale tween) works on each card regardless of row [US-61]
+- [ ] Go button is positioned below both rows and fully visible [US-61]
+- [ ] Player can select exactly 5 defenders (loadout size capped at 5, not 4) [US-61]
+- [ ] In-game defender panel (HUD) renders 5 selected defenders without overlap or clipping [US-61]
+- [ ] Card dimensions in 2-row layout use proportional sizing (derived from GAME_WIDTH/GAME_HEIGHT, no hardcoded pixel values) with name text remaining legible [US-61]
 
 #### Structural / phase criteria
 
-- [x] AGENTS.md Honey Bear entry updated to reflect the new projectile + 3-lane AOE + honey pool on hit mechanic (periodic tossing removed) [phase]
-- [x] AGENTS.md Enemies section updated to include Stage-1 Boss (key: 'boss', bossType flag, stats, boss mine damage behaviour) [phase]
-- [x] AGENTS.md Level progression section updated to include Level 10 (formation waves 1-4, Stage-1 Boss in wave 5) [phase]
+- [ ] stage-one.md updated: L10 boss level row added; "Available toys" column reflects new unlocks (Water Cannon at L3, Glitter Bomb at L5); design notes updated for new toys [phase]
+- [ ] AGENTS.md Defenders section updated with Water Cannon (key 'cannon', behavior, stats, knockback) and Glitter Bomb (key 'bomb', behavior, 3×3 AOE, BOMB_BOSS_DAMAGE) [phase]
+- [ ] AGENTS.md Defender unlocks section updated: L3 unlocks wall + cannon, L5 unlocks bomb, L6 unlocks trapper, L8 unlocks mine [phase]
+- [ ] AGENTS.md Level progression section reflects that loadout selection first appears at L7 (6 unlocked > 5 max) [phase]
 
 ### Golden principles (phase-relevant)
-- Game logic in src/systems/ as pure TypeScript, no Phaser dependencies — AOE damage logic in Combat.ts, boss mine interaction in SingleUse.ts
-- Config-driven entities — Stage-1 Boss added to enemies.ts registry, not hardcoded in scene or system logic
-- Per-key shape drawing convention maintained in EnemyEntity.ts (dedicated if/case branch for 'boss')
-- Depth layer map maintained: honey pools at depth 2, entities at depth 5, HUD at depth 50
-- All enemy types follow the animation baseline: movement animation + hit flash + death particles + scaled health bar
-- Named constants for all tunable values (HONEY_BEAR_PROJECTILE_SPEED, HONEY_BEAR_FIRE_INTERVAL, MINE_BOSS_DAMAGE)
+- Game logic in src/systems/ as pure TypeScript, no Phaser dependencies — knockback logic, AOE detonation logic
+- Config-driven entities — Water Cannon and Glitter Bomb added to defenders.ts registry, not hardcoded in scenes
+- Per-key shape drawing convention in DefenderEntity.ts (dedicated if/case branch per defender key)
+- Depth layer map maintained: entities at 5, overlays at 199-201, HUD at 50
+- Named constants for tunable values (BOMB_BOSS_DAMAGE, knockback amount, rechargeTime)
+- Toy unlock card pattern preserved: DRAW_DEFENDER at 2x, cream background, warm brown border (#5d4037), slide-in, "Collect!" button, localStorage tracking
+- Proportional sizing for loadout cards (GAME_WIDTH/GAME_HEIGHT derived, no hardcoded px)
+- All defender types follow animation baseline: idle bob on preview, fire/placement reaction during gameplay
