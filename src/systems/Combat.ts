@@ -126,17 +126,20 @@ export function applyAOEDamage(
   return hit;
 }
 
+// Enemy keys immune to knockback — heavy/armored enemies and bosses resist the push
+const KNOCKBACK_IMMUNE_KEYS = new Set(['tough', 'armored']);
+
 /**
  * Apply knockback to an enemy — push it rightward by `amount` cells.
- * Clamped to maxCol (grid right edge). Boss-type enemies are immune.
+ * Clamped to maxCol (grid right edge). Boss, tough, and armored enemies are immune.
  * Returns the new col position.
  */
 export function applyKnockback(
-  enemy: CombatEntity & { bossType?: boolean },
+  enemy: CombatEntity & { bossType?: boolean; enemyKey?: string },
   amount: number,
   maxCol: number = 8,
 ): number {
-  if (enemy.bossType) return enemy.col;
+  if (enemy.bossType || KNOCKBACK_IMMUNE_KEYS.has(enemy.enemyKey ?? '')) return enemy.col;
   enemy.col = Math.min(enemy.col + amount, maxCol);
   return enemy.col;
 }

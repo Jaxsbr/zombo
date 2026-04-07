@@ -70,11 +70,11 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     health: 50,
     damage: 24, // 2× Water Pistol
     range: 9,
-    fireRate: 0.8, // slightly slower than Water Pistol
+    fireRate: 0.6, // noticeably slower than Water Pistol (1.0)
     generatesIncome: 0,
     behavior: 'shooter',
     singleUse: false,
-    knockback: 0.3, // gentle nudge — pushes non-boss enemies back a fraction of a cell
+    knockback: 0.2, // subtle nudge backward on hit
     bio: 'KA-SPLASH! A massive water blaster that blows enemies backwards! Way stronger than the pistol.',
   },
   bomb: {

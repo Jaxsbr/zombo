@@ -230,4 +230,18 @@ describe('Combat — Knockback', () => {
     expect(newCol).toBe(4);
     expect(enemy.col).toBe(4);
   });
+
+  it('tough (Cleaning Robot) enemy is NOT knocked back', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), enemyKey: 'tough' };
+    const newCol = applyKnockback(enemy, 0.3);
+    expect(newCol).toBe(4);
+    expect(enemy.col).toBe(4);
+  });
+
+  it('armored (Armored Bunny) enemy is NOT knocked back', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), enemyKey: 'armored' };
+    const newCol = applyKnockback(enemy, 0.3);
+    expect(newCol).toBe(4);
+    expect(enemy.col).toBe(4);
+  });
 });
