@@ -11,6 +11,7 @@ export interface DefenderType {
   behavior: DefenderBehavior;
   singleUse: boolean;
   rechargeTime?: number; // ms cooldown between placements (single-use types)
+  knockback?: number; // cells to push enemy back on hit (0 or undefined = no knockback)
   bio: string; // kid-friendly description shown on unlock card
 }
 
@@ -62,6 +63,19 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     behavior: 'trapper',
     singleUse: false,
     bio: 'Shoots slow honey blobs that splash on hit! Damages nearby lanes and leaves sticky puddles.',
+  },
+  cannon: {
+    name: 'Water Cannon',
+    cost: 150,
+    health: 50,
+    damage: 24, // 2× Water Pistol
+    range: 9,
+    fireRate: 0.8, // slightly slower than Water Pistol
+    generatesIncome: 0,
+    behavior: 'shooter',
+    singleUse: false,
+    knockback: 1, // pushes non-boss enemies back ~1 cell on hit
+    bio: 'KA-SPLASH! A massive water blaster that blows enemies backwards! Way stronger than the pistol.',
   },
   mine: {
     name: 'Marble Mine',

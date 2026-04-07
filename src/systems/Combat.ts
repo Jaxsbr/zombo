@@ -126,6 +126,21 @@ export function applyAOEDamage(
   return hit;
 }
 
+/**
+ * Apply knockback to an enemy — push it rightward by `amount` cells.
+ * Clamped to maxCol (grid right edge). Boss-type enemies are immune.
+ * Returns the new col position.
+ */
+export function applyKnockback(
+  enemy: CombatEntity & { bossType?: boolean },
+  amount: number,
+  maxCol: number = 8,
+): number {
+  if ((enemy as { bossType?: boolean }).bossType) return enemy.col;
+  enemy.col = Math.min(enemy.col + amount, maxCol);
+  return enemy.col;
+}
+
 export function wallBlocks(
   wall: CombatEntity,
   enemy: EnemyCombatEntity,

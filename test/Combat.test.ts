@@ -13,6 +13,7 @@ import {
   wallBlocks,
   getAOETargetRows,
   applyAOEDamage,
+  applyKnockback,
   HONEY_BEAR_PROJECTILE_SPEED,
   HONEY_BEAR_AOE_DAMAGE,
 } from '../src/systems/Combat';
@@ -191,5 +192,35 @@ describe('Combat — Honey Bear AOE', () => {
 
   it('HONEY_BEAR_PROJECTILE_SPEED is less than Water Pistol projectile speed (4)', () => {
     expect(HONEY_BEAR_PROJECTILE_SPEED).toBeLessThan(4);
+  });
+});
+
+describe('Combat — Knockback', () => {
+  it('non-boss enemy is knocked back by the specified amount', () => {
+    const enemy = makeEnemy({ col: 4 });
+    const newCol = applyKnockback(enemy, 1);
+    expect(newCol).toBe(5);
+    expect(enemy.col).toBe(5);
+  });
+
+  it('knockback is clamped to maxCol (grid right edge)', () => {
+    const enemy = makeEnemy({ col: 8 });
+    const newCol = applyKnockback(enemy, 1);
+    expect(newCol).toBe(8);
+    expect(enemy.col).toBe(8);
+  });
+
+  it('knockback clamps when push would exceed maxCol', () => {
+    const enemy = makeEnemy({ col: 7.8 });
+    const newCol = applyKnockback(enemy, 1);
+    expect(newCol).toBe(8);
+    expect(enemy.col).toBe(8);
+  });
+
+  it('boss-type enemy is NOT knocked back', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), bossType: true };
+    const newCol = applyKnockback(enemy, 1);
+    expect(newCol).toBe(4);
+    expect(enemy.col).toBe(4);
   });
 });
