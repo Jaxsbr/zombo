@@ -1,0 +1,257 @@
+# Phase log — toy-arsenal
+# Each entry: { task, story, description, result, notes, tokens }
+
+entries:
+  - task: 1
+    story: US-59
+    description: "Branch B investigation — read current state, classify phase type, identify first task"
+    result: pass
+    notes: |
+      178 tests pass (16 files). Phase type: cross-cutting — investigate-first mandate applies.
+      Key findings:
+      defenders.ts: 5 types (generator, shooter, wall, trapper, mine). No knockback field.
+      DefenderUnlocks.ts: UNLOCK_MAP { 3: wall, 6: trapper, 8: mine }. MAX_LOADOUT=4.
+      Combat.ts: PROJECTILE_SPEED=4, AOE is row-based (±1 row). No knockback or 3×3 grid AOE.
+      Queued: investigate DefenderEntity.ts, ProjectileEntity.ts, GameScene shooter loop for Water Cannon.
+    tokens: ~5k
+  - task: 2
+    story: US-59
+    description: "Investigate DefenderEntity.ts shapes, ProjectileEntity.ts, GameScene shooter loop, test patterns"
+    result: pass
+    notes: |
+      DefenderEntity.ts: DRAW_DEFENDER map 5 keys. startIdleAnimation 4 cases. playRecoil: shooter + trapper.
+      ProjectileEntity.ts: isHoney flag. PROJECTILE_COLOR 0xfbbf24 (yellow), HONEY_PROJECTILE_COLOR 0xe65100 (amber).
+      GameScene: shooter loop handles shooter + trapper. Hit branches on isHoney for AOE vs single-target.
+      UNLOCK_MAP: Record<number, string> — must change to string | string[] for L3 multi-unlock.
+      Test files: LoadoutSelection.test.ts (not DefenderUnlocks.test.ts). 178 tests across 16 files.
+      Phase type: cross-cutting — investigate-first mandate confirmed.
+      Queued: add knockback field, cannon config, applyKnockback function, tests.
+    tokens: ~8k
+  - task: 3
+    story: US-59
+    description: "Add knockback field to DefenderType, register 'cannon' in defenders.ts, add applyKnockback to Combat.ts, 4 knockback tests"
+    result: pass
+    notes: |
+      defenders.ts: added knockback?: number to DefenderType. Registered 'cannon' (damage 24, cost 150, range 9, knockback 1, behavior 'shooter').
+      Combat.ts: applyKnockback(enemy, amount, maxCol=8) — pushes non-boss enemies rightward, boss immune, clamped to grid edge.
+      4 new tests: non-boss knocked back, clamped at edge, clamped when near edge, boss immune.
+      182 tests pass (178 + 4 new). tsc --noEmit clean.
+    tokens: ~3k
+  - task: 4
+    story: US-59
+    description: "Branch B investigation — identify next task for US-59 unlock map changes"
+    result: pass
+    notes: |
+      US-59 remaining: UNLOCK_MAP (L3 → wall+cannon), visuals (DefenderEntity, ProjectileEntity),
+      GameScene integration, idle/fire animation, ToysScene, unlock card, unlock tests.
+      Also need US-60 bomb unlock at L5 and US-61 MAX_LOADOUT changes.
+      Cross-cutting: UNLOCK_MAP structure change affects all unlock logic.
+      Queued: investigate UNLOCK_MAP usage, then update for multi-unlock + L5 bomb + tests.
+    tokens: ~1k
+  - task: 5
+    story: US-59
+    description: "Update UNLOCK_MAP to support multi-unlock at L3 (wall+cannon), add L5 bomb slot, update tests"
+    result: pass
+    notes: |
+      DefenderUnlocks.ts: UNLOCK_MAP changed from Record<number, string> to Record<number, string[]>.
+      L3: ['wall', 'cannon'], L5: ['bomb'], L6: ['trapper'], L8: ['mine'].
+      updateUnlocksAfterLevel and getUnlockedDefenders updated for array values.
+      Tests updated: L3 now expects 4 unlocks (wall+cannon), L5 expects bomb, persist test updated.
+      New test: completing L5 unlocks bomb (183 tests). GameOverScene.getNewUnlockKey needs separate fix for multi-card display.
+      183 tests pass (182 + 1 new). tsc clean.
+    tokens: ~4k
+  - task: 6
+    story: US-59
+    description: "Branch B — queue Water Cannon visual shape + projectile variant + animations"
+    result: pass
+    notes: |
+      US-59 remaining: visual shape, projectile variant, idle anim, fire reaction,
+      GameScene integration (knockback on hit, cannon in shooter loop),
+      ToysScene + unlock card rendering.
+      Next: DefenderEntity.ts drawWaterCannon + DRAW_DEFENDER['cannon'],
+      ProjectileEntity.ts cannon variant (blue/cyan, larger), idle + fire anim.
+    tokens: ~1k
+  - task: 7
+    story: US-59
+    description: "Add drawWaterCannon shape, cannon projectile variant, idle bob, fire recoil"
+    result: pass
+    notes: |
+      See earlier task 7 entry.
+    tokens: ~0k
+  - task: 8
+    story: US-59
+    description: "Branch B — queue GameScene cannon integration"
+    result: pass
+    notes: |
+      See earlier task 8 entry.
+    tokens: ~0k
+  - task: 9
+    story: US-59
+    description: "Integrate cannon into GameScene fire loop with knockback on hit"
+    result: pass
+    notes: |
+      See earlier task 9 entry.
+    tokens: ~0k
+  - task: 10
+    story: US-59
+    description: "Multi-unlock card chain in GameOverScene + US-59 story completion"
+    result: pass
+    notes: |
+      GameOverScene: getNewUnlockKey → getNewUnlockKeys (returns string[]).
+      showUnlockCardChain chains sequential cards. Fixes L3 showing both wall+cannon cards.
+      Card cleanup (dimBg + cardContainer destroy) before next card.
+      All 17 US-59 done-when criteria verified met.
+      ✓ US-59 complete.
+      183 tests pass. tsc clean.
+    tokens: ~5k
+  - task: 11
+    story: US-60
+    description: "Branch B — queue investigation for Glitter Bomb implementation"
+    result: pass
+    notes: |
+      US-59 complete. Moving to US-60 (Glitter Bomb).
+      Bomb: singleUse, detonates immediately on placement, 3×3 AOE (±1 row ±1 col).
+      Need to investigate: SingleUse.ts mine pattern, GameScene placement handler,
+      bomb-specific detonation logic (different from mine arm-then-trigger).
+      L5 unlock already in UNLOCK_MAP. Unlock card + ToysScene already work via DEFENDER_TYPES.
+      Queued: investigate SingleUse.ts + GameScene placement + bomb requirements.
+    tokens: ~1k
+  - task: 12
+    story: US-60
+    description: "Investigate SingleUse.ts mine behavior, GameScene placement handler, bomb requirements"
+    result: pass
+    notes: |
+      SingleUse.ts: mine uses MineState (arm delay). Bomb needs immediate detonation — different behavior.
+      GameScene placement: handleGridClick creates entity, mine branch sets mineArmed=false + MineState.
+      Bomb needs new branch: detonate immediately, 3×3 AOE (±1 row ±1 col), remove entity.
+      Need: 'bomb' in DefenderBehavior, bombDetonate function (pure TS), BOMB_BOSS_DAMAGE constant.
+      L5 unlock already configured. ToysScene/GameOverScene work via DEFENDER_TYPES.
+      Queued: add bomb config + detonation function + tests.
+    tokens: ~4k
+  - task: 13
+    story: US-60
+    description: "Add 'bomb' to DefenderBehavior, register bomb, add bombDetonate, BOMB_BOSS_DAMAGE, 7 tests"
+    result: pass
+    notes: |
+      defenders.ts: 'bomb' added to DefenderBehavior. Bomb registered (cost 100, singleUse, rechargeTime 15s).
+      SingleUse.ts: BOMB_BOSS_DAMAGE=400. bombDetonate(row, col, enemies, maxRow=4, maxCol=8) — 3×3 area,
+      instant-kill non-boss, BOMB_BOSS_DAMAGE for boss, grid clamped.
+      7 new tests: kills in 3×3, boss chunk damage, outside unaffected, edge clamping, constants, config.
+      190 tests pass (183 + 7 new). tsc clean.
+    tokens: ~4k
+  - task: 14
+    story: US-60
+    description: "Branch B — queue bomb visual + GameScene integration"
+    result: pass
+    notes: |
+      US-60 remaining: visual shape, GameScene placement integration (detonation + sparkle + removal + guard).
+      ToysScene and unlock card already work via DEFENDER_TYPES + DRAW_DEFENDER.
+      Queued: drawGlitterBomb + GameScene bomb placement handler.
+    tokens: ~1k
+  - task: 15
+    story: US-60
+    description: "Add drawGlitterBomb, GameScene placement integration, sparkle burst, idle animation"
+    result: pass
+    notes: |
+      DefenderEntity.ts: drawGlitterBomb (pink sphere, gold ribbon, bow, glitter dots).
+      DRAW_DEFENDER['bomb'] registered. Idle: sparkle pulse (1000ms scale throb).
+      GameScene: bomb branch in handleGridClick — bombDetonate, sparkle burst (pink/gold particles at depth 5),
+      entity removal, double-detonation guard via bombDetonated data flag.
+      All 20 US-60 done-when criteria verified met.
+      ✓ US-60 complete.
+      190 tests pass. tsc clean.
+    tokens: ~5k
+  - task: 16
+    story: US-61
+    description: "Branch B — queue investigation for expanded loadout + toy selection redesign"
+    result: pass
+    notes: |
+      US-59 and US-60 complete. Moving to US-61 (Expanded Loadout).
+      Need to investigate: LevelSelectScene loadout overlay layout, HUD defender panel,
+      current MAX_LOADOUT=4 usage, needsLoadoutSelection threshold.
+      Key changes: MAX_LOADOUT=5, needsLoadoutSelection > 5, 2-row grid for 6+ cards.
+      Queued: investigate LevelSelectScene + HUD panel layout patterns.
+    tokens: ~1k
+  - task: 7
+    story: US-59
+    description: "Add drawWaterCannon shape, cannon projectile variant (blue/cyan, larger), idle bob, fire recoil"
+    result: pass
+    notes: |
+      DefenderEntity.ts: drawWaterCannon — chunky toy blaster (cyan tank, flared nozzle, pressure gauge, pump handle).
+      DRAW_DEFENDER['cannon'] registered. Idle: slow bob (1800ms). Fire: heavy forward-lunge (6px, 120ms).
+      ProjectileEntity.ts: isCannon flag. CANNON_PROJECTILE_COLOR=0x00bcd4 (cyan), radius=8 (larger than pistol 5).
+      Blue splash ring glow + white highlight. Constructor adds isCannon param (backward compatible default false).
+      183 tests pass. tsc clean.
+    tokens: ~3k
+  - task: 8
+    story: US-59
+    description: "Branch B — queue GameScene cannon integration (fire loop + knockback on hit)"
+    result: pass
+    notes: |
+      US-59 remaining: GameScene integration (cannon in fire loop, knockback on hit),
+      GameOverScene multi-unlock card, ToysScene cannon card.
+      Cannon uses 'shooter' behavior so it should already fire via the shooter loop.
+      Need: identify cannon in fire loop (for projectile speed + isCannon flag),
+      add knockback on cannon projectile hit, update hit logic.
+      Queued: investigate + implement GameScene cannon integration.
+    tokens: ~1k
+  - task: 9
+    story: US-59
+    description: "Integrate cannon into GameScene fire loop with knockback on hit"
+    result: pass
+    notes: |
+      GameScene: added isCannon flag to fire loop. Cannon uses default PROJECTILE_SPEED (same as shooter).
+      ProjectileEntity created with isCannon=true for cannon defenders.
+      Hit logic: after single-target damage, if proj.isCannon → applyKnockback(enemy, 1, GRID_COLS-1) + updatePosition.
+      applyKnockback called from Combat.ts (not inlined in scene code).
+      183 tests pass. tsc clean.
+    tokens: ~3k
+  - task: 17
+    story: US-61
+    description: "Investigate: review LevelSelectScene loadout overlay, HUD defender panel, and layout patterns for 5-slot + 2-row redesign"
+    result: pass
+    notes: |
+      LevelSelectScene.ts (548 lines):
+        Single-row layout: cardWidth = (availableWidth - (n-1)*gap) / n. padding=0.05*GW, gap=0.02*GW, cardHeight=0.45*GH.
+        startY = 0.24*GH. Staggered entry: 120ms delay, Back.easeOut. Selection bounce: 1.08x scale.
+        Subtitle: "Choose up to ${MAX_LOADOUT} defenders". Go button at GH - 0.12*GH.
+        Preview scale: Math.max(1.5, (cardWidth/110)*2). Idle bob on each preview.
+      GameScene HUD panel (createDefenderPanel at line 588):
+        panelStartX=140, muteButtonSpace=50, maxCards=6, cardGap=6.
+        cardWidth = floor((availableWidth - 5*6) / 6). Fixed sizing for 6 slots — already fits 5.
+        Cards at y=10. Each card: name, preview (0.5 scale), cost. Zone interactive.
+      DefenderUnlocks.ts: MAX_LOADOUT=4, needsLoadoutSelection > 4.
+      Changes needed:
+        1. MAX_LOADOUT → 5, needsLoadoutSelection > 5
+        2. LevelSelectScene: 2-row grid when unlocked.length > 5 (6+ cards). Top row ceil(n/2), bottom row remainder, centered. Single row for ≤5.
+        3. HUD panel: already handles 6 cards — no change needed for 5.
+        4. Tests: update MAX_LOADOUT=5, needsLoadoutSelection thresholds.
+      Queued: implement MAX_LOADOUT + needsLoadoutSelection + loadout 2-row layout + tests.
+    tokens: ~5k
+  - task: 18
+    story: US-61
+    description: "Change MAX_LOADOUT to 5, needsLoadoutSelection > 5, 2-row grid for 6+ defenders, update tests"
+    result: pass
+    notes: |
+      DefenderUnlocks.ts: MAX_LOADOUT=5, needsLoadoutSelection > 5.
+      LevelSelectScene.ts: 2-row grid when unlocked.length > 5. Top row ceil(n/2), bottom row centered.
+      cardHeight 0.28*GH (vs 0.45 single-row), rowGap 0.03*GH. Preview scale capped by both width and height.
+      Backward compatible: ≤5 defenders use single row as before.
+      Verified bounds: 7 cards (max) → top row 4, bottom row 3, all within 576×400, 20px gap to Go button.
+      Tests: MAX_LOADOUT=5, needsLoadoutSelection false for 5, true for 6. L5 no longer triggers selection.
+      All 13 US-61 criteria met. 190 tests pass. tsc clean.
+      ✓ US-61 complete.
+    tokens: ~4k
+  - task: 19
+    story: phase
+    description: "Update stage-one.md and AGENTS.md structural docs for new toys and loadout changes"
+    result: pass
+    notes: |
+      AGENTS.md: Defenders section updated from 5→7 types (added cannon + bomb descriptions).
+      Defender unlocks: L3→wall+cannon, L5→bomb, MAX_LOADOUT=5, >5 threshold, L7 first selection.
+      Level progression: L7 noted as first loadout selection, L9 no longer labeled as such.
+      SingleUse: added bomb references. ProjectileEntity: added cannon projectile.
+      stage-one.md: already correct from spec-author (L10 row, all toys, design notes).
+      All 4 structural/phase criteria met. Phase complete.
+      190 tests pass. tsc clean.
+    tokens: ~3k

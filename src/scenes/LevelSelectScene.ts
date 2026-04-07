@@ -351,28 +351,51 @@ export class LevelSelectScene extends Phaser.Scene {
     subtitle.setDepth(11);
 
     // Proportional card layout — derived from GAME_WIDTH and GAME_HEIGHT
+    // 2-row grid when 6+ defenders; single row for ≤5
     const padding = Math.floor(GAME_WIDTH * 0.05);
     const gap = Math.floor(GAME_WIDTH * 0.02);
-    const cardHeight = Math.floor(GAME_HEIGHT * 0.45);
     const availableWidth = GAME_WIDTH - 2 * padding;
-    const cardWidth = Math.floor((availableWidth - (this.unlocked.length - 1) * gap) / this.unlocked.length);
+    const usesTwoRows = this.unlocked.length > 5;
+    const topRowCount = usesTwoRows ? Math.ceil(this.unlocked.length / 2) : this.unlocked.length;
+    const bottomRowCount = usesTwoRows ? this.unlocked.length - topRowCount : 0;
+    const cardWidth = Math.floor((availableWidth - (topRowCount - 1) * gap) / topRowCount);
+    const cardHeight = usesTwoRows ? Math.floor(GAME_HEIGHT * 0.28) : Math.floor(GAME_HEIGHT * 0.45);
+    const rowGap = Math.floor(GAME_HEIGHT * 0.03);
     this.loadoutCardWidth = cardWidth;
     this.loadoutCardHeight = cardHeight;
-    const totalWidth = this.unlocked.length * cardWidth + (this.unlocked.length - 1) * gap;
-    const startX = (GAME_WIDTH - totalWidth) / 2;
     const startY = Math.floor(GAME_HEIGHT * 0.24);
     const cornerRadius = Math.floor(cardWidth * 0.08);
 
-    // Preview scale — proportional to card size, minimum 0.75
-    const previewScale = Math.max(1.5, (cardWidth / 110) * 2);
+    // Preview scale — proportional to card size, capped by both width and height
+    const previewScale = Math.max(1.2, Math.min((cardWidth / 110) * 2, (cardHeight / 90) * 1.5));
 
     for (let i = 0; i < this.unlocked.length; i++) {
       const key = this.unlocked[i];
       const type = DEFENDER_TYPES[key];
-      const x = startX + i * (cardWidth + gap);
+
+      // Compute row and column position
+      let row: number, col: number, rowCount: number;
+      if (!usesTwoRows) {
+        row = 0;
+        col = i;
+        rowCount = this.unlocked.length;
+      } else if (i < topRowCount) {
+        row = 0;
+        col = i;
+        rowCount = topRowCount;
+      } else {
+        row = 1;
+        col = i - topRowCount;
+        rowCount = bottomRowCount;
+      }
+
+      const rowTotalWidth = rowCount * cardWidth + (rowCount - 1) * gap;
+      const rowStartX = (GAME_WIDTH - rowTotalWidth) / 2;
+      const x = rowStartX + col * (cardWidth + gap);
+      const cardY = startY + row * (cardHeight + rowGap);
 
       const entryOffset = Math.floor(GAME_HEIGHT * 0.08);
-      const container = this.add.container(x, startY + entryOffset);
+      const container = this.add.container(x, cardY + entryOffset);
       container.setDepth(11);
       container.setAlpha(0);
 
@@ -436,7 +459,7 @@ export class LevelSelectScene extends Phaser.Scene {
       this.tweens.add({
         targets: container,
         alpha: 1,
-        y: startY,
+        y: cardY,
         duration: 400,
         delay: i * 120,
         ease: 'Back.easeOut',

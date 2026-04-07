@@ -126,6 +126,21 @@ export function applyAOEDamage(
   return hit;
 }
 
+/**
+ * Apply knockback to an enemy — push it rightward.
+ * Uses the enemy's knockbackAmount (per-type, 0 = immune).
+ * Clamped to maxCol (grid right edge). Returns the new col position.
+ */
+export function applyKnockback(
+  enemy: CombatEntity & { knockbackAmount?: number },
+  maxCol: number = 8,
+): number {
+  const kb = enemy.knockbackAmount ?? 0;
+  if (kb <= 0) return enemy.col;
+  enemy.col = Math.min(enemy.col + kb, maxCol);
+  return enemy.col;
+}
+
 export function wallBlocks(
   wall: CombatEntity,
   enemy: EnemyCombatEntity,

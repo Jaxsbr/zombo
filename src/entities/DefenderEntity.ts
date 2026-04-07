@@ -139,6 +139,86 @@ function drawHoneyBear(g: Phaser.GameObjects.Graphics): void {
   g.fillCircle(10, 14, 3);
 }
 
+function drawWaterCannon(g: Phaser.GameObjects.Graphics): void {
+  // Chunky toy water blaster — big barrel, playful proportions
+  // Tank/reservoir — wide rounded body (cyan)
+  g.fillStyle(0x00bcd4, 1);
+  g.fillRect(-14, -4, 28, 18);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-14, -4, 28, 18);
+  // Tank fill window — lighter blue stripe
+  g.fillStyle(0x4dd0e1, 1);
+  g.fillRect(-10, 0, 20, 8);
+  // Barrel — thick nozzle extending right (darker blue)
+  g.fillStyle(0x0097a7, 1);
+  g.fillRect(14, -2, 14, 12);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(14, -2, 14, 12);
+  // Barrel tip — flared nozzle
+  g.fillStyle(0x00838f, 1);
+  g.fillRect(26, -5, 6, 18);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(26, -5, 6, 18);
+  // Pressure gauge — small circle on body
+  g.fillStyle(0xffeb3b, 1);
+  g.fillCircle(-6, 4, 4);
+  g.lineStyle(1, 0x000000, 0.6);
+  g.strokeCircle(-6, 4, 4);
+  // Gauge needle
+  g.lineStyle(1.5, 0xf44336, 1);
+  g.lineBetween(-6, 4, -4, 2);
+  // Handle/grip — below body (orange, playful)
+  g.fillStyle(0xff9800, 1);
+  g.fillRect(-4, 14, 12, 10);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-4, 14, 12, 10);
+  // Pump handle — on top
+  g.fillStyle(0xff9800, 1);
+  g.fillRect(-2, -12, 8, 8);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeRect(-2, -12, 8, 8);
+  // Pump rod
+  g.lineStyle(2, 0x795548, 1);
+  g.lineBetween(2, -12, 2, -18);
+  g.fillStyle(0x795548, 1);
+  g.fillCircle(2, -19, 3);
+}
+
+function drawGlitterBomb(g: Phaser.GameObjects.Graphics): void {
+  // Sparkly party favor — round pink/gold shape, not military
+  // Main body — large pink sphere
+  g.fillStyle(0xf06292, 1);
+  g.fillCircle(0, 0, 14);
+  g.lineStyle(OUTLINE, 0x000000, 1);
+  g.strokeCircle(0, 0, 14);
+  // Gold ribbon/wrap around middle
+  g.fillStyle(0xffd54f, 1);
+  g.fillRect(-14, -3, 28, 6);
+  g.lineStyle(1, 0xf9a825, 1);
+  g.strokeRect(-14, -3, 28, 6);
+  // Bow on top — gold loops
+  g.fillStyle(0xffd54f, 1);
+  g.fillCircle(-5, -12, 5);
+  g.fillCircle(5, -12, 5);
+  g.lineStyle(1, 0xf9a825, 1);
+  g.strokeCircle(-5, -12, 5);
+  g.strokeCircle(5, -12, 5);
+  // Bow center knot
+  g.fillStyle(0xf9a825, 1);
+  g.fillCircle(0, -12, 3);
+  // Sparkle dots — scattered glitter
+  g.fillStyle(0xffffff, 0.8);
+  g.fillCircle(-8, -5, 2);
+  g.fillCircle(7, 5, 1.5);
+  g.fillCircle(-3, 8, 1.5);
+  g.fillCircle(10, -2, 2);
+  g.fillCircle(-6, 10, 1);
+  // Star sparkle accent
+  g.fillStyle(0xffd54f, 0.9);
+  g.fillCircle(9, -8, 2.5);
+  g.fillCircle(-10, 3, 2);
+}
+
 function drawMarbleMine(g: Phaser.GameObjects.Graphics): void {
   // Cluster of coloured marbles
   const marbles = [
@@ -164,6 +244,8 @@ export const DRAW_DEFENDER: Record<string, (g: Phaser.GameObjects.Graphics) => v
   generator: drawJackInTheBox,
   wall: drawBlockTower,
   trapper: drawHoneyBear,
+  cannon: drawWaterCannon,
+  bomb: drawGlitterBomb,
   mine: drawMarbleMine,
 };
 
@@ -281,10 +363,33 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
           repeat: -1,
         });
         break;
+      case 'cannon':
+        // Water Cannon — slow bob like Water Pistol but heavier
+        scene.tweens.add({
+          targets: this,
+          y: this.y - 2,
+          duration: 1800,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
+      case 'bomb':
+        // Glitter Bomb — gentle sparkle pulse (scale throb)
+        scene.tweens.add({
+          targets: this,
+          scaleX: 1.08,
+          scaleY: 1.08,
+          duration: 1000,
+          ease: 'Sine.easeInOut',
+          yoyo: true,
+          repeat: -1,
+        });
+        break;
     }
   }
 
-  /** Projectile fire reaction — recoil for shooter, forward-lunge for trapper */
+  /** Projectile fire reaction — recoil for shooter/cannon, forward-lunge for trapper */
   playRecoil(): void {
     if (this.defenderKey === 'shooter') {
       this.scene.tweens.add({
@@ -292,6 +397,17 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
         scaleX: 0.85,
         scaleY: 1.1,
         duration: 80,
+        ease: 'Quad.easeOut',
+        yoyo: true,
+      });
+    } else if (this.defenderKey === 'cannon') {
+      // Water Cannon — heavy forward-lunge recoil (stronger than trapper)
+      this.scene.tweens.add({
+        targets: this,
+        x: this.x + 6,
+        scaleX: 0.9,
+        scaleY: 1.05,
+        duration: 120,
         ease: 'Quad.easeOut',
         yoyo: true,
       });

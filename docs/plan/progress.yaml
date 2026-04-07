@@ -23,23 +23,23 @@ config:
 
 state:
   # --- Lifecycle (owner: iterator) ---
-  phase: endgame-content
+  phase: toy-arsenal
   phase_complete: true
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 15
-  next_task: null
+  task_number: 22
+  next_task: "[review] handle-pr-review pr=16 auto=true"
   last_result: pass
   consecutive_fails: 0
 
   # --- Review (owner: iterator) ---
-  review_stage: review_posted
+  review_stage: review_complete
   review_complete: true
-  pr_number: 15
+  pr_number: 16
 
   # --- Retrospective (owner: retro) ---
   retro_complete: true
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-56, US-57, US-58]
+  completed_stories: [US-59, US-60, US-61]

@@ -20,10 +20,11 @@ import {
   getAOETargetRows,
   isDead,
   wallBlocks,
+  applyKnockback,
   HONEY_BEAR_PROJECTILE_SPEED,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
-import { mineTriggerCheck, MineState, createMineState, updateMineState, MINE_BOSS_DAMAGE } from '../systems/SingleUse';
+import { mineTriggerCheck, MineState, createMineState, updateMineState, bombDetonate, MINE_BOSS_DAMAGE, MINE_HEAVY_DAMAGE } from '../systems/SingleUse';
 import { HoneyPot, createHoneyPot, updateHoneyPots, getSpeedModifier, HONEY_POT_DURATION } from '../systems/HoneyTrap';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
@@ -812,6 +813,27 @@ export class GameScene extends Phaser.Scene {
         entity.setAlpha(0.5);
         entity.setData('mineArmed', false);
         this.mineStates.set(entity, createMineState(MINE_ARM_DELAY));
+      } else if (type.behavior === 'bomb') {
+        // Glitter Bomb — detonate immediately on placement
+        if (!entity.getData('bombDetonated')) {
+          entity.setData('bombDetonated', true);
+          const affected = bombDetonate(row, col, this.enemies, GRID_ROWS - 1, GRID_COLS - 1);
+          for (const enemy of affected) {
+            const ent = this.enemies.find(e => e === enemy);
+            if (ent) {
+              ent.drawHealthBar();
+              ent.updateHelmet();
+              ent.playHitFlash();
+            }
+          }
+          // Sparkle burst effect at bomb position
+          this.spawnGlitterBurst(entity.x, entity.y);
+          // Remove bomb entity from grid
+          const idx = this.defenders.indexOf(entity);
+          if (idx >= 0) this.defenders.splice(idx, 1);
+          this.placement.remove({ row, col });
+          entity.destroy();
+        }
       }
 
       // Start recharge cooldown for single-use types
@@ -1197,6 +1219,53 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  /** Glitter Bomb sparkle burst — pink/gold particle explosion at entity layer */
+  private spawnGlitterBurst(x: number, y: number): void {
+    // Central pink flash
+    const flash = this.add.circle(x, y, 6, 0xf06292, 0.9);
+    flash.setDepth(5);
+    this.tweens.add({
+      targets: flash,
+      scaleX: 5,
+      scaleY: 5,
+      alpha: 0,
+      duration: 350,
+      ease: 'Quad.easeOut',
+      onComplete: () => flash.destroy(),
+    });
+    // Gold ring expanding
+    const ring = this.add.graphics();
+    ring.lineStyle(3, 0xffd54f, 0.8);
+    ring.strokeCircle(x, y, 8);
+    ring.setDepth(5);
+    this.tweens.add({
+      targets: ring,
+      scaleX: 4,
+      scaleY: 4,
+      alpha: 0,
+      duration: 400,
+      ease: 'Cubic.easeOut',
+      onComplete: () => ring.destroy(),
+    });
+    // Sparkle particles — pink and gold dots radiating outward
+    const colors = [0xf06292, 0xffd54f, 0xffffff, 0xf48fb1, 0xffe082];
+    for (let i = 0; i < 12; i++) {
+      const angle = (Math.PI * 2 * i) / 12;
+      const dist = 30 + Math.random() * 20;
+      const dot = this.add.circle(x, y, 2 + Math.random() * 2, colors[i % colors.length], 0.9);
+      dot.setDepth(5);
+      this.tweens.add({
+        targets: dot,
+        x: x + Math.cos(angle) * dist,
+        y: y + Math.sin(angle) * dist,
+        alpha: 0,
+        duration: 300 + Math.random() * 200,
+        ease: 'Quad.easeOut',
+        onComplete: () => dot.destroy(),
+      });
+    }
+  }
+
   update(_time: number, delta: number): void {
     const dt = delta / 1000;
 
@@ -1323,7 +1392,8 @@ export class GameScene extends Phaser.Scene {
         if (target) {
           const ent = this.enemies.find(e => e === target);
           const isBoss = ent?.enemyType.bossType === true;
-          const mineDamage = isBoss ? MINE_BOSS_DAMAGE : def.defenderType.damage;
+          const isTough = ent?.enemyKey === 'tough' || ent?.enemyKey === 'armored';
+          const mineDamage = isBoss ? MINE_BOSS_DAMAGE : isTough ? MINE_HEAVY_DAMAGE : def.defenderType.damage;
           applyDamage(target, mineDamage);
           if (ent) {
             ent.drawHealthBar();
@@ -1351,11 +1421,12 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Shooter + trapper cooldowns and firing
+    // Shooter + cannon + trapper cooldowns and firing
     for (const def of this.defenders) {
       const isShooter = def.defenderKey === 'shooter';
+      const isCannon = def.defenderKey === 'cannon';
       const isTrapper = def.defenderType.behavior === 'trapper';
-      if ((!isShooter && !isTrapper) || isDead(def)) continue;
+      if ((!isShooter && !isCannon && !isTrapper) || isDead(def)) continue;
 
       const projectileSpeed = isTrapper ? HONEY_BEAR_PROJECTILE_SPEED : undefined;
 
@@ -1384,7 +1455,7 @@ export class GameScene extends Phaser.Scene {
         def.playRecoil();
         playSfxFire();
         const speed = projectileSpeed ?? proj.speed;
-        const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, speed, isTrapper);
+        const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, speed, isTrapper, isCannon);
         this.projectiles.push(projEntity);
       }
     }
@@ -1427,8 +1498,22 @@ export class GameScene extends Phaser.Scene {
               }
             }
           } else {
-            // Water Pistol: single-target damage
+            // Water Pistol / Water Cannon: single-target damage
             applyDamage(enemy, proj.damage);
+            if (proj.isCannon) {
+              // Water Cannon knockback — per-enemy amount with smooth lerp
+              const oldCol = enemy.col;
+              applyKnockback(enemy, GRID_COLS - 1);
+              if (enemy.col !== oldCol) {
+                const targetX = enemy.col * CELL_SIZE + CELL_SIZE / 2;
+                this.tweens.add({
+                  targets: enemy,
+                  x: targetX,
+                  duration: 500,
+                  ease: 'Sine.easeOut',
+                });
+              }
+            }
             enemy.drawHealthBar();
             enemy.updateHelmet();
             enemy.playHitFlash();

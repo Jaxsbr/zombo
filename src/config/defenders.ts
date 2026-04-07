@@ -1,4 +1,4 @@
-export type DefenderBehavior = 'shooter' | 'wall' | 'generator' | 'trapper' | 'mine';
+export type DefenderBehavior = 'shooter' | 'wall' | 'generator' | 'trapper' | 'mine' | 'bomb';
 
 export interface DefenderType {
   name: string;
@@ -11,6 +11,7 @@ export interface DefenderType {
   behavior: DefenderBehavior;
   singleUse: boolean;
   rechargeTime?: number; // ms cooldown between placements (single-use types)
+  knockback?: number; // cells to push enemy back on hit (0 or undefined = no knockback)
   bio: string; // kid-friendly description shown on unlock card
 }
 
@@ -62,6 +63,32 @@ export const DEFENDER_TYPES: Record<string, DefenderType> = {
     behavior: 'trapper',
     singleUse: false,
     bio: 'Shoots slow honey blobs that splash on hit! Damages nearby lanes and leaves sticky puddles.',
+  },
+  cannon: {
+    name: 'Water Cannon',
+    cost: 150,
+    health: 50,
+    damage: 24, // 2× Water Pistol
+    range: 9,
+    fireRate: 0.6, // noticeably slower than Water Pistol (1.0)
+    generatesIncome: 0,
+    behavior: 'shooter',
+    singleUse: false,
+    knockback: 0.2, // subtle nudge backward on hit
+    bio: 'KA-SPLASH! A massive water blaster that blows enemies backwards! Way stronger than the pistol.',
+  },
+  bomb: {
+    name: 'Glitter Bomb',
+    cost: 100,
+    health: 1,
+    damage: 9999, // lethal to non-boss enemies in AOE
+    range: 0,
+    fireRate: 0,
+    generatesIncome: 0,
+    behavior: 'bomb',
+    singleUse: true,
+    rechargeTime: 15000, // 15s cooldown between placements
+    bio: 'SPARKLE BOOM! Place it and — pop! — glitter explodes everywhere! Clears out a whole crowd of baddies.',
   },
   mine: {
     name: 'Marble Mine',

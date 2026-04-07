@@ -31,17 +31,18 @@ describe('DefenderUnlocks', () => {
     expect(needsLoadoutSelection(unlocked)).toBe(false);
   });
 
-  it('selection cap at 4 — MAX_LOADOUT is 4', () => {
-    expect(MAX_LOADOUT).toBe(4);
+  it('selection cap at 5 — MAX_LOADOUT is 5', () => {
+    expect(MAX_LOADOUT).toBe(5);
   });
 
-  it('completing L3 (index 2) unlocks Block Tower', () => {
+  it('completing L3 (index 2) unlocks Block Tower and Water Cannon', () => {
     let unlocked = loadUnlocks(storage);
-    // Complete L3 (index 2) → unlocks wall (Block Tower)
+    // Complete L3 (index 2) → unlocks wall (Block Tower) + cannon (Water Cannon)
     unlocked = updateUnlocksAfterLevel(unlocked, 2);
     expect(unlocked).toContain('wall');
-    expect(unlocked).toHaveLength(3);
-    // 3 defenders < 4 → no loadout selection needed
+    expect(unlocked).toContain('cannon');
+    expect(unlocked).toHaveLength(4);
+    // 4 defenders ≤ 5 → no loadout selection needed
     expect(needsLoadoutSelection(unlocked)).toBe(false);
   });
 
@@ -53,16 +54,29 @@ describe('DefenderUnlocks', () => {
     expect(unlocked).toHaveLength(2);
   });
 
-  it('completing only L1-L5 (indices 0-4) does not yield trapper or mine', () => {
+  it('completing L5 (index 4) unlocks Glitter Bomb', () => {
+    let unlocked = loadUnlocks(storage);
+    for (let i = 0; i <= 4; i++) {
+      unlocked = updateUnlocksAfterLevel(unlocked, i);
+    }
+    expect(unlocked).toContain('bomb');
+    expect(unlocked).toHaveLength(5); // generator, shooter, wall, cannon, bomb
+    // 5 ≤ 5 → no loadout selection needed yet
+    expect(needsLoadoutSelection(unlocked)).toBe(false);
+  });
+
+  it('completing only L1-L4 (indices 0-3) does not yield trapper, mine, or bomb', () => {
     let unlocked = loadUnlocks(storage);
     expect(unlocked).not.toContain('trapper');
     expect(unlocked).not.toContain('mine');
-    // Complete L1-L5 — only wall should be added (trapper unlocks at L6, mine at L8)
-    for (let i = 0; i < 5; i++) {
+    expect(unlocked).not.toContain('bomb');
+    // Complete L1-L4 — wall + cannon at L3 only
+    for (let i = 0; i < 4; i++) {
       unlocked = updateUnlocksAfterLevel(unlocked, i);
     }
     expect(unlocked).not.toContain('trapper');
     expect(unlocked).not.toContain('mine');
+    expect(unlocked).not.toContain('bomb');
   });
 
   it('completing L6 (index 5) unlocks trapper (Honey Bear)', () => {
@@ -83,25 +97,26 @@ describe('DefenderUnlocks', () => {
     expect(unlocked).toContain('mine');
   });
 
-  it('needsLoadoutSelection returns true when 5 defenders unlocked (after L6)', () => {
+  it('needsLoadoutSelection returns false for 5 unlocked, true for 6', () => {
     let unlocked = loadUnlocks(storage);
-    for (let i = 0; i <= 5; i++) {
+    // After L5: generator, shooter, wall, cannon, bomb = 5 → not yet (5 ≤ 5)
+    for (let i = 0; i <= 4; i++) {
       unlocked = updateUnlocksAfterLevel(unlocked, i);
     }
-    // After L6: generator, shooter, wall, trapper = 4 → not yet
+    expect(unlocked).toHaveLength(5);
     expect(needsLoadoutSelection(unlocked)).toBe(false);
-    // After L8: + mine = 5 → needs selection
-    unlocked = updateUnlocksAfterLevel(unlocked, 6);
-    unlocked = updateUnlocksAfterLevel(unlocked, 7);
+    // After L6: + trapper = 6 → needs selection (6 > 5)
+    unlocked = updateUnlocksAfterLevel(unlocked, 5);
+    expect(unlocked).toHaveLength(6);
     expect(needsLoadoutSelection(unlocked)).toBe(true);
   });
 
   it('loadout array persisted and restored from localStorage', () => {
     let unlocked = loadUnlocks(storage);
-    unlocked = updateUnlocksAfterLevel(unlocked, 2); // +wall
+    unlocked = updateUnlocksAfterLevel(unlocked, 2); // +wall +cannon
     saveUnlocks(unlocked, storage);
 
     const restored = loadUnlocks(storage);
-    expect(restored).toEqual(['generator', 'shooter', 'wall']);
+    expect(restored).toEqual(['generator', 'shooter', 'wall', 'cannon']);
   });
 });

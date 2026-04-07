@@ -1,10 +1,10 @@
 # Phase: endgame-content
 
-Status: draft
+Status: shipped
 
 ## Stories
 
-### US-56 — Honey Bear: Projectile Attack & Vertical AOE
+### US-56 — Honey Bear: Projectile Attack & Vertical AOE [Shipped]
 
 As a player, I want the Honey Bear to shoot slow honey projectiles that deal damage to enemies in 3 vertical lanes and leave honey pools at each affected cell on hit, so that it becomes a powerful, strategic, and satisfying zone-control defender.
 
@@ -27,7 +27,7 @@ As a player, I want the Honey Bear to shoot slow honey projectiles that deal dam
 
 ---
 
-### US-57 — Stage-1 Boss Enemy
+### US-57 — Stage-1 Boss Enemy [Shipped]
 
 As a player, I want to face a Stage-1 Boss — a massive, slow, high-HP threat — so that Level 10 delivers a climactic challenge requiring coordinated use of all available defenders.
 
@@ -49,7 +49,7 @@ As a player, I want to face a Stage-1 Boss — a massive, slow, high-HP threat �
 
 ---
 
-### US-58 — Level 10: Formation Waves & Boss Fight
+### US-58 — Level 10: Formation Waves & Boss Fight [Shipped]
 
 As a player, I want Level 10 to feature escalating coordinated enemy waves followed by a boss encounter, so that the endgame feels like a proper climax to the full game.
 

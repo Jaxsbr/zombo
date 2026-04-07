@@ -13,6 +13,7 @@ import {
   wallBlocks,
   getAOETargetRows,
   applyAOEDamage,
+  applyKnockback,
   HONEY_BEAR_PROJECTILE_SPEED,
   HONEY_BEAR_AOE_DAMAGE,
 } from '../src/systems/Combat';
@@ -191,5 +192,52 @@ describe('Combat — Honey Bear AOE', () => {
 
   it('HONEY_BEAR_PROJECTILE_SPEED is less than Water Pistol projectile speed (4)', () => {
     expect(HONEY_BEAR_PROJECTILE_SPEED).toBeLessThan(4);
+  });
+});
+
+describe('Combat — Knockback (per-enemy amount)', () => {
+  it('Dust Bunny knocked back by 0.6 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.6 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.6);
+    expect(enemy.col).toBeCloseTo(4.6);
+  });
+
+  it('Sock Puppet knocked back by 0.5 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.5 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.5);
+  });
+
+  it('Armored Bunny knocked back by 0.3 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.3 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.3);
+  });
+
+  it('Cleaning Robot knocked back by 0.1 cells', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0.1 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBeCloseTo(4.1);
+  });
+
+  it('boss (knockbackAmount 0) is NOT knocked back', () => {
+    const enemy = { ...makeEnemy({ col: 4 }), knockbackAmount: 0 };
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBe(4);
+    expect(enemy.col).toBe(4);
+  });
+
+  it('enemy without knockbackAmount is NOT knocked back', () => {
+    const enemy = makeEnemy({ col: 4 });
+    const newCol = applyKnockback(enemy);
+    expect(newCol).toBe(4);
+  });
+
+  it('knockback is clamped to maxCol', () => {
+    const enemy = { ...makeEnemy({ col: 7.8 }), knockbackAmount: 0.6 };
+    const newCol = applyKnockback(enemy, 8);
+    expect(newCol).toBe(8);
+    expect(enemy.col).toBe(8);
   });
 });

@@ -67,11 +67,12 @@ export class GameOverScene extends Phaser.Scene {
     playAgainZone.on('pointerdown', () => {
       playAgainZone.disableInteractive();
 
-      // Check for unlock card before transitioning
+      // Check for unlock cards before transitioning
       if (data.won && data.levelIndex !== undefined) {
-        const unlockedKey = this.getNewUnlockKey(data.levelIndex);
-        if (unlockedKey && !this.hasShownBio(unlockedKey)) {
-          this.showUnlockCard(unlockedKey, data.levelIndex);
+        const newKeys = this.getNewUnlockKeys(data.levelIndex);
+        const unshownKeys = newKeys.filter(k => !this.hasShownBio(k));
+        if (unshownKeys.length > 0) {
+          this.showUnlockCardChain(unshownKeys, 0, data.levelIndex);
           return;
         }
       }
@@ -80,14 +81,20 @@ export class GameOverScene extends Phaser.Scene {
     });
   }
 
-  private getNewUnlockKey(levelIndex: number): string | null {
+  private getNewUnlockKeys(levelIndex: number): string[] {
     const currentUnlocks = loadUnlocks();
     const updatedUnlocks = updateUnlocksAfterLevel(currentUnlocks, levelIndex);
-    if (updatedUnlocks.length > currentUnlocks.length) {
-      // Find the newly added key
-      return updatedUnlocks.find(k => !currentUnlocks.includes(k)) ?? null;
+    return updatedUnlocks.filter(k => !currentUnlocks.includes(k));
+  }
+
+  private showUnlockCardChain(keys: string[], index: number, levelIndex: number): void {
+    if (index >= keys.length) {
+      this.transitionToLevelSelect({ won: true, levelIndex });
+      return;
     }
-    return null;
+    this.showUnlockCard(keys[index], levelIndex, () => {
+      this.showUnlockCardChain(keys, index + 1, levelIndex);
+    });
   }
 
   private hasShownBio(key: string): boolean {
@@ -106,7 +113,7 @@ export class GameOverScene extends Phaser.Scene {
     }
   }
 
-  private showUnlockCard(defenderKey: string, levelIndex: number): void {
+  private showUnlockCard(defenderKey: string, levelIndex: number, onDismiss?: () => void): void {
     const type = DEFENDER_TYPES[defenderKey];
     if (!type) return;
 
@@ -213,7 +220,14 @@ export class GameOverScene extends Phaser.Scene {
     btnZone.on('pointerdown', () => {
       btnZone.disableInteractive();
       this.markBioShown(defenderKey);
-      this.transitionToLevelSelect({ won: true, levelIndex });
+      // Clean up card elements before next card or transition
+      dimBg.destroy();
+      cardContainer.destroy();
+      if (onDismiss) {
+        onDismiss();
+      } else {
+        this.transitionToLevelSelect({ won: true, levelIndex });
+      }
     });
   }
 

@@ -173,3 +173,11 @@ entries:
       Committed, pushed, thread resolved, summary posted.
       178 tests pass, tsc clean. Review complete.
     tokens: ~3k
+
+reconciliation_status:
+  r0: done
+  r1: done
+  r2: done
+  r3: done
+  r4: done
+  r5: done
