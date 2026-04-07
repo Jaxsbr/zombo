@@ -161,6 +161,17 @@ entries:
       ✓ US-60 complete.
       190 tests pass. tsc clean.
     tokens: ~5k
+  - task: 16
+    story: US-61
+    description: "Branch B — queue investigation for expanded loadout + toy selection redesign"
+    result: pass
+    notes: |
+      US-59 and US-60 complete. Moving to US-61 (Expanded Loadout).
+      Need to investigate: LevelSelectScene loadout overlay layout, HUD defender panel,
+      current MAX_LOADOUT=4 usage, needsLoadoutSelection threshold.
+      Key changes: MAX_LOADOUT=5, needsLoadoutSelection > 5, 2-row grid for 6+ cards.
+      Queued: investigate LevelSelectScene + HUD panel layout patterns.
+    tokens: ~1k
   - task: 7
     story: US-59
     description: "Add drawWaterCannon shape, cannon projectile variant (blue/cyan, larger), idle bob, fire recoil"
