@@ -20,6 +20,7 @@ import {
   getAOETargetRows,
   isDead,
   wallBlocks,
+  applyKnockback,
   HONEY_BEAR_PROJECTILE_SPEED,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
@@ -1351,11 +1352,12 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Shooter + trapper cooldowns and firing
+    // Shooter + cannon + trapper cooldowns and firing
     for (const def of this.defenders) {
       const isShooter = def.defenderKey === 'shooter';
+      const isCannon = def.defenderKey === 'cannon';
       const isTrapper = def.defenderType.behavior === 'trapper';
-      if ((!isShooter && !isTrapper) || isDead(def)) continue;
+      if ((!isShooter && !isCannon && !isTrapper) || isDead(def)) continue;
 
       const projectileSpeed = isTrapper ? HONEY_BEAR_PROJECTILE_SPEED : undefined;
 
@@ -1384,7 +1386,7 @@ export class GameScene extends Phaser.Scene {
         def.playRecoil();
         playSfxFire();
         const speed = projectileSpeed ?? proj.speed;
-        const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, speed, isTrapper);
+        const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, speed, isTrapper, isCannon);
         this.projectiles.push(projEntity);
       }
     }
@@ -1427,8 +1429,13 @@ export class GameScene extends Phaser.Scene {
               }
             }
           } else {
-            // Water Pistol: single-target damage
+            // Water Pistol / Water Cannon: single-target damage
             applyDamage(enemy, proj.damage);
+            if (proj.isCannon) {
+              // Water Cannon knockback — push non-boss enemies back
+              applyKnockback(enemy, 1, GRID_COLS - 1);
+              enemy.updatePosition();
+            }
             enemy.drawHealthBar();
             enemy.updateHelmet();
             enemy.playHitFlash();
