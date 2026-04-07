@@ -148,6 +148,19 @@ entries:
       ToysScene and unlock card already work via DEFENDER_TYPES + DRAW_DEFENDER.
       Queued: drawGlitterBomb + GameScene bomb placement handler.
     tokens: ~1k
+  - task: 15
+    story: US-60
+    description: "Add drawGlitterBomb, GameScene placement integration, sparkle burst, idle animation"
+    result: pass
+    notes: |
+      DefenderEntity.ts: drawGlitterBomb (pink sphere, gold ribbon, bow, glitter dots).
+      DRAW_DEFENDER['bomb'] registered. Idle: sparkle pulse (1000ms scale throb).
+      GameScene: bomb branch in handleGridClick — bombDetonate, sparkle burst (pink/gold particles at depth 5),
+      entity removal, double-detonation guard via bombDetonated data flag.
+      All 20 US-60 done-when criteria verified met.
+      ✓ US-60 complete.
+      190 tests pass. tsc clean.
+    tokens: ~5k
   - task: 7
     story: US-59
     description: "Add drawWaterCannon shape, cannon projectile variant (blue/cyan, larger), idle bob, fire recoil"

@@ -28,8 +28,8 @@ state:
   status: running
 
   # --- Task orchestration (owner: iterator) ---
-  task_number: 15
-  next_task: "[US-60] Add drawGlitterBomb to DefenderEntity.ts, integrate bomb into GameScene placement handler (immediate detonation, sparkle burst, entity removal, double-detonation guard)"
+  task_number: 16
+  next_task: null
   last_result: pass
   consecutive_fails: 0
 
@@ -42,4 +42,4 @@ state:
   retro_complete: false
 
   # --- Tracking (owner: iterator) ---
-  completed_stories: [US-59]
+  completed_stories: [US-59, US-60]
