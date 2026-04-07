@@ -24,7 +24,7 @@ import {
   HONEY_BEAR_PROJECTILE_SPEED,
 } from '../systems/Combat';
 import { DefenderEntity, DRAW_DEFENDER } from '../entities/DefenderEntity';
-import { mineTriggerCheck, MineState, createMineState, updateMineState, bombDetonate, MINE_BOSS_DAMAGE } from '../systems/SingleUse';
+import { mineTriggerCheck, MineState, createMineState, updateMineState, bombDetonate, MINE_BOSS_DAMAGE, MINE_HEAVY_DAMAGE } from '../systems/SingleUse';
 import { HoneyPot, createHoneyPot, updateHoneyPots, getSpeedModifier, HONEY_POT_DURATION } from '../systems/HoneyTrap';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
@@ -1392,7 +1392,8 @@ export class GameScene extends Phaser.Scene {
         if (target) {
           const ent = this.enemies.find(e => e === target);
           const isBoss = ent?.enemyType.bossType === true;
-          const mineDamage = isBoss ? MINE_BOSS_DAMAGE : def.defenderType.damage;
+          const isTough = ent?.enemyKey === 'tough' || ent?.enemyKey === 'armored';
+          const mineDamage = isBoss ? MINE_BOSS_DAMAGE : isTough ? MINE_HEAVY_DAMAGE : def.defenderType.damage;
           applyDamage(target, mineDamage);
           if (ent) {
             ent.drawHealthBar();
@@ -1500,9 +1501,18 @@ export class GameScene extends Phaser.Scene {
             // Water Pistol / Water Cannon: single-target damage
             applyDamage(enemy, proj.damage);
             if (proj.isCannon) {
-              // Water Cannon knockback — push non-boss enemies back
+              // Water Cannon knockback — smooth push, not instant snap
+              const oldCol = enemy.col;
               applyKnockback(enemy, 1, GRID_COLS - 1);
-              enemy.updatePosition();
+              if (enemy.col !== oldCol) {
+                const targetX = enemy.col * CELL_SIZE + CELL_SIZE / 2;
+                this.tweens.add({
+                  targets: enemy,
+                  x: targetX,
+                  duration: 200,
+                  ease: 'Quad.easeOut',
+                });
+              }
             }
             enemy.drawHealthBar();
             enemy.updateHelmet();

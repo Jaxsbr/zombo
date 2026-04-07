@@ -8,6 +8,8 @@ import {
   bombDetonate,
   MINE_BOSS_DAMAGE,
   BOMB_BOSS_DAMAGE,
+  BOMB_HEAVY_DAMAGE,
+  MINE_HEAVY_DAMAGE,
 } from '../src/systems/SingleUse';
 
 function makeEnemy(overrides: Partial<EnemyCombatEntity> = {}): EnemyCombatEntity {
@@ -157,5 +159,33 @@ describe('Glitter Bomb — immediate 3×3 AOE detonation', () => {
   it('bomb cost is in range 75-125', () => {
     expect(DEFENDER_TYPES.bomb.cost).toBeGreaterThanOrEqual(75);
     expect(DEFENDER_TYPES.bomb.cost).toBeLessThanOrEqual(125);
+  });
+
+  it('instant-kills basic (Dust Bunny) and jumper (Sock Puppet) enemies', () => {
+    const basic = { ...makeEnemy({ lane: 2, col: 4, health: 80 }), enemyKey: 'basic' };
+    const jumper = { ...makeEnemy({ lane: 2, col: 4, health: 150 }), enemyKey: 'jumper' };
+    bombDetonate(2, 4, [basic, jumper]);
+    expect(isDead(basic)).toBe(true);
+    expect(isDead(jumper)).toBe(true);
+  });
+
+  it('deals BOMB_HEAVY_DAMAGE to tough (Cleaning Robot) instead of instant kill', () => {
+    const tough = { ...makeEnemy({ lane: 2, col: 4, health: 550 }), enemyKey: 'tough' };
+    const affected = bombDetonate(2, 4, [tough]);
+    expect(affected).toHaveLength(1);
+    expect(tough.health).toBe(550 - BOMB_HEAVY_DAMAGE);
+    expect(isDead(tough)).toBe(false);
+  });
+
+  it('deals BOMB_HEAVY_DAMAGE to armored (Armored Bunny) instead of instant kill', () => {
+    const armored = { ...makeEnemy({ lane: 2, col: 4, health: 300 }), enemyKey: 'armored' };
+    const affected = bombDetonate(2, 4, [armored]);
+    expect(affected).toHaveLength(1);
+    expect(armored.health).toBe(300 - BOMB_HEAVY_DAMAGE);
+    expect(isDead(armored)).toBe(false);
+  });
+
+  it('MINE_HEAVY_DAMAGE is at least 200', () => {
+    expect(MINE_HEAVY_DAMAGE).toBeGreaterThanOrEqual(200);
   });
 });
