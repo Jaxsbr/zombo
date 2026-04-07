@@ -139,6 +139,15 @@ entries:
       7 new tests: kills in 3×3, boss chunk damage, outside unaffected, edge clamping, constants, config.
       190 tests pass (183 + 7 new). tsc clean.
     tokens: ~4k
+  - task: 14
+    story: US-60
+    description: "Branch B — queue bomb visual + GameScene integration"
+    result: pass
+    notes: |
+      US-60 remaining: visual shape, GameScene placement integration (detonation + sparkle + removal + guard).
+      ToysScene and unlock card already work via DEFENDER_TYPES + DRAW_DEFENDER.
+      Queued: drawGlitterBomb + GameScene bomb placement handler.
+    tokens: ~1k
   - task: 7
     story: US-59
     description: "Add drawWaterCannon shape, cannon projectile variant (blue/cyan, larger), idle bob, fire recoil"
