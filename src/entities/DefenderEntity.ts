@@ -280,6 +280,12 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
     this.health = type.health;
     this.maxHealth = type.health;
 
+    // Drop shadow — drawn first so it sits behind the shape.
+    const shadow = scene.add.graphics();
+    shadow.fillStyle(0x000000, 0.3);
+    shadow.fillEllipse(0, 22, 36, 9);
+    this.add(shadow);
+
     const shape = scene.add.graphics();
     const drawFn = DRAW_DEFENDER[key];
     if (drawFn) {
@@ -301,6 +307,7 @@ export class DefenderEntity extends Phaser.GameObjects.Container {
     // Hidden at full health — drawHealthBar only renders when damaged
 
     scene.add.existing(this);
+    this.setDepth(5);
 
     // Placement bounce-in animation
     this.setScale(0.3);
