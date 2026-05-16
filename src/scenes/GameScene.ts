@@ -28,6 +28,7 @@ import { mineTriggerCheck, MineState, createMineState, updateMineState, bombDeto
 import { HoneyPot, createHoneyPot, updateHoneyPots, getSpeedModifier, HONEY_POT_DURATION } from '../systems/HoneyTrap';
 import { EnemyEntity } from '../entities/EnemyEntity';
 import { ProjectileEntity } from '../entities/ProjectileEntity';
+import { spawnMuzzleFlash } from '../visuals/fx';
 import { attemptJump } from '../systems/EnemyMovement';
 import { Tutorial, TutorialStep } from '../systems/Tutorial';
 import {
@@ -73,7 +74,6 @@ export class GameScene extends Phaser.Scene {
   private sparks: Phaser.GameObjects.Container[] = [];
   private mineStates: Map<DefenderEntity, MineState> = new Map();
   private honeyPots: HoneyPot[] = [];
-  private honeyPotGraphics: Map<string, Phaser.GameObjects.Graphics> = new Map(); // "row,col" → visual
   private generatorTimers: Map<DefenderEntity, number> = new Map(); // ms until next spark
   private rechargeTimers: Map<string, number> = new Map(); // defenderKey → remaining ms
   private currentLevelIndex: number = 0;
@@ -445,8 +445,13 @@ export class GameScene extends Phaser.Scene {
         const y = HUD_HEIGHT + row * CELL_SIZE;
         const isActive = this.activeLanes.includes(row);
 
-        const shade = (row + col) % 2 === 0 ? 0xc4a882 : 0xb0956e;
-        graphics.fillStyle(shade, isActive ? 1 : 0.25);
+        // Two-tone checker, each cell gets a vertical gradient (lighter top →
+        // darker bottom) so the floor reads as lit from above.
+        const isLightCell = (row + col) % 2 === 0;
+        const top = isLightCell ? 0xd4b893 : 0xc0a37a;
+        const bot = isLightCell ? 0xb09870 : 0x9a8260;
+        const a = isActive ? 1 : 0.25;
+        graphics.fillGradientStyle(top, top, bot, bot, a, a, a, a);
         graphics.fillRect(x, y, CELL_SIZE, CELL_SIZE);
 
         graphics.lineStyle(1, 0x8b7355, isActive ? 0.3 : 0.1);
@@ -1171,10 +1176,11 @@ export class GameScene extends Phaser.Scene {
 
   /** Dramatic amber splash — expands across 3 lanes with droplet particles */
   private spawnHoneySplash(x: number, y: number, lane: number): void {
-    // Central amber blast
+    // Central amber blast — draw at local origin so scale tweens stay centred.
     const blast = this.add.graphics();
     blast.fillStyle(0xe65100, 0.7);
-    blast.fillCircle(x, y, 8);
+    blast.fillCircle(0, 0, 8);
+    blast.setPosition(x, y);
     blast.setDepth(50);
     this.tweens.add({
       targets: blast,
@@ -1188,7 +1194,8 @@ export class GameScene extends Phaser.Scene {
     // Amber ring expanding outward
     const ring = this.add.graphics();
     ring.lineStyle(3, 0xffb300, 0.8);
-    ring.strokeCircle(x, y, 10);
+    ring.strokeCircle(0, 0, 10);
+    ring.setPosition(x, y);
     ring.setDepth(50);
     this.tweens.add({
       targets: ring,
@@ -1336,37 +1343,9 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Update honey pots — expire old ones and manage visuals
+    // Honey pots drive the slow modifier; the splash on impact is the only
+    // visual — no persistent floor effect.
     this.honeyPots = updateHoneyPots(this.honeyPots, delta);
-    // Render honey pool visuals at depth 2 (above grid tiles, below entities)
-    const activePotKeys = new Set<string>();
-    for (const pot of this.honeyPots) {
-      const key = `${pot.row},${pot.col}`;
-      activePotKeys.add(key);
-      if (!this.honeyPotGraphics.has(key)) {
-        const px = pot.col * CELL_SIZE + CELL_SIZE / 2;
-        const py = HUD_HEIGHT + pot.row * CELL_SIZE + CELL_SIZE / 2;
-        const g = this.add.graphics();
-        // Outer glow
-        g.fillStyle(0xffb300, 0.15);
-        g.fillCircle(px, py, CELL_SIZE * 0.45);
-        // Main pool
-        g.fillStyle(0xe65100, 0.4);
-        g.fillCircle(px, py, CELL_SIZE * 0.35);
-        // Inner highlight
-        g.fillStyle(0xffd54f, 0.25);
-        g.fillCircle(px - 3, py - 3, CELL_SIZE * 0.15);
-        g.setDepth(2);
-        this.honeyPotGraphics.set(key, g);
-      }
-    }
-    // Remove visuals for expired pots
-    for (const [key, g] of this.honeyPotGraphics) {
-      if (!activePotKeys.has(key)) {
-        g.destroy();
-        this.honeyPotGraphics.delete(key);
-      }
-    }
 
     // Mine arm timer + trigger check
     for (const [def, mineState] of this.mineStates) {
@@ -1454,6 +1433,8 @@ export class GameScene extends Phaser.Scene {
       if (proj) {
         def.playRecoil();
         playSfxFire();
+        const flashColor = isTrapper ? 0xffb300 : isCannon ? 0x4dd0e1 : 0xfbbf24;
+        spawnMuzzleFlash(this, def.x + 14, def.y, flashColor);
         const speed = projectileSpeed ?? proj.speed;
         const projEntity = new ProjectileEntity(this, proj.lane, proj.x, proj.damage, speed, isTrapper, isCannon);
         this.projectiles.push(projEntity);

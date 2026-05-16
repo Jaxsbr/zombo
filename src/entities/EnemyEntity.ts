@@ -238,6 +238,13 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
 
     const scale = type.scale ?? 1.0;
 
+    // Drop shadow — drawn first so it sits behind the shape. Lifts the toy
+    // off the carpet visually.
+    const shadow = scene.add.graphics();
+    shadow.fillStyle(0x000000, 0.28);
+    shadow.fillEllipse(0, 20 * scale, 34 * scale, 9 * scale);
+    this.add(shadow);
+
     const shape = scene.add.graphics();
     this.shapeGraphics = shape;
     const drawFn = DRAW_ENEMY[key];
@@ -262,6 +269,7 @@ export class EnemyEntity extends Phaser.GameObjects.Container {
     this.add(this.flashOverlay);
 
     scene.add.existing(this);
+    this.setDepth(5);
 
     // Per-key movement animation
     this.startMovementAnimation(scene);

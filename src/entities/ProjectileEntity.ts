@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { CELL_SIZE, HUD_HEIGHT } from '../config/game';
+import { addObjectGlow } from '../visuals/fx';
 
 const PROJECTILE_COLOR = 0xfbbf24;
 const HONEY_PROJECTILE_COLOR = 0xe65100; // amber — distinct from Water Pistol yellow
@@ -64,6 +65,13 @@ export class ProjectileEntity extends Phaser.GameObjects.Container {
     this.add(g);
 
     scene.add.existing(this);
+
+    const glowColor = isHoney
+      ? HONEY_PROJECTILE_COLOR
+      : isCannon
+        ? CANNON_PROJECTILE_COLOR
+        : PROJECTILE_COLOR;
+    addObjectGlow(this, glowColor);
   }
 
   updatePosition(): void {
